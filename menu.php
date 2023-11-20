@@ -35,7 +35,7 @@
         <div class="collapse navbar-collapse justify-content-between" id="nav">
 
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="../Anime 2.0/">Animes</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="../Anime/">Animes</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="emision.php">Emision</a> </li>
