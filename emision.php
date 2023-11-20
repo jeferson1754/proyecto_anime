@@ -70,7 +70,7 @@ $nombre_dia = $nombres_dias[$numero_dia];
                     <select name="dias" class="form-control" style="width:auto;">
                         <option value="" required>Seleccione:</option>
                         <?php
-                        $query = $conexion->query("SELECT * FROM `dias`;");
+                        $query = $conexion->query("SELECT DISTINCT(e.Dia) FROM emision e INNER JOIN dias ot ON e.Dia = ot.Dia ORDER BY ot.ID ASC;");
                         while ($valores = mysqli_fetch_array($query)) {
                             echo '<option value="' . $valores['Dia'] . '">' . $valores['Dia'] . '</option>';
                         }

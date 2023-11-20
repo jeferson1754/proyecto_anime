@@ -204,6 +204,23 @@ if (mysqli_num_rows($conteo) == 0) {
     </script>';
 }
 
+if ($posicion == 0) {
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "UPDATE emision SET 
+            Posicion='" . $posicion . "'
+            WHERE ID_Emision='" . $idRegistros . "'";
+        $conn->exec($sql);
+        echo $sql;
+        echo "<br>";
+    } catch (PDOException $e) {
+        $conn = null;
+        echo $e;
+        echo "<br>";
+    }
+    echo "El conteo es cero asi que esta bien<br>";
+}
 
 if (mysqli_num_rows($anime) == 0) {
 
