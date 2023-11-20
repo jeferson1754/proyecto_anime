@@ -1,0 +1,84 @@
+.main-container {
+    max-width: 600%;
+    margin: 30px 20px;
+
+}
+
+table {
+    width: 100%;
+    background-color: white !important;
+    text-align: left;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 5px;
+
+}
+
+thead {
+    background-color: #5a9b8d !important;
+    color: white !important;
+    border-bottom: solid 5px #0F362D !important;
+}
+
+
+tr:nth-child(even) {
+    background-color: #ddd !important;
+}
+
+tr:hover td {
+    background-color: #369681 !important;
+    color: white !important;
+}
+
+
+div.dataTables_wrapper div.dataTables_filter input {
+    margin-right: 10px;
+}
+
+
+
+
+@media screen and (max-width: 600px) {
+    table {
+        width: 100%;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr:nth-of-type(2n) {
+        background-color: inherit !important;
+    }
+
+    tr td:first-child {
+        background: #f0f0f0 !important;
+        font-weight: bold;
+        font-size: 1.3em;
+    }
+
+    tr:hover td {
+        background-color: #369681 !important;
+        color: white !important;
+    }
+
+    tbody td {
+        display: block;
+        text-align: center !important;
+    }
+
+
+    tbody td:before {
+        content: attr(data-th) !important;
+        display: block;
+        text-align: center !important;
+    }
+
+    .op {
+        width: 10%;
+    }
+
+}
