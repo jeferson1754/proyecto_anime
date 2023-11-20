@@ -31,10 +31,7 @@
         <h1 class="modal-title">
           Titulo: <h1 lass="modal-title2" ><?php echo $mostrar['Cancion']; ?></h1>
         </h1>
-        <button class="copy-title" title="Copiar título" onclick="copyTitle()">
-          <i class="fas fa-copy"></i>
-        </button>
-
+  
         <h3 class="modal-body">
           Artista: <?php echo $mostrar['Nombre']; ?> OP <?php echo $mostrar['Opening']; ?>(o Autor)
           Album: <?php echo $album; ?>
@@ -45,13 +42,5 @@
     </div>
   </div>
 </div>
-<script>
-  function copyTitle(event) {
-    // Obtén el título del modal
-    const title = document.querySelector(".modal-title2").textContent;
 
-    // Copia el título al portapapeles
-    navigator.clipboard.writeText(title);
-  }
-</script>
 <!---fin ventana Update --->
