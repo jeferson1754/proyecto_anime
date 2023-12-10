@@ -48,18 +48,17 @@ $nombre_dia = $nombres_dias[$numero_dia];
     <div class="col-sm">
         <div class="container-fluid flex-container">
             <form action="" method="GET">
-                <button class="btn btn-outline-info" type="submit" name="enviar"><b>HOY </b> </button>
-                <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
+                <button class="btn btn-outline-info mostrar" type="submit" name="enviar"><b>HOY </b> </button>
+                <button class="btn btn-outline-info mostrar" type="submit" name="borrar"> <b>Borrar </b> </button>
                 <input type="hidden" name="accion" value="HOY">
 
-                &nbsp;
-                <button type="button" class="btn btn-info " onclick="myFunction()">
+                <button type="button" class="btn btn-info mostrar" onclick="myFunction()">
                     Filtrar
                 </button>
-                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ModalTotal">
+                <button type="button" class="btn btn-info ocultar" data-toggle="modal" data-target="#ModalTotal">
                     Actualizar Capitulos
                 </button>
-                <button class='btn btn-outline-info' type='button' id="miBoton"> <b>Marcar Todos Vistos </b> </button>
+                <button class='btn btn-outline-info mostrar' type='button' id="miBoton"> <b>Marcar Todos Vistos </b> </button>
 
             </form>
         </div>
