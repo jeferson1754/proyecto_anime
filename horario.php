@@ -8,12 +8,16 @@ $mes = date("F");
 
 if ($mes == "January" || $mes == "February" || $mes == "March") {
     $tempo = "Invierno";
+    $img = "img/winter.png";
 } else if ($mes == "April" || $mes == "May" || $mes == "June") {
     $tempo = "Primavera";
+    $img = "img/spring.png";
 } else if ($mes == "July" || $mes == "August" || $mes == "September") {
     $tempo = "Verano";
+    $img = "img/sun.png";
 } else if ($mes == "October" || $mes == "November" || $mes == "December") {
     $tempo = "Otoño";
+    $img = "img/autumn.png";
 }
 ?>
 <!DOCTYPE html>
@@ -25,6 +29,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.semanticui.min.css">
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
@@ -33,40 +38,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
     </title>
 </head>
 <style>
-    .main-container {
-        max-width: 600%;
-        margin: 30px 20px;
-    }
-
-    table {
-        width: 100%;
-        background-color: white !important;
-        text-align: left;
-        border-collapse: collapse;
-    }
-
-    th,
-    td {
-        padding: 5px;
-
-    }
-
-    thead {
-        background-color: #5a9b8d !important;
-        color: white !important;
-        border-bottom: solid 5px #0F362D !important;
-    }
-
-
-    tr:nth-child(even) {
-        background-color: #ddd !important;
-    }
-
-    tr:hover td {
-        background-color: #369681 !important;
-        color: white !important;
-    }
-
+    /* */
     .auto-style3 {
         width: 96px;
         background-color: #E9BCAC;
@@ -120,9 +92,9 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
         top: 0;
         left: 0;
         margin-top: 5px;
-        /* Ajusta el valor según sea necesario */
+
         margin-left: 10px;
-        /* Ajusta el valor según sea necesario */
+
     }
 
     .auto-style12 {
@@ -130,8 +102,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
         top: -7px;
         right: 14px;
         margin-top: 5px;
-        /* Ajusta el valor según sea necesario */
-        ;
+
         margin-right: 10px;
         width: 180px;
     }
@@ -141,16 +112,12 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
         top: 0;
         left: 19px;
         margin-top: 5px;
-        /* Ajusta el valor según sea necesario */
-        ;
         margin-left: 10px;
-        /* Ajusta el valor según sea necesario */
     }
 
     .auto-style14 {
         display: inline-block;
         margin-right: 5px;
-        /* Ajusta el valor según sea necesario */
     }
 
     .auto-style15 {
@@ -162,6 +129,32 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
 
     .auto-style16 {
         height: 1257px;
+    }
+
+    .image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 150px;
+        margin: 0;
+    }
+
+    .liston {
+        width: 80%;
+        /* Ajusta el ancho según sea necesario */
+        height: 150px;
+        display: block;
+    }
+
+    .texto-superpuesto {
+        position: absolute;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: black;
+        font-size: 35px;
+        text-align: center;
     }
 </style>
 
@@ -184,9 +177,14 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
     <div class="col-sm">
 
         <!--- Formulario para registrar Cliente --->
-        <div class="auto-style12" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 22px; font-weight: bold;"><?php echo $año . " " . $mayusculas; ?></div>
+        <div class="auto-style12" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 22px; font-weight: bold;"><?php echo $año ?><img style="width:50px;" src="<?php echo $img ?>"></div>
         <div class="auto-style13" style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 22px; font-weight: bold;">N° <?php echo $number; ?></div>
-        <div class="auto-style11"><span style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 62px; ">HORARIO DE ANIME</span></div>
+        <div class="image-container">
+            <img class="liston" src="./img/liston.png" alt="Imagen con Listón">
+            <div class="texto-superpuesto">
+                HORARIO DE ANIME
+            </div>
+        </div>
     </div>
 
     <div class="main-container">
