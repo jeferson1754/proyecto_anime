@@ -1,8 +1,8 @@
-<!--coment
+<!--coment-->
+
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
--->
 
 <?php
 include '../bd.php';
