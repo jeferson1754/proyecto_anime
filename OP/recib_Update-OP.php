@@ -1,8 +1,8 @@
-<!--coment-->
+<!--coment
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
-
+-->
 
 <?php
 include '../bd.php';
@@ -66,6 +66,19 @@ echo "<br>";
 echo $autor;
 echo "<br>";
 
+$tempor = "";
+
+if ($temp == "Invierno") {
+    $tempor = "1";
+} else if ($temp == "Primavera") {
+    $tempor = "2";
+} else if ($temp == "Verano") {
+    $tempor = "3";
+} else if ($temp == "Otoño") {
+    $tempor = "4";
+}
+
+echo $tempor . "<br>";
 echo "openings.php?nombre= <br>";
 echo $link . "<br>";
 
@@ -108,7 +121,7 @@ try {
             Link ='" . $enlace . "',
             Estado ='" . $estado . "',
             ID_Anime ='" . $idAnime . "',
-            Temporada ='" . $temp . "',
+            Temporada ='" . $tempor . "',
             Estado_Link ='" . $estado_link . "',
             Ano ='" . $ano . "',
             ID_Autor ='" . $autores . "',
