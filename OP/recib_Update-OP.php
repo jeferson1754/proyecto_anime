@@ -9,7 +9,7 @@ include '../bd.php';
 $idRegistros    = $_REQUEST['id'];
 $idAnime        = $_REQUEST['anime'];
 $cancion        = $_REQUEST['cancion'];
-$enlace           = $_REQUEST['enlace'];
+$enlace          = $_REQUEST['enlace'];
 $op             = $_REQUEST['op'];
 $estado         = $_REQUEST['estado'];
 $mix            = $_REQUEST['mix'];
@@ -18,7 +18,7 @@ $temp           = $_REQUEST['temp'];
 $ano            = $_REQUEST['ano'];
 $estado_link    = $_REQUEST['estado_link'];
 $link           = $_REQUEST['link'];
-$autor           = $_REQUEST['autor'];
+$autor          = $_REQUEST['autor'];
 
 
 if (isset($_REQUEST["ocultar"])) {
@@ -63,24 +63,41 @@ echo $nombre;
 echo "<br>";
 echo $estado_link;
 echo "<br>";
+echo $autor;
+echo "<br>";
 
-$tempor = "";
-
-if ($temp == "Invierno") {
-    $tempor = "1";
-} else if ($temp == "Primavera") {
-    $tempor = "2";
-} else if ($temp == "Verano") {
-    $tempor = "3";
-} else if ($temp == "Otoño") {
-    $tempor = "4";
-} else {
-    $tempor = "5";
-}
-
-echo $tempor . "<br>";
 echo "openings.php?nombre= <br>";
 echo $link . "<br>";
+
+$opening = $conexion->query("SELECT * FROM `autor` where Autor='$autor';");
+
+while ($valores = mysqli_fetch_array($opening)) {
+    $autor1 = $valores['Autor'];
+    $id_autores = $valores['ID'];
+    echo $autor1 . "<br>";
+}
+
+if ($autor == $autor1) {
+    $autores = $id_autores;
+} else {
+
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "INSERT INTO `autor` (`ID`, `Autor`)
+ VALUES ( NULL ,'" . $autor . "')";
+        $conn->exec($sql);
+        $autores = $conn->lastInsertId();
+        echo $sql . "<br>";
+        echo 'ID_Autor: ' . $autores;
+        echo "<br>";
+        $conn = null;
+    } catch (PDOException $e) {
+        $conn = null;
+    }
+    echo $sql;
+}
+
 
 
 try {
@@ -91,10 +108,10 @@ try {
             Link ='" . $enlace . "',
             Estado ='" . $estado . "',
             ID_Anime ='" . $idAnime . "',
-            Temporada ='" . $tempor . "',
+            Temporada ='" . $temp . "',
             Estado_Link ='" . $estado_link . "',
             Ano ='" . $ano . "',
-            Autor ='" . $autor . "',
+            ID_Autor ='" . $autores . "',
             Mix ='" . $mix . "'
             WHERE ID='" . $idRegistros . "'";
     $conn->exec($sql);

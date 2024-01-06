@@ -44,7 +44,7 @@
             <datalist id="autores">
               <?php
               // Ejecución de la consulta SQL
-              $mangas = $conexion->query("SELECT Autor FROM `op`;");
+              $mangas = $conexion->query("SELECT * FROM `autor`;");
 
               //echo "<input type='hidden' name='id' value='" . $manga['ID'] . "'>";
               // Recorrido del array de mangas

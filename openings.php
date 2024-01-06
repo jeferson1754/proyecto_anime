@@ -166,7 +166,7 @@ $año = date("Y");
 
             //$sql = "SELECT a.id,a.Anime,a.Temporadas,a.Peliculas,a.Spin_Off,e.Estado,a.Año,t.Temporada FROM anime as a INNER JOIN Estado as e ON a.Estado = e.id INNER join Temporada as t ON a.Temporada=t.ID ORDER by a.id;";
 
-            $sql = "  SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,op.Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Mix,op.Estado_Link,op.mostrar FROM `op`  JOIN temporada ON   op.Temporada=temporada.ID $where";
+            $sql = "SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,autor.Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Mix,op.Estado_Link,op.mostrar FROM `op` JOIN temporada ON op.Temporada=temporada.ID JOIN autor ON op.ID_Autor=autor.ID $where";
             //echo $sql;
 
             $result = mysqli_query($conexion, $sql);
