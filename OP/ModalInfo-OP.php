@@ -33,7 +33,15 @@
         </h1>
   
         <h3 class="modal-body">
-          Artista: <?php echo $mostrar['Nombre']; ?> OP <?php echo $mostrar['Opening']; ?>(o Autor)
+          
+          Artista: <?php
+          if($mostrar['Autor']==""){
+            echo $mostrar['Nombre'] ." OP ". $mostrar['Opening']; 
+          }else{
+            echo $mostrar['Autor'];
+          }
+          ?>  
+          <br>
           Album: <?php echo $album; ?>
         </h3>
 

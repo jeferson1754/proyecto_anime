@@ -30,10 +30,10 @@
             <?php echo $mostrar['Cancion']; ?>
           </h1>
           <h2 class="modal-title">
-            <?php echo $mostrar['Nombre']; ?>
+            <?php echo $mostrar['Nombre']; ?> OP <?php echo $mostrar['Opening']; ?>
           </h2>
           <h2 class="modal-title">
-            OP <?php echo $mostrar['Opening']; ?>
+            <?php echo $mostrar['Autor']; ?>
           </h2>
           <h2 class="modal-title">
             <?php echo $mostrar['Temporada']; ?>

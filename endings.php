@@ -150,6 +150,7 @@ $año = date("Y");
                     <th>Nombre</th>
                     <th>Ending</th>
                     <th>Cancion</th>
+                    <th>Autor</th>
                     <th>Año</th>
                     <th>Temporada</th>
                     <th>Estado</th>
@@ -159,7 +160,7 @@ $año = date("Y");
             </thead>
             <?php
 
-            $sql = "  SELECT ed.ID,ed.Nombre,ed.ID_Anime,ed.Ending,ed.Cancion,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Mix,ed.Estado_Link,ed.mostrar FROM `ed`  JOIN temporada ON ed.Temporada=temporada.ID $where ";
+            $sql = "  SELECT ed.ID,ed.Nombre,ed.ID_Anime,ed.Ending,ed.Cancion,ed.Autor,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Mix,ed.Estado_Link,ed.mostrar FROM `ed`  JOIN temporada ON ed.Temporada=temporada.ID $where ";
             $result = mysqli_query($conexion, $sql);
             //echo $sql;
 
@@ -170,9 +171,10 @@ $año = date("Y");
 
                 <tr>
                     <td><?php echo $mostrar['ID'] ?></td>
-                    <td style=""><?php echo $mostrar['Nombre'] ?></td>
+                    <td class="td"><?php echo $mostrar['Nombre'] ?></td>
                     <td>ED <?php echo $mostrar['Ending'] ?></td>
                     <td><a href="<?php echo $mostrar['Link'] ?>" class="enlace" title="<?php echo $mostrar['Estado_Link'] ?>" target="_blank"><?php echo $mostrar['Cancion'] ?></a></td>
+                    <td><?php echo $mostrar['Autor'] ?></td>
                     <td><?php echo $mostrar['Ano'] ?></td>
                     <td><?php echo $mostrar['Temporada'] ?></td>
                     <td><?php echo $mostrar['Estado'] ?></td>
@@ -185,7 +187,7 @@ $año = date("Y");
                             Editar
                         </button>
                         <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#editpeli2<?php echo $mostrar['ID']; ?>">
-                            Eliminar
+                           Eliminar
                         </button>
 
                     </td>

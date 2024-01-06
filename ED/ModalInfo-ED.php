@@ -29,11 +29,17 @@
         <h1 class="modal-title">
           Titulo: <?php echo $mostrar['Cancion']; ?>
         </h1>
-        <h3 class="modal-title">
-          Artista: <?php echo $mostrar['Nombre']; ?> ED <?php echo $mostrar['Ending']; ?>(o Autor)
-        </h3>
-        <h3 class="modal-title">
-          Album: <?php echo $album ?>
+        <h3 class="modal-body">
+          
+          Artista: <?php
+          if($mostrar['Autor']==""){
+            echo $mostrar['Nombre'] ." ED ". $mostrar['Ending']; 
+          }else{
+            echo $mostrar['Autor'];
+          }
+          ?>  
+          <br>
+          Album: <?php echo $album; ?>
         </h3>
 
       </div>

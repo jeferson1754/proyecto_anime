@@ -17,6 +17,7 @@ $temp           = $_REQUEST['temp'];
 $ano            = $_REQUEST['ano'];
 $estado_link    = $_REQUEST['estado_link'];
 $link           = $_REQUEST['link'];
+$autor           = $_REQUEST['autor'];
 
 if (isset($_REQUEST["ocultar"])) {
     echo "Ocultar_Verdadero";
@@ -97,6 +98,7 @@ try {
             Ending ='" . $ed . "',
             Estado_Link ='" . $estado_link . "',
             Ano ='" . $ano . "',
+            Autor ='" . $autor . "',
             Mix ='" . $mix . "'
             WHERE ID='" . $idRegistros . "'";
     $conn->exec($sql);

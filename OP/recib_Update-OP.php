@@ -1,8 +1,8 @@
 <!--coment-->
-
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
+
 
 <?php
 include '../bd.php';
@@ -18,6 +18,7 @@ $temp           = $_REQUEST['temp'];
 $ano            = $_REQUEST['ano'];
 $estado_link    = $_REQUEST['estado_link'];
 $link           = $_REQUEST['link'];
+$autor           = $_REQUEST['autor'];
 
 
 if (isset($_REQUEST["ocultar"])) {
@@ -93,6 +94,7 @@ try {
             Temporada ='" . $tempor . "',
             Estado_Link ='" . $estado_link . "',
             Ano ='" . $ano . "',
+            Autor ='" . $autor . "',
             Mix ='" . $mix . "'
             WHERE ID='" . $idRegistros . "'";
     $conn->exec($sql);
