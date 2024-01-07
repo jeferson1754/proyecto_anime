@@ -66,6 +66,7 @@ echo "<br>";
 echo $autor;
 echo "<br>";
 
+
 $tempor = "";
 
 if ($temp == "Invierno") {
@@ -76,6 +77,10 @@ if ($temp == "Invierno") {
     $tempor = "3";
 } else if ($temp == "Otoño") {
     $tempor = "4";
+} else if($temp =="Desconocida"){
+     $tempor = "5";
+}else{
+    $tempor=$temp;
 }
 
 echo $tempor . "<br>";
