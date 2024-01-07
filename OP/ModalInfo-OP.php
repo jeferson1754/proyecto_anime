@@ -29,18 +29,24 @@
       ?>
       <div class="modal-body div1" id="cont_modal">
         <h1 class="modal-title">
-          Titulo: <h1 lass="modal-title2" ><?php echo $mostrar['Cancion']; ?></h1>
+          Titulo: <h1 lass="modal-title2"><?php echo $mostrar['Cancion']; ?></h1>
         </h1>
-  
+
         <h3 class="modal-body">
-          
-          Artista: <?php
-          if($mostrar['Autor']==""){
-            echo $mostrar['Nombre'] ." OP ". $mostrar['Opening']; 
-          }else{
+
+          Artista:
+          <?php
+
+          $sql1 = "SELECT autor.Autor, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones FROM autor where Autor='$mostrar[Autor]' HAVING Repeticiones > 3;";
+          $result1 = $conexion->query($sql1);
+
+          if ($result1->num_rows > 0) {
             echo $mostrar['Autor'];
+          } else {
+            echo $mostrar['Nombre'] . " OP " . $mostrar['Opening'];
           }
-          ?>  
+
+          ?>
           <br>
           Album: <?php echo $album; ?>
         </h3>

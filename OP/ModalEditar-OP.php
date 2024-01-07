@@ -39,18 +39,13 @@
 
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Autor:</label>
-            <input type="text" name="autor" id="autor" list="autores" class="form-control">
+            <input type="text" name="autor" id="autor" list="autores" value="<?php echo $mostrar['Autor']; ?>" class="form-control">
 
             <datalist id="autores">
               <?php
-              // Ejecución de la consulta SQL
               $mangas = $conexion->query("SELECT * FROM `autor`;");
 
-              //echo "<input type='hidden' name='id' value='" . $manga['ID'] . "'>";
-              // Recorrido del array de mangas
               foreach ($mangas as $manga) {
-                // Creación de la opción
-                //echo "<option value='" . $manga['ID'] . "'>" . $manga['Nombre'] . "</option>";
                 echo "<option value='" . $manga['Autor'] . "'></option>";
               }
 
