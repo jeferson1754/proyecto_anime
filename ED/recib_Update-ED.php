@@ -8,7 +8,7 @@ include '../bd.php';
 $idRegistros    = $_REQUEST['id'];
 $idAnime        = $_REQUEST['anime'];
 $cancion        = $_REQUEST['cancion'];
-$enlace           = $_REQUEST['enlace'];
+$enlace         = $_REQUEST['enlace'];
 $ed             = $_REQUEST['ed'];
 $estado         = $_REQUEST['estado'];
 $mix            = $_REQUEST['mix'];
@@ -51,12 +51,6 @@ if (isset($_REQUEST["ocultar"])) {
     }
 }
 
-$anime = $conexion->query("SELECT Anime FROM `anime` where id='$idAnime';");
-
-while ($valores = mysqli_fetch_array($anime)) {
-    $nombre = $valores[0];
-}
-
 echo "Temporada: " . $temp;
 echo "<br>";
 echo "Ending " . $ed;
@@ -78,13 +72,43 @@ if ($temp == "Invierno") {
     $tempor = "3";
 } else if ($temp == "Otoño") {
     $tempor = "4";
-} else {
+} else if ($temp == "Desconocida") {
     $tempor = "5";
+} else {
+    $tempor = $temp;
 }
 
 echo $tempor;
 echo "<br>";
 
+$ending = $conexion->query("SELECT * FROM `autor` where Autor='$autor';");
+
+while ($valores = mysqli_fetch_array($ending)) {
+    $autor1 = $valores['Autor'];
+    $id_autores = $valores['ID'];
+    echo $autor1 . "<br>";
+}
+
+if ($autor == $autor1) {
+    $autores = $id_autores;
+} else {
+
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "INSERT INTO `autor` (`ID`, `Autor`)
+ VALUES ( NULL ,'" . $autor . "')";
+        $conn->exec($sql);
+        $autores = $conn->lastInsertId();
+        echo $sql . "<br>";
+        echo 'ID_Autor: ' . $autores;
+        echo "<br>";
+        $conn = null;
+    } catch (PDOException $e) {
+        $conn = null;
+    }
+    echo $sql;
+}
 
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
@@ -98,7 +122,7 @@ try {
             Ending ='" . $ed . "',
             Estado_Link ='" . $estado_link . "',
             Ano ='" . $ano . "',
-            Autor ='" . $autor . "',
+            ID_Autor ='" . $autores . "',
             Mix ='" . $mix . "'
             WHERE ID='" . $idRegistros . "'";
     $conn->exec($sql);

@@ -37,7 +37,7 @@
           Artista:
           <?php
 
-          $sql1 = "SELECT autor.Autor, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones FROM autor where Autor='$mostrar[Autor]' HAVING Repeticiones > 3;";
+          $sql1 = "SELECT autor.Autor, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones FROM autor where Autor='$mostrar[Autor]' and Autor !='' HAVING Repeticiones > 3;";
           $result1 = $conexion->query($sql1);
 
           if ($result1->num_rows > 0) {

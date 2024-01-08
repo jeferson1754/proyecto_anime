@@ -160,7 +160,7 @@ $año = date("Y");
             </thead>
             <?php
 
-            $sql = "  SELECT ed.ID,ed.Nombre,ed.ID_Anime,ed.Ending,ed.Cancion,ed.Autor,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Mix,ed.Estado_Link,ed.mostrar FROM `ed`  JOIN temporada ON ed.Temporada=temporada.ID $where ";
+            $sql = "SELECT ed.ID,ed.Nombre,ed.ID_Anime,ed.Ending,ed.Cancion,autor.Autor,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Mix,ed.Estado_Link,ed.mostrar FROM `ed` JOIN temporada ON ed.Temporada=temporada.ID JOIN autor ON ed.ID_Autor=autor.ID $where ";
             $result = mysqli_query($conexion, $sql);
             //echo $sql;
 

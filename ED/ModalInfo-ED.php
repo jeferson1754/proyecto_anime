@@ -30,14 +30,20 @@
           Titulo: <?php echo $mostrar['Cancion']; ?>
         </h1>
         <h3 class="modal-body">
-          
-          Artista: <?php
-          if($mostrar['Autor']==""){
-            echo $mostrar['Nombre'] ." ED ". $mostrar['Ending']; 
-          }else{
-            echo $mostrar['Autor'];
-          }
-          ?>  
+
+          Artista:<?php
+
+                  $sql1 = "SELECT autor.Autor, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones FROM autor where Autor='$mostrar[Autor]' and Autor !='' HAVING Repeticiones > 3;";
+                  //echo $sql1;
+                  $result1 = $conexion->query($sql1);
+
+                  if ($result1->num_rows > 0) {
+                    echo $mostrar['Autor'];
+                  } else {
+                    echo $mostrar['Nombre'] . " ED " . $mostrar['Ending'];
+                  }
+
+                  ?>
           <br>
           Album: <?php echo $album; ?>
         </h3>

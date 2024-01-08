@@ -9,7 +9,7 @@ include '../bd.php';
 $idRegistros    = $_REQUEST['id'];
 $idAnime        = $_REQUEST['anime'];
 $cancion        = $_REQUEST['cancion'];
-$enlace          = $_REQUEST['enlace'];
+$enlace         = $_REQUEST['enlace'];
 $op             = $_REQUEST['op'];
 $estado         = $_REQUEST['estado'];
 $mix            = $_REQUEST['mix'];
