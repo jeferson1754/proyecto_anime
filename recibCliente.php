@@ -1,8 +1,8 @@
-<!--coment
+<!--coment-->
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
--->
+
 <?php
 include('bd.php');
 $id         = $_REQUEST['id'];
@@ -133,8 +133,8 @@ if (mysqli_num_rows($anime) == 0) {
             try {
                 $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "INSERT INTO  op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`, `Estado_Link`) 
-                VALUES('" . $nombre . "', '" . $last_id2 . "','1','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "','Faltante')";
+                $sql = "INSERT INTO  op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`, `Estado_Link`,`Fecha_Ingreso`) 
+                VALUES('" . $nombre . "', '" . $last_id2 . "','1','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "','Faltante',NOW())";
                 $conn->exec($sql);
                 echo $sql;
                 echo "<br>";
@@ -156,8 +156,8 @@ if (mysqli_num_rows($anime) == 0) {
             try {
                 $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "INSERT INTO  ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`, `Estado_Link`) 
-                VALUES('" . $nombre . "', '" . $last_id2 . "','1','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "','Faltante')";
+                $sql = "INSERT INTO  ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`, `Estado_Link`,`Fecha_Ingreso`) 
+                VALUES('" . $nombre . "', '" . $last_id2 . "','1','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "','Faltante',NOW())";
                 $conn->exec($sql);
                 echo $sql;
                 echo "<br>";

@@ -175,8 +175,8 @@ if ($op > $op1) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO  op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`) 
-        VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $op . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "')";
+        $sql = "INSERT INTO  op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`) 
+        VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $op . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "',NOW())";
         $conn->exec($sql);
         echo $sql;
         $conn = null;
@@ -196,8 +196,8 @@ if ($ed > $ed1) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO  ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`) 
-        VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $ed . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "')";
+        $sql = "INSERT INTO  ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`) 
+        VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $ed . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "',NOW())";
         $conn->exec($sql);
         echo $sql;
         $conn = null;
