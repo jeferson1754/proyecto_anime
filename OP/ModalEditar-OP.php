@@ -37,6 +37,12 @@
             <input type="text" name="enlace" class="form-control" value="<?php echo $mostrar['Link']; ?>">
           </div>
 
+
+          <div class="form-group">
+            <label for="iframe" class="col-form-label">Link Iframe:</label>
+            <input type="text" name="iframe" class="form-control" value="<?php echo $mostrar['Link_Iframe']; ?>">
+          </div>
+
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Autor:</label>
             <input type="text" name="autor" id="autor" list="autores" value="<?php echo $mostrar['Autor']; ?>" class="form-control">
