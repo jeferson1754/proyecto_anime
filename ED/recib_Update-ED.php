@@ -9,6 +9,7 @@ $idRegistros    = $_REQUEST['id'];
 $idAnime        = $_REQUEST['anime'];
 $cancion        = $_REQUEST['cancion'];
 $enlace         = $_REQUEST['enlace'];
+$iframe         = $_REQUEST['iframe'];
 $ed             = $_REQUEST['ed'];
 $estado         = $_REQUEST['estado'];
 $mix            = $_REQUEST['mix'];
@@ -116,6 +117,7 @@ try {
     $sql = "UPDATE ed SET
             Cancion ='" . $cancion . "',
             Link ='" . $enlace . "',
+            Link_Iframe ='" . $iframe . "',
             Estado ='" . $estado . "',
             ID_Anime ='" . $idAnime . "',
             Temporada ='" . $tempor . "',
