@@ -186,7 +186,7 @@ if ($resultado) {
 
     .content {
         width: 35%;
-        height: 250px;
+        height: 300px;
     }
 
     iframe,

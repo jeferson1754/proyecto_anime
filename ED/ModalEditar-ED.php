@@ -41,6 +41,19 @@
           </div>
 
           <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Estado del Link:</label>
+            <select name="estado_link" class="form-control" required>
+              <option value="<?php echo $mostrar['Estado_Link']; ?>"><?php echo $mostrar['Estado_Link']; ?></option>
+              <?php
+              $query = $conexion->query("SELECT Estado FROM `estado_link`;");
+              while ($valores = mysqli_fetch_array($query)) {
+                echo '<option value="' . $valores['Estado'] . '">' . $valores['Estado'] . '</option>';
+              }
+              ?>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="iframe" class="col-form-label">Link Iframe:</label>
             <input type="text" name="iframe" class="form-control" value="<?php echo $mostrar['Link_Iframe']; ?>">
           </div>
@@ -60,19 +73,7 @@
               ?>
             </datalist>
           </div>
-          
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Estado del Link:</label>
-            <select name="estado_link" class="form-control" required>
-              <option value="<?php echo $mostrar['Estado_Link']; ?>"><?php echo $mostrar['Estado_Link']; ?></option>
-              <?php
-              $query = $conexion->query("SELECT Estado FROM `estado_link`;");
-              while ($valores = mysqli_fetch_array($query)) {
-                echo '<option value="' . $valores['Estado'] . '">' . $valores['Estado'] . '</option>';
-              }
-              ?>
-            </select>
-          </div>
+
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Año:</label>
             <input type="number" name="ano" class="form-control" value="<?php echo $mostrar['Ano']; ?>">
