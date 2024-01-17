@@ -234,7 +234,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
             $COUNT5 = ("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='Viernes'    and Emision='Emision';");
             $COUNT6 = ("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='Sabado'     and Emision='Emision';");
             $COUNT7 = ("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='Domingo'    and Emision='Emision';");
-            $COUNTFINAL = ("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia!='Indefinido';");
+            $COUNTFINAL = ("SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Emision='Emision' and Dia!='Indefinido';");
             $COUNTANIME = ("SELECT COUNT(*) AS Total_Registros FROM emision WHERE Emision='Emisión' AND Dia!='Indefinido';");
 
             $lunesco        = mysqli_query($conexion, $COUNT1);
