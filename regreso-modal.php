@@ -8,7 +8,7 @@ if (isset($_GET['borrar'])) {
    echo "<input type='hidden' name='link' value='$link'>";
 
 } else if (isset($_GET['buscar'])) {
-   $link = "./?busqueda=$busqueda&buscar=";
+   $link = "./?busqueda_anime=$busqueda&buscar=";
    echo "<input type='hidden' name='link' value='$link'>";
 
 }  else {
