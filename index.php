@@ -118,7 +118,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
             </div>
             <div class="class-control" id="myDIV2" style="display:none;">
                 <form action="" method="GET">
-                    <input class="form-control" type="text" name="busqueda" style="width:auto;" placeholder="Nombre de Anime">
+                    <input class="form-control" type="text" name="busqueda_anime" style="width:auto;" placeholder="Nombre de Anime">
 
                     <button class="btn btn-outline-info" type="submit" name="buscar"> <b>Buscar </b> </button>
                     <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
@@ -140,8 +140,8 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
                     $where = "WHERE anime.Estado LIKE'%" . $estado . "%' ORDER BY `anime`.`id` DESC limit 10";
                 }
             } else if (isset($_GET['buscar'])) {
-                if (isset($_GET['busqueda'])) {
-                    $busqueda   = $_REQUEST['busqueda'];
+                if (isset($_GET['busqueda_anime'])) {
+                    $busqueda   = $_REQUEST['busqueda_anime'];
 
 
                     $where = "WHERE anime.Anime LIKE '%$busqueda%' ORDER BY `anime`.`id` DESC limit 10";

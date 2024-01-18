@@ -83,7 +83,7 @@ $año = date("Y");
             </div>
             <div class="class-control" id="myDIV1" style="display:none;">
                 <form action="" method="GET">
-                    <input class="form-control" type="text" name="busqueda" style="width:auto;" placeholder="Nombre de Anime">
+                    <input class="form-control" type="text" name="busqueda_op" style="width:auto;" placeholder="Nombre de Anime">
 
                     <button class="btn btn-outline-info" type="submit" name="buscar"> <b>Buscar </b> </button>
                     <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
@@ -92,7 +92,7 @@ $año = date("Y");
 
             <div class="class-control" id="myDIV2" style="display:none;">
                 <form action="" method="GET">
-                    <input class="form-control" type="text" name="cancion" style="width:auto;" placeholder="Nombre de Cancion">
+                    <input class="form-control" type="text" name="busqueda_cancion" style="width:auto;" placeholder="Nombre de Cancion">
 
                     <button class="btn btn-outline-info" type="submit" name="buscar1"> <b>Buscar </b> </button>
                     <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
@@ -121,17 +121,17 @@ $año = date("Y");
                 $where = "WHERE Cancion='' limit 10";
             } else if (isset($_GET['buscar'])) {
 
-                if (isset($_GET['busqueda'])) {
+                if (isset($_GET['busqueda_op'])) {
 
-                    $busqueda   = $_REQUEST['busqueda'];
+                    $busqueda   = $_REQUEST['busqueda_op'];
 
                     $where = "WHERE op.Nombre LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
                 }
             } else if (isset($_GET['buscar1'])) {
 
-                if (isset($_GET['cancion'])) {
+                if (isset($_GET['busqueda_cancion'])) {
 
-                    $busqueda   = $_REQUEST['cancion'];
+                    $busqueda   = $_REQUEST['busqueda_cancion'];
 
                     $where = "WHERE op.Cancion LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
                 }
