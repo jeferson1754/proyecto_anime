@@ -263,7 +263,7 @@ if ($resultado) {
 
         echo "<h1 class='hover-text'>";
 
-        if ($fila["Nombre"] == $row["Nombre"]) {
+        if ($fila["ID_Anime"] == $row["ID_Anime"] && $fila["Link"] == $row["Link"]) {
             echo "<span class='visible-text'>" . $row["Nombre"] . " - OP " . $row["Opening"] . "</span>";
         } else {
             echo "<span class='visible-text'>" . $row["Nombre"] . " - ED " . $row["Opening"] . "</span>";
