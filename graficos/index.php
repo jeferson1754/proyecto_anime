@@ -186,15 +186,17 @@ if ($resultado) {
 
     .content {
         width: 35%;
-        height: 400px;
     }
 
-    iframe,
-    img {
+    iframe {
         width: 100%;
-        height: 100%;
+        height: 400px;
         max-width: 1000px;
         border: 0;
+    }
+
+    img {
+        height: 10px;
     }
 
     #pie,
@@ -290,7 +292,7 @@ if ($resultado) {
             if ($row["Link_Iframe"] == "") {
                 echo "<img src='' alt='Sin video'>";
             } else {
-                echo "<iframe src='" . $row["Link_Iframe"] . "'></iframe>";
+                echo "<iframe src='" . $row["Link_Iframe"] . "' frameborder='0' allow='clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share' allowfullscreen></iframe>";
             }
             ?>
         </div>
@@ -486,7 +488,7 @@ if ($resultado) {
             ],
             'series' => [
                 [
-                 
+
                     'name' => 'Cantidad de Casillas',
                     'type' => 'pie',
                     'radius' => '65%',
@@ -502,7 +504,7 @@ if ($resultado) {
                         'show' => true,
                         'formatter' => '{b}: {d}%'
                     ],
-                    
+
                 ]
             ]
         ];
