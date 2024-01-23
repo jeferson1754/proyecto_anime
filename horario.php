@@ -29,7 +29,7 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="./css/style.css">
+    <link rel="stylesheet" type="text/css" href="./css/style.css?v=<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.semanticui.min.css">
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
@@ -37,126 +37,6 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
     <title>Horario
     </title>
 </head>
-<style>
-    /* */
-    .auto-style3 {
-        width: 96px;
-        background-color: #E9BCAC;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        font-size: 32px
-    }
-
-    .auto-style4 {
-        text-align: center;
-        width: 151px;
-        font-size: 16px
-    }
-
-    .auto-style6 {
-        position: relative;
-        width: 100%;
-        -ms-flex-preferred-size: 0;
-        flex-basis: 0;
-        -ms-flex-positive: 1;
-        flex-grow: 1;
-        max-width: 100%;
-        left: 0px;
-        top: -70px;
-        text-align: center;
-        height: 1365px;
-        padding-left: 15px;
-        padding-right: 15px;
-    }
-
-    .auto-style8 {
-        text-align: center;
-        width: 154px;
-        height: 46px;
-    }
-
-    .auto-style9 {
-        width: 50px;
-        height: 50px;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        font-size: 32px
-    }
-
-    .auto-style11 {
-        text-align: center;
-
-
-    }
-
-    .esquina-superior-izquierda {
-        position: absolute;
-        top: 0;
-        left: 0;
-        margin-top: 5px;
-
-        margin-left: 10px;
-
-    }
-
-    .auto-style12 {
-        position: absolute;
-        top: -7px;
-        right: 14px;
-        margin-top: 5px;
-
-        margin-right: 10px;
-        width: 180px;
-    }
-
-    .auto-style13 {
-        position: absolute;
-        top: 0;
-        left: 19px;
-        margin-top: 5px;
-        margin-left: 10px;
-    }
-
-    .auto-style14 {
-        display: inline-block;
-        margin-right: 5px;
-    }
-
-    .auto-style15 {
-        width: 748px;
-        display: inline-block;
-        margin-right: 20px;
-        height: 35px;
-    }
-
-    .auto-style16 {
-        height: 1257px;
-    }
-
-    .image-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 150px;
-        margin: 0;
-    }
-
-    .liston {
-        width: 80%;
-        /* Ajusta el ancho según sea necesario */
-        height: 150px;
-        display: block;
-    }
-
-    .texto-superpuesto {
-        position: absolute;
-        font-family: Verdana, Geneva, Tahoma, sans-serif;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        color: black;
-        font-size: 35px;
-        text-align: center;
-    }
-</style>
 
 <body>
 

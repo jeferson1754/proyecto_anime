@@ -185,7 +185,7 @@ if ($resultado) {
     }
 
     .content {
-        width: 35%;
+        width: 50%;
     }
 
     iframe {
