@@ -63,7 +63,7 @@ tr:hover td {
 .auto-style8 {
     text-align: center;
     width: 154px;
-    height: 46px;
+    height: max-content !important;
 }
 
 .auto-style9 {
@@ -172,31 +172,31 @@ header {
 }
 
 .Lunes {
-    background-color: #E9BCAC;
+    background-color: #E9BCAC !important;
 }
 
 .Martes {
-    background-color: #B9CDD9;
+    background-color: #B9CDD9 !important;
 }
 
 .Miercoles {
-    background-color: #EBC6C8;
+    background-color: #EBC6C8 !important;
 }
 
 .Jueves {
-    background-color: #E4B1C2;
+    background-color: #E4B1C2 !important;
 }
 
 .Viernes {
-    background-color: #BFD5FD;
+    background-color: #BFD5FD !important;
 }
 
 .Sabado {
-    background-color: #75E7FD;
+    background-color: #75E7FD !important;
 }
 
 .Domingo {
-    background-color: #E1FDD1;
+    background-color: #E1FDD1 !important;
 }
 
 .auto-style3 {
@@ -325,7 +325,7 @@ header {
         display: none;
     }
 
-    .liston{
+    .liston {
         display: none;
     }
 
