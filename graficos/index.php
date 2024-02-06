@@ -269,13 +269,33 @@ if ($resultado) {
             echo "<span class='visible-text'>" . $row["Nombre"] . " - ED " . $row["Opening"] . "</span>";
         }
 
-        echo "<a  href=" . $row["Link"] . " target='_blanck'>";
-        if ($columna["Autor"] != "") {
-            echo "<span class='hidden-text'>" . $row["Cancion"] . " - " . $columna["Autor"] . "</span>";
+        if ($row["Link"] == NULL) {
+            echo "<a  href=" . $row["Link"] . " target='_blanck'>";
+            if ($columna["Autor"] != "") {
+                echo "<span style='color:red' class='hidden-text'>" . $row["Cancion"] . " - " . $columna["Autor"] . "</span>";
+            } else {
+                echo "<span style='color:red' class='hidden-text'>" . $row["Cancion"] . "</span>";
+            }
+            echo "</a>";
+        } else if ($row["Estado_Link"] != "Correcto") {
+            echo "<a  href=" . $row["Link"] . " target='_blanck'>";
+            if ($columna["Autor"] != "") {
+                echo "<span style='color:purple' class='hidden-text'>" . $row["Cancion"] . " - " . $columna["Autor"] . "</span>";
+            } else {
+                echo "<span style='color:purple' class='hidden-text'>" . $row["Cancion"] . "</span>";
+            }
+            echo "</a>";
         } else {
-            echo "<span class='hidden-text'>" . $row["Cancion"] . "</span>";
+            echo "<a  href=" . $row["Link"] . " target='_blanck'>";
+            if ($columna["Autor"] != "") {
+                echo "<span class='hidden-text'>" . $row["Cancion"] . " - " . $columna["Autor"] . "</span>";
+            } else {
+                echo "<span class='hidden-text'>" . $row["Cancion"] . "</span>";
+            }
+            echo "</a>";
         }
-        echo "</a>";
+
+
 
         echo "</h1>";
     } else {
