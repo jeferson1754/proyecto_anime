@@ -110,10 +110,10 @@ $año = date("Y");
                 }
             } else if (isset($_GET['link'])) {
 
-                $where = "WHERE Link='' OR Estado_link!='Correcto' ORDER BY `ed`.`ID` DESC limit 10";
+                $where = "WHERE Link='' OR Estado_link!='Correcto' OR Link_Iframe='' ORDER BY `ed`.`ID` DESC limit 10";
             } else if (isset($_GET['nombre'])) {
 
-                $where = "WHERE Cancion='' ORDER BY `ed`.`ID` DESC limit 10";
+                $where = "WHERE Cancion='' OR Autor='' ORDER BY `ed`.`ID` DESC limit 10";
             } else if (isset($_GET['buscar'])) {
 
                 if (isset($_GET['busqueda_ed'])) {

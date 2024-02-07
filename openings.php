@@ -107,18 +107,18 @@ $año = date("Y");
             if (isset($_GET['borrar'])) {
                 $busqueda = "";
 
-                $where = "where op.mostrar='SI' ORDER BY `op`.`ID` DESC limit 10 ";
+                $where = "where op.mostrar='SI' ORDER BY `op`.`ID` DESC limit 10";
             } else if (isset($_GET['filtrar'])) {
                 if (isset($_GET['estado'])) {
                     $estado   = $_REQUEST['estado'];
-                    $where = "WHERE op.Mix LIKE'%" . $estado . "%' AND op.mostrar='SI' ORDER BY `op`.`ID` DESC";
+                    $where = "WHERE op.Mix LIKE'%" . $estado . "%' AND op.mostrar='SI' ORDER BY `op`.`ID` DESC ";
                 }
             } else if (isset($_GET['link'])) {
 
-                $where = "WHERE Link='' OR Estado_link!='Correcto' ORDER BY `op`.`ID` DESC";
+                $where = "WHERE Link='' OR Estado_link!='Correcto' OR Link_Iframe='' ORDER BY `op`.`ID` DESC limit 10"; 
             } else if (isset($_GET['nombre'])) {
 
-                $where = "WHERE Cancion='' limit 10";
+                $where = "WHERE Cancion='' OR Autor='' limit 10";
             } else if (isset($_GET['buscar'])) {
 
                 if (isset($_GET['busqueda_op'])) {
@@ -162,8 +162,6 @@ $año = date("Y");
                 </tr>
             </thead>
             <?php
-
-            //$sql = "SELECT a.id,a.Anime,a.Temporadas,a.Peliculas,a.Spin_Off,e.Estado,a.Año,t.Temporada FROM anime as a INNER JOIN Estado as e ON a.Estado = e.id INNER join Temporada as t ON a.Temporada=t.ID ORDER by a.id;";
 
             $sql = "SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,autor.Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link,op.mostrar FROM `op` JOIN temporada ON op.Temporada=temporada.ID JOIN autor ON op.ID_Autor=autor.ID $where";
             //echo $sql;

@@ -15,7 +15,7 @@ if (isset($_GET['borrar'])) {
    $link = "../endings.php?nombre=";
    echo "<input type='hidden' name='link' value='$link'>";
 } else if (isset($_GET['buscar1'])) {
-   $link = "../endings.php?busqueda_cancion=$busqueda&buscar1=";
+   $link = "../endings.php?busqueda_cancion_ed=$busqueda&buscar1=";
    echo "<input type='hidden' name='link' value='$link'>";
 } else {
    $link = "../endings.php";
