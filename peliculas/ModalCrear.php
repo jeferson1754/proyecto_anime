@@ -29,7 +29,7 @@
       //echo $peli1;
       ?>
 
-      <form name="form-data" action="peliculas/recibCliente-Peli.php" method="POST">
+      <form name="form-data" action="recibCliente-Peli.php" method="POST">
 
         <div class="modal-body" id="cont_modal">
 

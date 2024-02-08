@@ -11,7 +11,7 @@
       </div>
 
 
-      <form method="POST" action="peliculas/recib_Update-Peli.php">
+      <form method="POST" action="recib_Update-Peli.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="pendi" value="<?php echo $mostrar['ID_Pendientes']; ?>">
 

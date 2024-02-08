@@ -44,7 +44,7 @@
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/Pendientes/">Pendientes</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./peliculas/">Peliculas</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/peliculas/">Peliculas</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="./Horarios/">Horario</a> </li>

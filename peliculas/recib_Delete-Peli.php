@@ -9,62 +9,38 @@ $idRegistros = $_REQUEST['id'];
 $estado = $_REQUEST['estado'];
 echo $estado;
 
-$delete1 = ("DELETE peliculas.*,pendientes.*
-FROM peliculas JOIN pendientes ON peliculas.ID_Pendientes=pendientes.ID_Pendientes
-WHERE peliculas.ID='" . $idRegistros . "'
-");
+$deleteQueryPendientes = "DELETE peliculas.*, pendientes.*
+                FROM peliculas
+                JOIN pendientes ON peliculas.ID_Pendientes = pendientes.ID_Pendientes
+                WHERE peliculas.ID = '$idRegistros'";
 
-$delete2 = ("DELETE FROM peliculas 
-WHERE `peliculas`.`ID` = '" . $idRegistros . "'
-");
+$deleteQueryPeliculas = "DELETE FROM peliculas 
+                         WHERE peliculas.ID = '$idRegistros'";
 
-$update = ("INSERT INTO id_peliculas (`ID`) VALUES
-('" . $idRegistros . "');
-");
+$insertQuery = "INSERT INTO id_peliculas (`ID`) VALUES ('$idRegistros')";
 
 if ($estado == "Finalizado") {
-    //echo $update;
-
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete2);
-    echo '<script>
-Swal.fire({
-    icon: "success",
-    title: "Eliminado de Pelicula",
-    confirmButtonText: "OK"
-}).then(function() {
-    window.location = "../peliculas.php";
-});
-</script>';
-    $conexion = null;
-} else if ($estado == "Pendiente") {
-    //echo $update;
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete1);
-    echo '<script>
-Swal.fire({
-    icon: "success",
-    title: "Eliminado de Pelicula y Pendiente",
-    confirmButtonText: "OK"
-}).then(function() {
-    window.location = "../peliculas.php";
-});
-</script>';
-    $conexion = null;
+    $result_update = mysqli_query($conexion, $insertQuery);
+    $result_update = mysqli_query($conexion, $deleteQueryPeliculas);
+    mostrarExito("Eliminado de Película");
+} elseif ($estado == "Pendiente") {
+    $result_update = mysqli_query($conexion, $insertQuery);
+    $result_update = mysqli_query($conexion, $deleteQueryPendientes);
+    mostrarExito("Eliminado de Película y Pendiente");
 }
 
+function mostrarExito($mensaje)
+{
+    echo '<script>
+            Swal.fire({
+                icon: "success",
+                title: "' . $mensaje . '",
+                confirmButtonText: "OK"
+            }).then(function() {
+                window.location = "./";
+            });
+        </script>';
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-//header("location:index.php");
+$conexion = null;
 ?>

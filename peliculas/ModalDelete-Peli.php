@@ -17,7 +17,7 @@
       </style>
 
 
-      <form method="POST" action="peliculas/recib_Delete-Peli.php">
+      <form method="POST" action="recib_Delete-Peli.php">
 
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="estado" value="<?php echo $mostrar['Estado']; ?>">

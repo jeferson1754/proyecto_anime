@@ -5,336 +5,188 @@
 
 <?php
 include '../bd.php';
-$idRegistros    = $_POST['id'];
-$idPendientes    = $_POST['pendi'];
-$nombre  = $_REQUEST['nombre'];
-$estado   = $_REQUEST['estado'];
+$idRegistros = $_POST['id'];
+$idPendientes = $_POST['pendi'];
+$nombre = $_REQUEST['nombre'];
+$estado = $_REQUEST['estado'];
 $fecha = $_REQUEST['fecha'];
 
-$sql = ("SELECT * FROM `peliculas` where ID='$idRegistros';");
-$sql2 = ("SELECT * FROM `pendientes`where ID_Pendientes='$idPendientes' and  ID_Pendientes>1;");
-$sql3 = ("SELECT * FROM `peliculas` where Nombre='$nombre';");
-$peli      = mysqli_query($conexion, $sql);
-$pendientes = mysqli_query($conexion, $sql2);
-$name = mysqli_query($conexion, $sql3);
+$sqlPelicula = "SELECT * FROM `peliculas` WHERE ID='$idRegistros'";
+$sqlPendientes = "SELECT * FROM `pendientes` WHERE ID_Pendientes='$idPendientes' AND ID_Pendientes > 1";
+$sqlNombre = "SELECT * FROM `peliculas` WHERE Nombre='$nombre'";
 
+$resultadoPelicula = mysqli_query($conexion, $sqlPelicula);
+$resultadoPendientes = mysqli_query($conexion, $sqlPendientes);
+$resultadoNombre = mysqli_query($conexion, $sqlNombre);
 
-echo $sql;
-echo "<br>";
-echo $sql2;
-echo "<br>";
-echo $sql3;
-echo "<br>";
-echo $estado;
-
-if (mysqli_num_rows($peli) == 0) {
-
-    echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "No se puede editar porque ' . $nombre . ' no existe en Peliculas",
-            confirmButtonText: "OK"
-    
-        }).then(function() {
-            window.location = "../peliculas.php";
-        });
-        </script>';
+if (mysqli_num_rows($resultadoPelicula) == 0) {
+    mostrarError("No se puede editar porque $nombre no existe en Peliculas");
 } else {
-    echo "Existe en Peliculas";
-    echo "<br>";
+    echo "Existe en Peliculas<br>";
     if ($estado == "Finalizado") {
-        if (mysqli_num_rows($pendientes) == 0) {
-            echo $estado;
-            echo "<br>";
+        if (mysqli_num_rows($resultadoPendientes) == 0) {
+            echo $estado . "<br>";
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
                 $sql = "UPDATE peliculas SET 
-                    Nombre ='" . $nombre . "',
-                    Ano ='" . $fecha . "',
-                    Estado ='" . $estado . "',
-                    ID_Pendientes ='" . $idPendientes . "'
-                    WHERE ID='" . $idRegistros . "'";
+                    Nombre ='$nombre',
+                    Ano ='$fecha',
+                    Estado ='$estado',
+                    ID_Pendientes ='$idPendientes'
+                    WHERE ID='$idRegistros'";
                 $conn->exec($sql);
                 $last_id1 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id1;
-                echo "<br>";
-                echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . '  en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+                echo $sql . "<br>";
+                echo 'Último anime insertado: ' . $last_id1 . "<br>";
+                mostrarExito("Actualizando registro de $nombre en Peliculas");
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido ' . $nombre . ' ",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                mostrarError("Nombre Repetido $nombre");
             }
         } else {
-
-            echo $estado;
-            echo "<br>";
+            echo $estado . "<br>";
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
                 $sql = "UPDATE peliculas SET 
-                    Nombre ='" . $nombre . "',
-                    Ano ='" . $fecha . "',
-                    Estado ='" . $estado . "',
+                    Nombre ='$nombre',
+                    Ano ='$fecha',
+                    Estado ='$estado',
                     ID_Pendientes ='1'
-                    WHERE ID='" . $idRegistros . "'";
+                    WHERE ID='$idRegistros'";
                 $conn->exec($sql);
                 $last_id1 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id1;
-                echo "<br>";
-                echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+                echo $sql . "<br>";
+                echo 'Último anime insertado: ' . $last_id1 . "<br>";
+                mostrarExito("Actualizando registro de $nombre en Peliculas");
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido ' . $nombre . ' ",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                mostrarError("Nombre Repetido $nombre");
             }
 
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "DELETE FROM pendientes WHERE ID_Pendientes ='" . $idPendientes . "'";
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
+                $sql = "DELETE FROM pendientes WHERE ID_Pendientes ='$idPendientes'";
                 $conn->exec($sql);
                 $last_id2 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id2;
-                echo "<br>";
+                echo $sql . "<br>";
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
+                echo $e . "<br>";
             }
 
-
-            echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+            mostrarExito("Actualizando registro de $nombre en Peliculas");
         }
     } else if ($estado == "Pendiente") {
-
-        echo $estado;
-        if (mysqli_num_rows($pendientes) == 0) {
-            echo "No Existe en Pendientes";
-            echo "<br>";
-
+        echo $estado . "<br>";
+        if (mysqli_num_rows($resultadoPendientes) == 0) {
+            echo "No Existe en Pendientes<br>";
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
                 $sql = "UPDATE peliculas SET 
-                    Nombre ='" . $nombre . "',
-                    Ano ='" . $fecha . "',
-                    Estado ='" . $estado . "'
-                    WHERE ID='" . $idRegistros . "'";
+                    Nombre ='$nombre',
+                    Ano ='$fecha',
+                    Estado ='$estado'
+                    WHERE ID='$idRegistros'";
                 $conn->exec($sql);
                 $last_id2 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id2;
-                echo "<br>";
+                echo $sql . "<br>";
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido de ' . $nombre . '",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                mostrarError("Nombre Repetido $nombre");
             }
 
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                //INSERT INTO `pendientes`(`ID`, `Nombre`, `Vistos`, `Total`, `Pendientes`, `Link`)
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
                 $sql = "INSERT INTO pendientes (`Nombre`, `Tipo`, `Vistos`, `Total`) 
-                VALUES ( '" . $nombre . "','Pelicula','0','1')";
+                VALUES ('$nombre', 'Pelicula', '0', '1')";
                 $conn->exec($sql);
                 $last_id1 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id1;
-                echo "<br>";
+                echo $sql . "<br>";
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
+                echo $e . "<br>";
             }
 
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "UPDATE pendientes SET Pendientes = (Total - Vistos) where Vistos >-1;";
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
+                $sql = "UPDATE pendientes SET Pendientes = (Total - Vistos) WHERE Vistos > -1";
                 $conn->exec($sql);
-                $last_id3 = $conn->lastInsertId();
-                echo $sql;
+                echo $sql . "<br>";
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
+                echo $e . "<br>";
             }
 
-            echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "../peliculas.php";
-            });
-            </script>';
+            mostrarExito("Actualizando registro de $nombre en Peliculas");
         } else {
-            echo "Existe en Pendientes";
-            echo "<br>";
+            echo "Existe en Pendientes<br>";
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "UPDATE pendientes SET Nombre ='" . $nombre . "',
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
+                $sql = "UPDATE pendientes SET 
+                    Nombre ='$nombre',
                     Vistos ='0',
                     Total ='1',
                     Tipo ='Pelicula'
-                    WHERE ID_Pendientes='" . $idPendientes . "'";
+                    WHERE ID_Pendientes='$idPendientes'";
                 $conn->exec($sql);
                 $last_id1 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id1;
-                echo "<br>";
-
-                echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+                echo $sql . "<br>";
+                mostrarExito("Actualizando registro de $nombre en Peliculas");
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido de ' . $nombre . ' en Pendientes",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                mostrarError("Nombre Repetido $nombre en Pendientes");
             }
+
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
                 $sql = "UPDATE peliculas SET 
-                    Nombre ='" . $nombre . "',
-                    Ano ='" . $fecha . "',
-                    Estado ='" . $estado . "',
-                    ID_Pendientes ='" . $idPendientes . "'
-                    WHERE ID='" . $idRegistros . "'";
+                    Nombre ='$nombre',
+                    Ano ='$fecha',
+                    Estado ='$estado',
+                    ID_Pendientes ='$idPendientes'
+                    WHERE ID='$idRegistros'";
                 $conn->exec($sql);
                 $last_id2 = $conn->lastInsertId();
-                echo $sql;
-                echo 'ultimo anime insertado ' . $last_id2;
-                echo "<br>";
-                echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+                echo $sql . "<br>";
+                mostrarExito("Actualizando registro de $nombre en Peliculas");
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido de ' . $nombre . '",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                mostrarError("Nombre Repetido $nombre");
             }
 
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "UPDATE pendientes SET Pendientes = (Total - Vistos) where Vistos >-1;";
+                $conn = conectarPDO($servidor, $basededatos, $usuario, $password);
+                $sql = "UPDATE pendientes SET Pendientes = (Total - Vistos) WHERE Vistos > -1";
                 $conn->exec($sql);
-                $last_id3 = $conn->lastInsertId();
-                echo $sql;
-                echo '<script>
-                Swal.fire({
-                    icon: "success",
-                    title: "Actualizando registro de ' . $nombre . ' en Peliculas ",
-                    confirmButtonText: "OK"
-                }).then(function() {
-                    window.location = "../peliculas.php";
-                });
-                </script>';
+                echo $sql . "<br>";
             } catch (PDOException $e) {
-                $conn = null;
-                echo $e;
-                echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Nombre Repetido en Pendientes",
-                        confirmButtonText: "OK"
-                    }).then(function() {
-                        window.location = "../peliculas.php";
-                    });
-                    </script>';
+                echo $e . "<br>";
             }
         }
     }
 }
-    
 
-//UPDATE `emision` SET `Capitulos` = '1' WHERE `emision`.`ID` = 19;
-//SELECT SUM(Capitulos)+1 total FROM emision Where Nombre="Dragon Ball";
+function conectarPDO($servidor, $basededatos, $usuario, $password)
+{
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $conn;
+}
 
+function mostrarExito($mensaje)
+{
+    echo '<script>
+        Swal.fire({
+            icon: "success",
+            title: "' . $mensaje . '",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "./";
+        });
+        </script>';
+}
 
-
-
-//$result_update = mysqli_query($conexion, $update);
-
-//header("location:index.php");
+function mostrarError($mensaje)
+{
+    echo '<script>
+        Swal.fire({
+            icon: "error",
+            title: "' . $mensaje . '",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "./";
+        });
+        </script>';
+}
