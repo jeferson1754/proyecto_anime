@@ -18,7 +18,7 @@
       </style>
 
       <?php
-      include('./OP/regreso-modal.php');
+      include('regreso-modal.php');
 
       $op = $conexion->query("SELECT Anime FROM `anime` WHERE id='$mostrar[ID_Anime]';");
 

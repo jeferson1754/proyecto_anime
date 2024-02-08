@@ -17,9 +17,9 @@
       </style>
 
 
-      <form method="POST" action="OP/recib_Delete-OP.php">
+      <form method="POST" action="recib_Delete-OP.php">
         <?php
-        include('./OP/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="anime" value="<?php echo $mostrar['Nombre']; ?>">

@@ -10,10 +10,10 @@
         </button>
       </div>
 
-      <link rel="stylesheet" href="checkbox.css">
-      <form method="POST" action="OP/recib_Update-OP.php">
+
+      <form method="POST" action="recib_Update-OP.php">
         <?php
-        include('./OP/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="anime" value="<?php echo $mostrar['ID_Anime']; ?>">
