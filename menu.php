@@ -35,28 +35,28 @@
         <div class="collapse navbar-collapse justify-content-between" id="nav">
 
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="../Anime/">Animes</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/">Animes</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="emision.php">Emision</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/Emision/">Emision</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="pendientes.php">Pendientes</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./Pendientes/">Pendientes</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="peliculas.php">Peliculas</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./peliculas/">Peliculas</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="horario.php">Horario</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./Horarios/">Horario</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="horarios.php">Horarios</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./Horarios/horarios.php">Horarios</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="openings.php">OP</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./OP/">OP</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="endings.php">ED</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="./ED/">ED</a> </li>
             </ul>
                 <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="http://inventarioncc.infinityfreeapp.com/Manga/">Manga</a> </li>
