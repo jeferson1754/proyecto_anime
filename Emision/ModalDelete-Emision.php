@@ -17,29 +17,12 @@
       </style>
 
 
-      <form method="POST" action="Emision/recib_Delete-Emision.php">
+      <form method="POST" action="recib_Delete-Emision.php">
 
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
         <?php
-        if (isset($_GET['enviar'])) {
-
-          $accion1 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion1  '>";
-          $link = "../emision.php?enviar=&accion=HOY";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else if (isset($_GET['enviar2'])) {
-
-          $accion2 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion2 '>";
-          $link = "../emision.php?dias=$dia&enviar2=&accion=Filtro";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else {
-          $accion2 = "nose";
-          echo "<input type='hidden' name='accion' value='  $accion2  '>";
-          $link = "../emision.php";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        }
+        include('regreso-modal.php');
         ?>
         <div class="modal-body div1" id="cont_modal">
 

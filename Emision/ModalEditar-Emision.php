@@ -11,28 +11,11 @@
       </div>
 
 
-      <form method="POST" action="Emision/recib_Update-Emision.php">
+      <form method="POST" action="recib_Update-Emision.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
         <?php
-        if (isset($_GET['enviar'])) {
-
-          $accion1 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion1  '>";
-          $link = "../emision.php?enviar=&accion=HOY";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else if (isset($_GET['enviar2'])) {
-
-          $accion2 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion2 '>";
-          $link = "../emision.php?dias=$dia&enviar2=&accion=Filtro";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else {
-          $accion2 = "nose";
-          echo "<input type='hidden' name='accion' value='  $accion2  '>";
-          $link = "../emision.php";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        }
+        include('regreso-modal.php');
 
         $idRegistros = $mostrar['ID_Emision'];
 
@@ -73,7 +56,7 @@
             <?php
             $query = $conexion->query("SELECT COUNT(Posicion) as conteo FROM `emision` WHERE Dia='$mostrar[Dia]' and Emision='Emision';");
             while ($valores = mysqli_fetch_array($query)) {
-              $conteo= $valores['conteo'];
+              $conteo = $valores['conteo'];
             }
             ?>
             <input type="number" name="posicion" class="form-control" min="0" max="<?php echo $conteo; ?>" value="<?php echo $mostrar['Posicion']; ?>" required="true">

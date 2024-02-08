@@ -18,7 +18,7 @@
       </style>
 
 
-      <form method="POST" action="Emision/recib_Update-Cap.php">
+      <form method="POST" action="recib_Update-Cap.php">
 
 
 
@@ -26,24 +26,8 @@
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
         <input type="hidden" name="capitulos" value="<?php echo $mostrar['Capitulos']; ?>">
         <?php
-        if (isset($_GET['enviar'])) {
+        include('regreso-modal.php');
 
-          $accion1 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion1  '>";
-          $link = "../emision.php?enviar=&accion=HOY";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else if (isset($_GET['enviar2'])) {
-
-          $accion2 = $_REQUEST['accion'];
-          echo "<input type='hidden' name='accion' value='  $accion2 '>";
-          $link = "../emision.php?dias=$dia&enviar2=&accion=Filtro";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        } else {
-          $accion2 = "nose";
-          echo "<input type='hidden' name='accion' value='  $accion2  '>";
-          $link = "../emision.php";
-          echo "<input type='hidden' name='link' value='  $link  '>";
-        }
         ?>
 
 

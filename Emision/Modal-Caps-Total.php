@@ -1,6 +1,6 @@
 <!--ventana para Update--->
 <?php
-include './bd.php';
+include '../bd.php';
 
 ?>
 <div class="modal fade" id="ModalTotal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -25,85 +25,43 @@ include './bd.php';
 
       $busqueda = "";
 
-      $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
+      $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and Emision='Emision' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
 
       if (isset($_GET['enviar'])) {
 
 
         $accion1 = $_REQUEST['accion'];
         echo "<input type='hidden' name='accion' value='  $accion1  '>";
-        $link = "emision.php?enviar=&accion=HOY";
+        $link = "/Anime/Emision/?enviar=&accion=HOY";
         echo "<input type='hidden' name='link' value='  $link  '>";
 
         $busqueda = $nombre_dia;
 
-        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision'";
-      } else 
-      if (isset($_GET['borrar'])) {
-        $busqueda = "";
-
-        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        $accion2 = "nose";
-        echo "<input type='hidden' name='accion' value='  $accion2  '>";
-        $link = "emision.php";
-        echo "<input type='hidden' name='link' value='  $link  '>";
+        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
       } else
       if (isset($_GET['enviar2'])) {
 
         $accion2 = $_REQUEST['accion'];
-        echo "<input type='hidden' name='accion' value='  $accion2 '>";
         $dia   = $_REQUEST['dias'];
-        $link = "emision.php?dias=$dia&enviar2=&accion=Filtro";
+
+        echo "<input type='hidden' name='accion' value='  $accion2 '>";
+        $link = "/Anime/Emision/?dias=$dia&enviar2=&accion=Filtro";
         echo "<input type='hidden' name='link' value='  $link  '>";
-        if ($dia == "Lunes") {
 
-          $busqueda = "Lunes";
+        $busqueda = $dia;
 
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Martes") {
-
-          $busqueda = "Martes";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Miercoles") {
-
-          $busqueda = "Miercoles";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Jueves") {
-
-          $busqueda = "Jueves";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Viernes") {
-
-          $busqueda = "Viernes";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Sabado") {
-
-          $busqueda = "Sabado";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Domingo") {
-
-          $busqueda = "Domingo";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        } else if ($dia == "Indefinido") {
-
-          $busqueda = "Indefinido";
-
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'";
-        }
+        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
       } else {
+        $busqueda = "";
+        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
+
         $accion2 = "nose";
         echo "<input type='hidden' name='accion' value='  $accion2  '>";
-        $link = "emision.php";
+        $link = "/Anime/Emision/?borrar=&accion=HOY";
         echo "<input type='hidden' name='link' value='  $link  '>";
       }
 
-      $alumnos = "SELECT * FROM emision $where and Emision='Emision' ORDER BY `emision`.`Nombre` ASC";
+      $alumnos = "SELECT * FROM emision $where";
 
       $resAlumnos = $conexion->query($alumnos);
       ?>
