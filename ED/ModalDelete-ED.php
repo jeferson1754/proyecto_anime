@@ -17,9 +17,9 @@
       </style>
 
 
-      <form method="POST" action="ED/recib_Delete-ED.php">
+      <form method="POST" action="recib_Delete-ED.php">
         <?php
-        include('./ED/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="anime" value="<?php echo $mostrar['Nombre']; ?>">

@@ -5,137 +5,82 @@
 
 <?php
 include '../bd.php';
-$idRegistros    = $_REQUEST['id'];
-$idAnime        = $_REQUEST['anime'];
-$cancion        = $_REQUEST['cancion'];
-$enlace         = $_REQUEST['enlace'];
-$iframe         = $_REQUEST['iframe'];
-$ed             = $_REQUEST['ed'];
-$estado         = $_REQUEST['estado'];
-$mix            = $_REQUEST['mix'];
-$nombre         = $_REQUEST['nombre'];
-$temp           = $_REQUEST['temp'];
-$ano            = $_REQUEST['ano'];
-$estado_link    = $_REQUEST['estado_link'];
-$link           = $_REQUEST['link'];
-$autor           = $_REQUEST['autor'];
 
-if (isset($_REQUEST["ocultar"])) {
-    echo "Ocultar_Verdadero";
-    echo "<br>";
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE `ed` SET `mostrar` = 'NO' WHERE `ed`.`ID` = $idRegistros;";
-        $conn->exec($sql);
-        echo $sql;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
-    }
-} else {
-    echo "Ocultar_Falso";
-    echo "<br>";
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE `ed` SET `mostrar` = 'SI' WHERE `ed`.`ID` = $idRegistros;";
-        $conn->exec($sql);
-        echo $sql;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
-    }
-}
+// Obtener los datos del formulario
+$idRegistros = $_REQUEST['id'];
+$idAnime = $_REQUEST['anime'];
+$cancion = $_REQUEST['cancion'];
+$enlace = $_REQUEST['enlace'];
+$iframe = $_REQUEST['iframe'];
+$ed = $_REQUEST['ed'];
+$estado = $_REQUEST['estado'];
+$mix = $_REQUEST['mix'];
+$nombre = $_REQUEST['nombre'];
+$temp = $_REQUEST['temp'];
+$ano = $_REQUEST['ano'];
+$estado_link = $_REQUEST['estado_link'];
+$link = $_REQUEST['link'];
+$autor = $_REQUEST['autor'];
 
-echo "Temporada: " . $temp;
-echo "<br>";
-echo "Ending " . $ed;
-echo "<br>";
-echo $estado;
-echo "<br>";
-echo $nombre;
-echo "<br>";
-echo $estado_link;
-echo "<br>";
-
-$tempor = "";
-
-if ($temp == "Invierno") {
-    $tempor = "1";
-} else if ($temp == "Primavera") {
-    $tempor = "2";
-} else if ($temp == "Verano") {
-    $tempor = "3";
-} else if ($temp == "Otoño") {
-    $tempor = "4";
-} else if ($temp == "Desconocida") {
-    $tempor = "5";
-} else {
-    $tempor = $temp;
-}
-
-echo $tempor;
-echo "<br>";
-
-$ending = $conexion->query("SELECT * FROM `autor` where Autor='$autor';");
-
-while ($valores = mysqli_fetch_array($ending)) {
-    $autor1 = $valores['Autor'];
-    $id_autores = $valores['ID'];
-    echo $autor1 . "<br>";
-}
-
-if ($autor == $autor1) {
-    $autores = $id_autores;
-} else {
-
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO `autor` (`ID`, `Autor`)
- VALUES ( NULL ,'" . $autor . "')";
-        $conn->exec($sql);
-        $autores = $conn->lastInsertId();
-        echo $sql . "<br>";
-        echo 'ID_Autor: ' . $autores;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-    }
-    echo $sql;
-}
+// Determinar si se debe ocultar el registro
+$mostrar = isset($_REQUEST["ocultar"]) ? 'NO' : 'SI';
 
 try {
+    // Actualizar el estado de visualización del registro
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "UPDATE ed SET
-            Cancion ='" . $cancion . "',
-            Link ='" . $enlace . "',
-            Link_Iframe ='" . $iframe . "',
-            Estado ='" . $estado . "',
-            ID_Anime ='" . $idAnime . "',
-            Temporada ='" . $tempor . "',
-            Ending ='" . $ed . "',
-            Estado_Link ='" . $estado_link . "',
-            Ano ='" . $ano . "',
-            ID_Autor ='" . $autores . "',
-            Mix ='" . $mix . "'
-            WHERE ID='" . $idRegistros . "'";
-    $conn->exec($sql);
-    echo $sql;
+    $sql = "UPDATE ed SET mostrar = ? WHERE ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$mostrar, $idRegistros]);
     $conn = null;
 } catch (PDOException $e) {
-    $conn = null;
-    echo $sql;
     echo $e;
 }
 
+// Determinar el valor numérico de la temporada
+$tempor = ($temp == "Invierno") ? "1" : (($temp == "Primavera") ? "2" : (($temp == "Verano") ? "3" : (($temp == "Otoño") ? "4" : (($temp == "Desconocida") ? "5" : $temp))));
+
+// Obtener el ID del autor
+try {
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $stmt = $conn->prepare("SELECT ID FROM autor WHERE Autor = ?");
+    $stmt->execute([$autor]);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $autores = $result ? $result['ID'] : null;
+    $conn = null;
+} catch (PDOException $e) {
+    echo $e;
+}
+
+// Si no se encontró el ID del autor, insertarlo en la tabla de autores y obtener su ID
+if (!$autores) {
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "INSERT INTO autor (Autor) VALUES (?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$autor]);
+        $autores = $conn->lastInsertId();
+        $conn = null;
+    } catch (PDOException $e) {
+        echo $e;
+    }
+}
+
+try {
+    // Actualizar los datos del registro de ending
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $sql = "UPDATE ed SET Cancion = ?, Link = ?, Link_Iframe = ?, Estado = ?, ID_Anime = ?, Temporada = ?, Ending = ?, Estado_Link = ?, Ano = ?, ID_Autor = ?, Mix = ? WHERE ID = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$cancion, $enlace, $iframe, $estado, $idAnime, $tempor, $ed, $estado_link, $ano, $autores, $mix, $idRegistros]);
+    $conn = null;
+} catch (PDOException $e) {
+    echo $e;
+}
+
+// Mensaje de éxito con SweetAlert
 echo '<script>
     Swal.fire({
         icon: "success",
@@ -144,14 +89,5 @@ echo '<script>
     }).then(function() {
         window.location = "' . $link . '";
     });
-    </script>';    
-
-//UPDATE `emision` SET `Capitulos` = '1' WHERE `emision`.`ID` = 19;
-//SELECT SUM(Capitulos)+1 total FROM emision Where Nombre="Dragon Ball";
-
-
-
-
-//$result_update = mysqli_query($conexion, $update);
-
-//header("location:index.php");
+</script>';
+?>

@@ -5,14 +5,19 @@
 
 <?php
 include '../bd.php';
-$idRegistros    = $_REQUEST['id'];
-$nombre         = $_REQUEST['anime'];
-$ed             = $_REQUEST['ed'];
-$link           = $_REQUEST['link'];
 
-$delete = ("DELETE FROM ed WHERE `ed`.`ID` = '" . $idRegistros . "';");
+// Obtener los datos del formulario
+$idRegistros = $_REQUEST['id'];
+$nombre = $_REQUEST['anime'];
+$ed = $_REQUEST['ed'];
+$link = $_REQUEST['link'];
 
-$result_update = mysqli_query($conexion, $delete);
+// Preparar la consulta para eliminar el registro de la base de datos
+$sql = "DELETE FROM ed WHERE ID = ?";
+$stmt = $conexion->prepare($sql);
+$stmt->execute([$idRegistros]);
+
+// Mensaje de éxito con SweetAlert
 echo '<script>
 Swal.fire({
     icon: "success",
@@ -23,7 +28,11 @@ Swal.fire({
 });
 </script>';
 
+// Cerrar la conexión
 $conexion = null;
+?>
+
+
 
 
 

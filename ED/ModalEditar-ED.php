@@ -9,12 +9,10 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-
-      <link rel="stylesheet" href="checkbox.css">
-      <form method="POST" action="ED/recib_Update-ED.php">
+      <form method="POST" action="recib_Update-ED.php">
 
         <?php
-        include('./ED/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="anime" value="<?php echo $mostrar['ID_Anime']; ?>">
