@@ -11,9 +11,9 @@
       </div>
 
 
-      <form method="POST" action="Pendientes/recib_Update-Pendientes.php">
+      <form method="POST" action="recib_Update-Pendientes.php">
         <?php
-        include('./Pendientes/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
         <input type="hidden" name="name" value="<?php echo $mostrar['Nombre']; ?>">

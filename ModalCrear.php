@@ -11,8 +11,6 @@
         </button>
       </div>
 
-      <link rel="stylesheet" href="checkbox.css">
-
       <form name="form-data" action="recibCliente.php" method="POST">
         <?php
         include('regreso-modal.php');

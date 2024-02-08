@@ -41,7 +41,7 @@
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/Emision/">Emision</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./Pendientes/">Pendientes</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/Pendientes/">Pendientes</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="./peliculas/">Peliculas</a> </li>

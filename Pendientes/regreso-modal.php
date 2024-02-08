@@ -1,14 +1,14 @@
 <?php
 if (isset($_GET['borrar'])) {
-    $link = "../pendientes.php?busqueda=&borrar=";
+    $link = "./?tipo=&borrar=&accion=Filtro";
     echo "<input type='hidden' name='link' value='$link'>";
  }else if (isset($_GET['filtrar'])) {
-    $link = "../pendientes.php?tipo=$tipo&filtrar=&accion=Filtro";
+    $link = "./?tipo=$tipo&filtrar=&accion=Filtro";
     echo "<input type='hidden' name='link' value='$link'>";
  }else if (isset($_GET['link'])) {
-    $link = "../pendientes.php?link=";
+    $link = "./?link=";
     echo "<input type='hidden' name='link' value='$link'>";
  }else{
-    $link = "../pendientes.php";
+    $link = "./";
     echo "<input type='hidden' name='link' value='$link'>";
  }

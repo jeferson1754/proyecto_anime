@@ -18,9 +18,9 @@
       </style>
 
 
-      <form method="POST" action="Pendientes/recib_Update-Cap.php">
+      <form method="POST" action="recib_Update-Cap.php">
         <?php
-        include('./Pendientes/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">

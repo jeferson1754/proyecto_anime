@@ -12,9 +12,9 @@
       </div>
 
 
-      <form method="POST" action="Pendientes/recibCliente.php">
+      <form method="POST" action="recibCliente.php">
         <?php
-        include('./Pendientes/regreso-modal.php');
+        include('regreso-modal.php');
         ?>
         <div class="modal-body" id="cont_modal">
           <div class="form-group">
