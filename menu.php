@@ -47,10 +47,10 @@
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/peliculas/">Peliculas</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./Horarios/">Horario</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/Horarios/">Horario</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./Horarios/horarios.php">Horarios</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/Horarios/horarios.php">Horarios</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="./OP/">OP</a> </li>
