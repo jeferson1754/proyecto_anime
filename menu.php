@@ -53,16 +53,16 @@
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/Horarios/horarios.php">Horarios</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./OP/">OP</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/OP/">OP</a> </li>
             </ul>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="./ED/">ED</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Anime/ED/">ED</a> </li>
             </ul>
                 <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="http://inventarioncc.infinityfreeapp.com/Manga/">Manga</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Manga/">Manga</a> </li>
             </ul>
                 <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="http://inventarioncc.infinityfreeapp.com/Series/">Series</a> </li>
+                <li class="nav-item active"> <a class="nav-link" href="/Series/">Series</a> </li>
             </ul>
         </div>
     </nav>
