@@ -5,26 +5,33 @@
 
 <?php
 include '../bd.php';
+
 $idRegistros = $_REQUEST['id'];
 $nombre = $_REQUEST['anime'];
 $op = $_REQUEST['op'];
-$link           = $_REQUEST['link'];
+$link = $_REQUEST['link'];
 
+// Consulta para eliminar el registro de la base de datos
+$delete = "DELETE FROM op WHERE `ID` = '$idRegistros'";
 
-$delete = ("DELETE FROM op WHERE `op`.`ID` = '" . $idRegistros . "';");
-
+// Ejecutar la consulta de eliminación
 $result_update = mysqli_query($conexion, $delete);
+
+// Mostrar mensaje de éxito con SweetAlert
 echo '<script>
-Swal.fire({
-    icon: "success",
-    title: "Eliminando OP ' . $op . ' de ' . $nombre . '",
-    confirmButtonText: "OK"
-}).then(function() {
-    window.location = "' . $link . '";
-});
+    Swal.fire({
+        icon: "success",
+        title: "Eliminando OP ' . $op . ' de ' . $nombre . '",
+        confirmButtonText: "OK"
+    }).then(function() {
+        window.location = "' . $link . '";
+    });
 </script>';
 
-$conexion = null;
+// Cerrar la conexión a la base de datos
+mysqli_close($conexion);
+?>
+
 
 
 
