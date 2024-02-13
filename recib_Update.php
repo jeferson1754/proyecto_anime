@@ -5,56 +5,63 @@
 
 <?php
 include 'bd.php';
-$idRegistros    = $_POST['id'];
-$idEmision      = $_POST['emision'];
-$idPendientes   = $_POST['pendientes'];
-$nombre         = $_POST['anime'];
-$temps          = $_POST['temps'];
-$peli           = $_POST['peli'];
-$spin           = $_POST['spin'];
-$estado         = $_POST['estado'];
-$fecha          = $_POST['fecha'];
-$temp           = $_POST['temp'];
-$link           = $_POST['link'];
-$op             = $_POST['op'];
-$ed             = $_POST['ed'];
 
-if ($temp == 1) {
-    $tempo = "Invierno";
-} else if ($temp == 2) {
-    $tempo = "Primavera";
-} else if ($temp == 3) {
-    $tempo = "Verano";
-} else if ($temp == 4) {
-    $tempo = "Otoño";
-} else if ($temp == 5) {
-    $tempo = "Desconocida";
-}
+// Variables
+$idRegistros = $_POST['id'];
+$idEmision = $_POST['emision'];
+$idPendientes = $_POST['pendientes'];
+$nombre = $_POST['anime'];
+$temps = $_POST['temps'];
+$peli = $_POST['peli'];
+$spin = $_POST['spin'];
+$estado = $_POST['estado'];
+$fecha = $_POST['fecha'];
+$temp = $_POST['temp'];
+$link = $_POST['link'];
+$op = $_POST['op'];
+$ed = $_POST['ed'];
+
+// Mapeo de valores de temporada
+$temporadas = [
+    1 => "Invierno",
+    2 => "Primavera",
+    3 => "Verano",
+    4 => "Otoño",
+    5 => "Desconocida"
+];
+
+// Obtener el nombre de la temporada
+$tempo = isset($temporadas[$temp]) ? $temporadas[$temp] : "Desconocida";
 
 
-$sql = ("SELECT * FROM `anime` where id='$idRegistros';");
-$sql1 = ("SELECT * FROM `emision`  where ID_Emision='$idEmision'and ID_Emision>1;");
-$sql2 = ("SELECT * FROM `pendientes`where ID_Pendientes='$idPendientes' and  ID_Pendientes>1;");
-$sql4 = ("SELECT * FROM `num_horario` where Temporada='$tempo' and Ano='$fecha';");
-$sql5 = ("SELECT * FROM `eliminados_emision` where Nombre='$nombre $temps' limit 1;");
 
-//echo $sql5."<br>";
+$sql = "SELECT * FROM `anime` WHERE id='$idRegistros'";
+$sql1 = "SELECT * FROM `emision` WHERE ID_Emision='$idEmision' AND ID_Emision>1";
+$sql2 = "SELECT * FROM `pendientes` WHERE ID_Pendientes='$idPendientes' AND ID_Pendientes>1";
+$sql4 = "SELECT * FROM `num_horario` WHERE Temporada='$tempo' AND Ano='$fecha'";
+$sql5 = "SELECT * FROM `eliminados_emision` WHERE Nombre='$nombre $temps' LIMIT 1";
 
-$anime              = mysqli_query($conexion, $sql);
-$emision            = mysqli_query($conexion, $sql1);
-$pendientes         = mysqli_query($conexion, $sql2);
-$num                = mysqli_query($conexion, $sql4);
+$anime = mysqli_query($conexion, $sql);
+$emision = mysqli_query($conexion, $sql1);
+$pendientes = mysqli_query($conexion, $sql2);
+$num = mysqli_query($conexion, $sql4);
 $eliminados_emision = mysqli_query($conexion, $sql5);
 
-$opening = $conexion->query("SELECT COUNT(*) total FROM `op` where ID_Anime='$idRegistros';");
+$opening = $conexion->query("SELECT COUNT(*) total FROM `op` WHERE ID_Anime='$idRegistros'");
+$num_horario = null;
 
-while ($valores = mysqli_fetch_array($opening)) {
-    $op1 = $valores[0];
-}
-
-while ($valores = mysqli_fetch_array($num)) {
+if ($num) {
+    $valores = mysqli_fetch_array($num);
     $num_horario = $valores[0];
 }
+
+$op1 = null;
+
+if ($opening) {
+    $valores = mysqli_fetch_array($opening);
+    $op1 = $valores['total'];
+}
+
 
 
 if ($estado != "Finalizado") {
@@ -64,7 +71,7 @@ if ($estado != "Finalizado") {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "INSERT INTO num_horario (`Temporada`, `Ano`)
-        VALUES ( '" . $tempo . "','" . $fecha . "')";
+        VALUES ( '$tempo','$fecha')";
             $conn->exec($sql);
             $num_horario = $conn->lastInsertId();
             echo $sql . "<br>";
@@ -84,22 +91,28 @@ if ($estado != "Finalizado") {
         }
     }
 
-    /*Deberia buscar las varibales en horario en vez de emision*/
-    while ($valores = mysqli_fetch_array($emision)) {
+
+
+    $sql3 = "SELECT * FROM `horario` where Nombre='$nombre' AND num_horario='$num_horario' ";
+    $horario = mysqli_query($conexion, $sql3);
+
+    /*Deberia buscar las variables en horario en vez de emision*/
+    $sql6 = "SELECT * FROM `horario` where Nombre='$nombre' ORDER BY `horario`.`num_horario` DESC limit 1";
+    $info = mysqli_query($conexion, $sql6);
+    echo $sql6 . "<br>";
+
+    while ($valores = mysqli_fetch_array($info)) {
         $dia = $valores['Dia'];
         $duracion = $valores['Duracion'];
     }
 
-    $sql3 = ("SELECT * FROM `horario` where Nombre='$nombre' AND num_horario='$num_horario' ;");
-    $horario    = mysqli_query($conexion, $sql3);
-
     if (mysqli_num_rows($horario) == 0) {
-        echo "No existe el anime en el horario,asi que lo creo:<br>";
+        echo "No existe el anime en el horario, asi que lo creo:<br>";
         try {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "INSERT INTO `horario`( `Nombre`, `Dia`, `Duracion`,`num_horario`)
-            VALUES ( '" . $nombre . " " . $temps . "', '" . $dias . "', '" . $duracion . "','" . $num_horario . "')";
+            VALUES ( '" . $nombre . " " . $temps . "', '$dia', '$duracion','$num_horario')";
             $conn->exec($sql);
             echo $sql . "<br>Demas<br>";
             $conn = null;
@@ -109,69 +122,41 @@ if ($estado != "Finalizado") {
         }
     } else {
         echo $sql3 . "<br>";
-        echo "Si existe el anime en el horario,asi que nada:<br>Demas <br>";
+        echo "Si existe el anime en el horario, asi que nada:<br>Demas <br>";
     }
     echo $sql3;
     echo "<br>";
 } else {
     echo "No hacer nada esta finalizado:<br>Demas <br>";
 }
-$ending = $conexion->query("SELECT COUNT(*) total FROM `ed` where ID_Anime='$idRegistros';");
 
-while ($valores = mysqli_fetch_array($ending)) {
-    $ed1 = $valores[0];
-}
+// Obtener el total de endings para el anime
+$ending = $conexion->query("SELECT COUNT(*) total FROM `ed` WHERE ID_Anime='$idRegistros';");
+$ed1 = mysqli_fetch_array($ending)[0];
 
+// Obtener el mix más reciente
 $mixes = $conexion->query("SELECT * FROM mix WHERE ID = (SELECT MAX(ID) FROM mix);");
+$mix = mysqli_fetch_array($mixes)[0];
 
-while ($valores = mysqli_fetch_array($mixes)) {
-    $mix = $valores[0];
-}
-
+// Obtener el mix de ending más reciente
 $mix_ed = $conexion->query("SELECT * FROM mix_ed WHERE ID = (SELECT MAX(ID) FROM mix_ed);");
+$mix2 = mysqli_fetch_array($mix_ed)[0];
 
-while ($valores = mysqli_fetch_array($mix_ed)) {
-    $mix2 = $valores[0];
-}
-
-
-echo $sql1;
-echo "<br>";
-echo $sql2;
-echo "<br>";
-echo $sql4;
-echo "<br>";
+// Mostrar información para depuración
+echo $sql1 . "<br>";
+echo $sql2 . "<br>";
+echo $sql4 . "<br>";
 echo $sql5 . "<br>";
-echo $idEmision;
-echo "<br>";
-echo $idPendientes;
-echo "<br>OP-";
-echo $op;
-echo "<br>OP1-";
-echo $op1;
-echo "<br>ED-";
-echo $ed;
-echo "<br>ED1-";
-echo $ed1;
-echo "<br>";
-echo $mix;
-echo "<br>";
-echo $mix2;
-echo "<br>";
-echo $link;
-echo "<br> Temporada ID";
-echo $temp;
-echo "<br>";
-echo $tempo;
-echo "<br>";
+echo $idEmision . "<br>";
+echo $idPendientes . "<br>OP-" . $op . "<br>OP1-" . $op1 . "<br>ED-" . $ed . "<br>ED1-" . $ed1 . "<br>";
+echo $mix . "<br>";
+echo $mix2 . "<br>";
+echo $link . "<br> Temporada ID" . $temp . "<br>" . $tempo . "<br>";
 echo "Num_Horario:" . $num_horario . "<br>";
 
 
-
-
 if ($op > $op1) {
-    echo "OP Mayor a Resultado";
-    echo "<br>";
+    echo "OP Mayor a Resultado<br>";
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -179,20 +164,17 @@ if ($op > $op1) {
         VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $op . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "',NOW())";
         $conn->exec($sql);
         echo $sql;
-        $conn = null;
     } catch (PDOException $e) {
-        $conn = null;
         echo $e;
+    } finally {
+        $conn = null;
     }
 } else {
-
-    echo "Iguales";
-    echo "<br>";
+    echo "Iguales<br>";
 }
 
 if ($ed > $ed1) {
-    echo "OP Mayor a Resultado";
-    echo "<br>";
+    echo "ED Mayor a Resultado<br>";
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -200,139 +182,107 @@ if ($ed > $ed1) {
         VALUES('" . $nombre . " " . $temps . "', '" . $idRegistros . "','" . $ed . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "',NOW())";
         $conn->exec($sql);
         echo $sql;
-        $conn = null;
     } catch (PDOException $e) {
-        $conn = null;
         echo $e;
+    } finally {
+        $conn = null;
     }
 } else {
-
-    echo "Iguales";
-    echo "<br>";
+    echo "Iguales<br>";
 }
 echo "<br>";
 
-function DELETE_EMISION()
-{
 
-    include 'bd.php';
-    $idEmision      = $_POST['emision'];
+function ejecutarConsulta($sql)
+{
+    global $servidor, $basededatos, $usuario, $password;
 
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "DELETE FROM `emision` where ID_Emision='" . $idEmision . "'";
         $conn->exec($sql);
-        $last_id1 = $conn->lastInsertId();
-        echo $sql;
-        echo 'ultimo anime insertado ' . $last_id1;
-        echo "<br>";
-        $conn = null;
+        return $conn->lastInsertId();
     } catch (PDOException $e) {
-        $conn = null;
-        echo $sql;
         echo $e;
-        echo "<br>";
+        return false;
+    } finally {
+        $conn = null;
+    }
+}
+
+function DELETE_EMISION()
+{
+    global $servidor, $basededatos, $usuario, $password;
+
+    $idEmision = $_POST['emision'];
+    $sql = "DELETE FROM `emision` WHERE ID_Emision = '$idEmision'";
+    $last_id1 = ejecutarConsulta($sql);
+    if ($last_id1 !== false) {
+        echo $sql;
+        echo 'último anime insertado ' . $last_id1 . "<br>";
     }
 }
 
 function DELETE_PENDIENTES()
 {
+    global $servidor, $basededatos, $usuario, $password;
 
-    include 'bd.php';
-    $idPendientes   = $_POST['pendientes'];
-
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "DELETE FROM pendientes WHERE ID_Pendientes ='" . $idPendientes . "'";
-        $conn->exec($sql);
-        $last_id2 = $conn->lastInsertId();
+    $idPendientes = $_POST['pendientes'];
+    $sql = "DELETE FROM `pendientes` WHERE ID_Pendientes = '$idPendientes'";
+    $last_id2 = ejecutarConsulta($sql);
+    if ($last_id2 !== false) {
         echo $sql;
-        echo 'ultimo anime insertado ' . $last_id2;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
+        echo 'último anime insertado ' . $last_id2 . "<br>";
     }
 }
 
 function UPDATE_ANIME_Solo()
 {
-    include 'bd.php';
-    $nombre         = $_POST['anime'];
-    $temps          = $_POST['temps'];
-    $peli           = $_POST['peli'];
-    $spin           = $_POST['spin'];
-    $estado         = $_POST['estado'];
-    $fecha          = $_POST['fecha'];
-    $temp           = $_POST['temp'];
-    $idRegistros    = $_POST['id'];
+    global $servidor, $basededatos, $usuario, $password;
 
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE anime SET 
-        Anime ='" . $nombre . "',
-        Temporadas ='" . $temps . "',
-        Peliculas ='" . $peli . "',
-        Spin_Off ='" . $spin . "',
-        Estado ='" . $estado . "',
-       `id_Emision`=1,
-       `id_Pendientes`=1,
-        Ano ='" . $fecha . "',
-        Id_Temporada ='" . $temp . "'
-        WHERE id='" . $idRegistros . "'";
-        $conn->exec($sql);
-        $last_id3 = $conn->lastInsertId();
+    $nombre = $_POST['anime'];
+    $temps = $_POST['temps'];
+    $peli = $_POST['peli'];
+    $spin = $_POST['spin'];
+    $estado = $_POST['estado'];
+    $fecha = $_POST['fecha'];
+    $temp = $_POST['temp'];
+    $idRegistros = $_POST['id'];
+
+    $sql = "UPDATE anime SET 
+        Anime = '$nombre',
+        Temporadas = '$temps',
+        Peliculas = '$peli',
+        Spin_Off = '$spin',
+        Estado = '$estado',
+        id_Emision = 1,
+        id_Pendientes = 1,
+        Ano = '$fecha',
+        Id_Temporada = '$temp'
+        WHERE id = '$idRegistros'";
+    $last_id3 = ejecutarConsulta($sql);
+    if ($last_id3 !== false) {
         echo $sql;
-        echo 'ultimo anime insertado ' . $last_id3;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
+        echo 'último anime insertado ' . $last_id3 . "<br>";
     }
 }
 
 function UPDATE_ANIME_ID()
 {
+    global $servidor, $basededatos, $usuario, $password;
 
-    include 'bd.php';
-    $idCambiado    = $_POST['id2'];
-    $nombre         = $_POST['anime'];
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE anime SET 
-        id='" . $idCambiado . "'
-        where Anime='" . $nombre . "'";
-        $conn->exec($sql);
-        $last_id4 = $conn->lastInsertId();
+    $idCambiado = $_POST['id2'];
+    $nombre = $_POST['anime'];
+
+    $sql = "UPDATE anime SET 
+        id = '$idCambiado'
+        WHERE Anime = '$nombre'";
+    $last_id4 = ejecutarConsulta($sql);
+    if ($last_id4 !== false) {
         echo $sql;
-        echo 'ultimo anime insertado ' . $last_id4;
-        echo "<br>";
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
-        echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Error al Actualizar ID de ' . $nombre . ' en Anime",
-            confirmButtonText: "OK"
-        }).then(function() {
-            window.location = "' . $link . '";
-        });
-        </script>';
+        echo 'último anime insertado ' . $last_id4 . "<br>";
     }
 }
-
-//DELETE_EMISION();
-//UPDATE_ANIME_Solo();
-//DELETE_PENDIENTES();
-//UPDATE_ANIME_ID();
 
 
 
@@ -347,75 +297,57 @@ if (mysqli_num_rows($emision) == 0) {
             echo "<br>";
             echo "Estado Emision";
             echo "<br>";
+
             if (mysqli_num_rows($eliminados_emision) == 0) {
                 echo "No existe en eliminados emision<br>";
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "INSERT INTO emision (`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','Indefinido','00:24:00')";
-                    $conn->exec($sql);
-                    $last_id1 = $conn->lastInsertId();
-                    echo $sql;
-                    echo 'ultimo anime insertado ' . $last_id1;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
             } else {
                 echo "Existe en eliminados emision<br>";
+
+                // Inicializar variables
+                $datos_emision = array();
+
                 while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
-                    $dato1 = $mostrar['ID_Emision'];
-                    $dato2 = $mostrar['Estado'];
-                    $dato3 = $mostrar['Nombre'];
-                    $dato4 = $mostrar['Capitulos'];
-                    $dato5 = $mostrar['Totales'];
-                    $dato6 = $mostrar['Dia'];
-                    $dato8 = $mostrar['Duracion'];
+                    $datos_emision[] = $mostrar;
                 }
+
                 echo "ELIMINADOS_EMISION<BR>";
-                echo $dato1;
-                echo "<br>";
-                echo $dato2;
-                echo "<br>";
-                echo $dato3;
-                echo "<br>";
-                echo $dato4;
-                echo "<br>";
-                echo $dato5;
-                echo "<br>";
-                echo $dato6;
-                echo "<br>";
-                echo $dato8 . "<br>";
 
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "INSERT INTO emision (`ID_Emision`,`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '$dato1','$dato2','$dato3','$dato4','$dato5','$dato6','$dato8')";
-                    $conn->exec($sql);
-                    $last_id1 = $dato1;
-                    echo $sql;
-                    echo 'ultimo anime insertado ' . $last_id1;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
-                
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "DELETE FROM `eliminados_emision` where ID_Emision='$dato1'";
-                    $conn->exec($sql);
-                    echo $sql;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
+                foreach ($datos_emision as $dato) {
+                    echo $dato['ID_Emision'] . "<br>";
+                    echo $dato['Estado'] . "<br>";
+                    echo $dato['Nombre'] . "<br>";
+                    echo $dato['Capitulos'] . "<br>";
+                    echo $dato['Totales'] . "<br>";
+                    echo $dato['Dia'] . "<br>";
+                    echo $dato['Duracion'] . "<br>";
 
+                    try {
+                        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        $sql = "INSERT INTO emision (`ID_Emision`, `Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
+                    VALUES ('{$dato['ID_Emision']}', '{$dato['Estado']}', '{$dato['Nombre']}', '{$dato['Capitulos']}', '{$dato['Totales']}', '{$dato['Dia']}', '{$dato['Duracion']}')";
+                        $conn->exec($sql);
+                        $last_id1 = $dato['ID_Emision'];
+                        echo $sql;
+                        echo 'ultimo anime insertado ' . $last_id1;
+                        echo "<br>";
+                        $conn = null;
+                    } catch (PDOException $e) {
+                        $conn = null;
+                    }
+
+                    try {
+                        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                        $sql = "DELETE FROM `eliminados_emision` where ID_Emision='{$dato['ID_Emision']}'";
+                        $conn->exec($sql);
+                        echo $sql;
+                        echo "<br>";
+                        $conn = null;
+                    } catch (PDOException $e) {
+                        $conn = null;
+                    }
+                }
             }
 
 
@@ -663,7 +595,7 @@ if (mysqli_num_rows($emision) == 0) {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $sql = "INSERT INTO emision (`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','Indefinido','00:24:00')";
+                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','" . $dia . "','" . $duracion . "')";
                     $conn->exec($sql);
                     $last_id1 = $conn->lastInsertId();
                     echo $sql;
@@ -1389,4 +1321,3 @@ if (mysqli_num_rows($emision) == 0) {
         }
     }
 }
-

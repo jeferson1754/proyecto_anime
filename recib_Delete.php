@@ -3,133 +3,77 @@
 </header>
 <?php
 include('bd.php');
-$idRegistros  = $_REQUEST['id'];
-$estado       = $_REQUEST['estado'];
-$nombre       = $_REQUEST['nombre'];
-$link         = $_REQUEST['link'];
 
+$idRegistros = $_REQUEST['id'];
+$estado = $_REQUEST['estado'];
+$nombre = $_REQUEST['nombre'];
+$link = $_REQUEST['link'];
 
-$delete1 = ("DELETE anime.*,emision.*
-FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
-WHERE anime.id='" . $idRegistros . "'
-");
+// Consultas de eliminación y actualización
+switch ($estado) {
+    case "Emision":
+    case "Pausado":
+        $sql_delete = "DELETE anime.*,emision.*
+                       FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
+                       WHERE anime.id='$idRegistros'";
+        break;
 
-$delete2 = ("DELETE anime.*,pendientes.*
-FROM anime JOIN pendientes ON anime.id_Pendientes=pendientes.ID_Pendientes
-WHERE anime.id='" . $idRegistros . "'
-");
+    case "Finalizado":
+        $sql_delete = "DELETE FROM anime WHERE anime.id='$idRegistros'";
+        break;
 
-$delete3 = ("DELETE FROM anime 
-WHERE `anime`.`id` = '" . $idRegistros . "'
-");
+    case "Pendiente":
+        $sql_delete = "DELETE anime.*,pendientes.*
+                       FROM anime JOIN pendientes ON anime.id_Pendientes=pendientes.ID_Pendientes
+                       WHERE anime.id='$idRegistros'";
+        break;
 
-$update = ("INSERT INTO id_anime (`ID`) VALUES
-('" . $idRegistros . "');
-");
-
-
-$update2 = ("UPDATE anime SET id_Emision=NULL,id_Pendientes=NULL,Id_Temporada=NULL where 
-id='" . $idRegistros . "';
-");
-
-$update3 = ("UPDATE op SET ID_Anime=NULL where 
-ID_Anime='" . $idRegistros . "';
-");
-
-$update4 = ("UPDATE ed SET ID_Anime=NULL where 
-ID_Anime='" . $idRegistros . "';
-");
-
-
-if ($estado === "Emision") {
-
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete1);
-    $conexion = null;
-} else if ($estado === "Finalizado") {
-
-    echo $delete3;
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete3);
-
-    $conexion = null;
-} else if ($estado === "Pausado") {
-
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete1);
-    $conexion = null;
-} else if ($estado === "Pendiente") {
-
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $delete2);
-    $conexion = null;
-} else {
-    $result_update = mysqli_query($conexion, $update);
-    $result_update = mysqli_query($conexion, $update2);
-    $result_update = mysqli_query($conexion, $update3);
-    $result_update = mysqli_query($conexion, $update4);
-    $result_update = mysqli_query($conexion, $delete1);
+    default:
+        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros')";
+        $sql_update .= "; UPDATE anime SET id_Emision=NULL,id_Pendientes=NULL,Id_Temporada=NULL WHERE id='$idRegistros'";
+        $sql_delete = "DELETE anime.*,emision.*
+                       FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
+                       WHERE anime.id='$idRegistros'";
 }
 
+// Ejecutar las consultas
+if (isset($sql_delete)) {
+    $result_delete = mysqli_query($conexion, $sql_delete);
+}
+if (isset($sql_update)) {
+    $result_update = mysqli_multi_query($conexion, $sql_update);
+}
 
-echo "<br>";
-echo $estado;
-echo "<br>";
-echo $nombre;
-
-
-$link         = $_REQUEST['link'];
-
-echo "<br>";
-echo $link;
-
+// Redireccionar
 if (isset($_POST['accion'])) {
-
     if ($_POST['accion'] == "nuevo_mix") {
-
-
-
-        $sql = ("INSERT INTO `mix` (`ID`) VALUES (NULL);");
-        echo $sql;
-        $result_update = mysqli_query($conexion, $sql);
-        $conexion = null;
-
-        echo '<script>
-    Swal.fire({
-        icon: "success",
-        title: "Creando Nuevo Mix en Openings",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "../Anime 2.0/' . $link . '";
-    });
-    </script>';
-    } else {
-        $sql = ("INSERT INTO `mix_ed` (`ID`) VALUES (NULL);");
-        echo $sql;
-        $result_update = mysqli_query($conexion, $sql);
-        $conexion = null;
-
-        echo '<script>
-    Swal.fire({
-        icon: "success",
-        title: "Creando Nuevo Mix en Endings",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "../Anime 2.0/' . $link . '";
-    });
-    </script>';
+        $table = ($_POST['accion'] == "nuevo_mix") ? "mix" : "mix_ed";
+        $sql_insert = "INSERT INTO `$table` (`ID`) VALUES (NULL)";
+        mysqli_query($conexion, $sql_insert);
+        $mensaje = ($_POST['accion'] == "nuevo_mix") ? "Nuevo Mix en Openings" : "Nuevo Mix en Endings";
     }
-} else {
-    echo "No Funciona";
-    //header("location:$link");
+}
+
+if (isset($mensaje)) {
     echo '<script>
-    Swal.fire({
-        icon: "success",
-        title: "' . $nombre . ' Eliminado Exitosamente de Anime",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "' . $link . '";
-    });
-    </script>';
+        Swal.fire({
+            icon: "success",
+            title: "Creando ' . $mensaje . '",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "../Anime 2.0/' . $link . '";
+        });
+        </script>';
+} else {
+    echo '<script>
+        Swal.fire({
+            icon: "success",
+            title: "' . $nombre . ' Eliminado Exitosamente de Anime",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "' . $link . '";
+        });
+        </script>';
 }
 ?>
+
