@@ -414,7 +414,7 @@ if (mysqli_num_rows($emision) == 0) {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $sql = "INSERT INTO emision (`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','Indefinido','00:24:00')";
+                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','" . $dia . "','" . $duracion . "')";
                     $conn->exec($sql);
                     $last_id1 = $conn->lastInsertId();
                     echo $sql;
@@ -727,7 +727,7 @@ if (mysqli_num_rows($emision) == 0) {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                     $sql = "INSERT INTO emision (`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','Indefinido','00:24:00')";
+                    VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','" . $dia . "','" . $duracion . "')";
                     $conn->exec($sql);
                     $last_id1 = $conn->lastInsertId();
                     echo $sql;
