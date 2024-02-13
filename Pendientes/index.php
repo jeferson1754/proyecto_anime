@@ -16,7 +16,7 @@ require '../bd.php';
     <!-- CSS de DataTables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
-    
+
     <title>Pendientes
     </title>
 </head>
@@ -56,7 +56,9 @@ require '../bd.php';
             <button type="button" class="btn btn-info " onclick="myFunction()">
                 Filtrar
             </button>
-
+            <button type="button" class="btn btn-info " onclick="myFunction2()">
+                Busqueda
+            </button>
             <button type="submit" name="link" class="btn btn-info ">
                 Sin Link
             </button>
@@ -78,6 +80,14 @@ require '../bd.php';
                 <input type="hidden" name="accion" value="Filtro">
             </form>
         </div>
+        <div class="class-control" id="myDIV1" style="display:none;">
+            <form action="" method="GET">
+                <input class="form-control" type="text" name="busqueda_pendientes" style="width:auto;" placeholder="Nombre de Anime">
+
+                <button class="btn btn-outline-info" type="submit" name="buscar"> <b>Buscar </b> </button>
+                <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
+            </form>
+        </div>
         <?php
 
         $where = "WHERE ID_Pendientes>1 ORDER BY `pendientes`.`Pendientes` ASC, `pendientes`.`Tipo` ASC;;";
@@ -95,6 +105,14 @@ require '../bd.php';
         } else if (isset($_GET['link'])) {
 
             $where = "WHERE Link='' AND Estado_link='Faltante' OR Estado_link='Erroneo/Inexistente' ORDER BY `pendientes`.`ID_Pendientes` ASC";
+        } else if (isset($_GET['buscar'])) {
+
+            if (isset($_GET['busqueda_pendientes'])) {
+
+                $busqueda   = $_REQUEST['busqueda_pendientes'];
+
+                $where = "WHERE Nombre LIKE '%$busqueda%' ORDER BY `pendientes`.`ID_Pendientes` ASC";
+            }
         }
         ?>
         <?php include('ModalCrear.php'); ?>
@@ -200,6 +218,15 @@ require '../bd.php';
 
         function myFunction() {
             var x = document.getElementById("myDIV");
+            if (x.style.display === "none") {
+                x.style.display = "block";
+            } else {
+                x.style.display = "none";
+            }
+        }
+
+        function myFunction2() {
+            var x = document.getElementById("myDIV1");
             if (x.style.display === "none") {
                 x.style.display = "block";
             } else {
