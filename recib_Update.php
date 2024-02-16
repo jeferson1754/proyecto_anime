@@ -47,6 +47,11 @@ $pendientes = mysqli_query($conexion, $sql2);
 $num = mysqli_query($conexion, $sql4);
 $eliminados_emision = mysqli_query($conexion, $sql5);
 
+
+while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
+    $id_emision = $mostrar['ID_Emision'];
+}
+
 $opening = $conexion->query("SELECT COUNT(*) total FROM `op` WHERE ID_Anime='$idRegistros'");
 $num_horario = null;
 
@@ -298,59 +303,6 @@ if (mysqli_num_rows($emision) == 0) {
             echo "Estado Emision";
             echo "<br>";
 
-            if (mysqli_num_rows($eliminados_emision) == 0) {
-                echo "No existe en eliminados emision<br>";
-            } else {
-                echo "Existe en eliminados emision<br>";
-
-                // Inicializar variables
-                $datos_emision = array();
-
-                while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
-                    $datos_emision[] = $mostrar;
-                }
-
-                echo "ELIMINADOS_EMISION<BR>";
-
-                foreach ($datos_emision as $dato) {
-                    echo $dato['ID_Emision'] . "<br>";
-                    echo $dato['Estado'] . "<br>";
-                    echo $dato['Nombre'] . "<br>";
-                    echo $dato['Capitulos'] . "<br>";
-                    echo $dato['Totales'] . "<br>";
-                    echo $dato['Dia'] . "<br>";
-                    echo $dato['Duracion'] . "<br>";
-
-                    try {
-                        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        $sql = "INSERT INTO emision (`ID_Emision`, `Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ('{$dato['ID_Emision']}', '{$dato['Estado']}', '{$dato['Nombre']}', '{$dato['Capitulos']}', '{$dato['Totales']}', '{$dato['Dia']}', '{$dato['Duracion']}')";
-                        $conn->exec($sql);
-                        $last_id1 = $dato['ID_Emision'];
-                        echo $sql;
-                        echo 'ultimo anime insertado ' . $last_id1;
-                        echo "<br>";
-                        $conn = null;
-                    } catch (PDOException $e) {
-                        $conn = null;
-                    }
-
-                    try {
-                        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        $sql = "DELETE FROM `eliminados_emision` where ID_Emision='{$dato['ID_Emision']}'";
-                        $conn->exec($sql);
-                        echo $sql;
-                        echo "<br>";
-                        $conn = null;
-                    } catch (PDOException $e) {
-                        $conn = null;
-                    }
-                }
-            }
-
-
             try {
                 $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -360,7 +312,6 @@ if (mysqli_num_rows($emision) == 0) {
                 Peliculas ='" . $peli . "',
                 Spin_Off ='" . $spin . "',
                 Estado ='" . $estado . "',
-               `id_Emision`='" . $last_id1 . "',
                `id_Pendientes`=1,
                Ano ='" . $fecha . "',
                Id_Temporada ='" . $temp . "'
@@ -378,15 +329,29 @@ if (mysqli_num_rows($emision) == 0) {
 
             UPDATE_ANIME_ID();
 
-            echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Creando registro de ' . $nombre . '  en Emision y Actualizando en Anime",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "' . $link . '";
-            });
-            </script>';
+            if (mysqli_num_rows($eliminados_emision) == 0) {
+                echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Creando registro de ' . $nombre . '  en Emision y Actualizando en Anime",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "' . $link . '";
+                });
+                </script>';
+            } else {
+                echo "Existe en eliminados emision<br>";
+                echo '<script>
+                Swal.fire({
+                    icon: "info",
+                    title: "El anime ' . $nombre . ' tiene registros en Eliminados de Emision",
+                    text:"Quiere usarlos?",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "./update_swal.php?variable=' . urlencode($id_emision) . '";
+                });
+                </script>';
+            }
         } else if ($estado === "Finalizado") {
             echo "<br>";
             echo "Estado Finalizado";
@@ -409,7 +374,6 @@ if (mysqli_num_rows($emision) == 0) {
             echo "Estado Pausado";
             echo "<br>";
             if (mysqli_num_rows($eliminados_emision) == 0) {
-                echo "No existe en eliminados emision<br>";
                 try {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -424,58 +388,27 @@ if (mysqli_num_rows($emision) == 0) {
                 } catch (PDOException $e) {
                     $conn = null;
                 }
+                echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Creando registro de ' . $nombre . ' en Pausado y Actualizando en Anime",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "' . $link . '";
+                });
+                </script>';
             } else {
                 echo "Existe en eliminados emision<br>";
-                while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
-                    $dato1 = $mostrar['ID_Emision'];
-                    $dato2 = $mostrar['Estado'];
-                    $dato3 = $mostrar['Nombre'];
-                    $dato4 = $mostrar['Capitulos'];
-                    $dato5 = $mostrar['Totales'];
-                    $dato6 = $mostrar['Dia'];
-                    $dato8 = $mostrar['Duracion'];
-                }
-                echo "ELIMINADOS_EMISION<BR>";
-                echo $dato1;
-                echo "<br>";
-                echo $dato2;
-                echo "<br>";
-                echo $dato3;
-                echo "<br>";
-                echo $dato4;
-                echo "<br>";
-                echo $dato5;
-                echo "<br>";
-                echo $dato6;
-                echo "<br>";
-                echo $dato8 . "<br>";
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "INSERT INTO emision (`ID_Emision`,`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '$dato1','$dato2','$dato3','$dato4','$dato5','$dato6','$dato8')";
-                    $conn->exec($sql);
-                    $last_id1 = $dato1;
-                    echo $sql;
-                    echo 'ultimo anime insertado ' . $last_id1;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "DELETE FROM `eliminados_emision` where ID_Emision='$dato1'";
-                    $conn->exec($sql);
-                    echo $sql;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
+                echo '<script>
+                Swal.fire({
+                    icon: "info",
+                    title: "El anime ' . $nombre . ' tiene registros en Eliminados de Emision",
+                    text:"Quiere usarlos?",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "./update_swal.php?variable=' . urlencode($id_emision) . '";
+                });
+                </script>';
             }
 
 
@@ -487,7 +420,6 @@ if (mysqli_num_rows($emision) == 0) {
                 Peliculas ='" . $peli . "',
                 Spin_Off ='" . $spin . "',
                 Estado ='" . $estado . "',
-               `id_Emision`='" . $last_id1 . "',
                `id_Pendientes`=1,
                Ano ='" . $fecha . "',
                Id_Temporada ='" . $temp . "'
@@ -504,16 +436,6 @@ if (mysqli_num_rows($emision) == 0) {
             }
 
             UPDATE_ANIME_ID();
-
-            echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Creando registro de ' . $nombre . ' en Pausado y Actualizando en Anime",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "' . $link . '";
-            });
-            </script>';
         } else if ($estado === "Pendiente") {
             echo "<br>";
             echo "Estado Pendiente";
@@ -590,7 +512,6 @@ if (mysqli_num_rows($emision) == 0) {
             echo "Estado Emision";
             echo "<br>";
             if (mysqli_num_rows($eliminados_emision) == 0) {
-                echo "No existe en eliminados emision<br>";
                 try {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -605,59 +526,29 @@ if (mysqli_num_rows($emision) == 0) {
                 } catch (PDOException $e) {
                     $conn = null;
                 }
+                echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Creando registro de ' . $nombre . ' en Emision,Actualizando en Anime y Eliminando en Pendientes",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "' . $link . '";
+                });
+                </script>';
             } else {
                 echo "Existe en eliminados emision<br>";
-                while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
-                    $dato1 = $mostrar['ID_Emision'];
-                    $dato2 = $mostrar['Estado'];
-                    $dato3 = $mostrar['Nombre'];
-                    $dato4 = $mostrar['Capitulos'];
-                    $dato5 = $mostrar['Totales'];
-                    $dato6 = $mostrar['Dia'];
-                    $dato8 = $mostrar['Duracion'];
-                }
-                echo "ELIMINADOS_EMISION<BR>";
-                echo $dato1;
-                echo "<br>";
-                echo $dato2;
-                echo "<br>";
-                echo $dato3;
-                echo "<br>";
-                echo $dato4;
-                echo "<br>";
-                echo $dato5;
-                echo "<br>";
-                echo $dato6;
-                echo "<br>";
-                echo $dato8 . "<br>";
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "INSERT INTO emision (`ID_Emision`,`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '$dato1','$dato2','$dato3','$dato4','$dato5','$dato6','$dato8')";
-                    $conn->exec($sql);
-                    $last_id1 = $dato1;
-                    echo $sql;
-                    echo 'ultimo anime insertado ' . $last_id1;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "DELETE FROM `eliminados_emision` where ID_Emision='$dato1'";
-                    $conn->exec($sql);
-                    echo $sql;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
+                echo '<script>
+                Swal.fire({
+                    icon: "info",
+                    title: "El anime ' . $nombre . ' tiene registros en Eliminados de Emision",
+                    text:"Quiere usarlos?",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "./update_swal.php?variable=' . urlencode($id_emision) . '";
+                });
+                </script>';
             }
+
 
 
             try {
@@ -689,15 +580,7 @@ if (mysqli_num_rows($emision) == 0) {
             UPDATE_ANIME_ID();
 
             //Eliminar en Pendientes
-            echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Creando registro de ' . $nombre . ' en Emision,Actualizando en Anime y Eliminando en Pendientes",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "' . $link . '";
-            });
-            </script>';
+
         } else if ($estado === "Finalizado") {
             echo "<br>";
             echo "Estado Finalizado";
@@ -720,9 +603,7 @@ if (mysqli_num_rows($emision) == 0) {
             echo "<br>";
             echo "Estado Pausado";
             echo "<br>";
-
             if (mysqli_num_rows($eliminados_emision) == 0) {
-                echo "No existe en eliminados emision<br>";
                 try {
                     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -737,60 +618,28 @@ if (mysqli_num_rows($emision) == 0) {
                 } catch (PDOException $e) {
                     $conn = null;
                 }
+                echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Creando registro de ' . $nombre . ' en Emision,Actualizando en Anime y Eliminando en Pendientes",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "' . $link . '";
+                });
+                </script>';
             } else {
                 echo "Existe en eliminados emision<br>";
-                while ($mostrar = mysqli_fetch_array($eliminados_emision)) {
-                    $dato1 = $mostrar['ID_Emision'];
-                    $dato2 = $mostrar['Estado'];
-                    $dato3 = $mostrar['Nombre'];
-                    $dato4 = $mostrar['Capitulos'];
-                    $dato5 = $mostrar['Totales'];
-                    $dato6 = $mostrar['Dia'];
-                    $dato8 = $mostrar['Duracion'];
-                }
-                echo "ELIMINADOS_EMISION<BR>";
-                echo $dato1;
-                echo "<br>";
-                echo $dato2;
-                echo "<br>";
-                echo $dato3;
-                echo "<br>";
-                echo $dato4;
-                echo "<br>";
-                echo $dato5;
-                echo "<br>";
-                echo $dato6;
-                echo "<br>";
-                echo $dato8 . "<br>";
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "INSERT INTO emision (`ID_Emision`,`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                    VALUES ( '$dato1','$dato2','$dato3','$dato4','$dato5','$dato6','$dato8')";
-                    $conn->exec($sql);
-                    $last_id1 = $dato1;
-                    echo $sql;
-                    echo 'ultimo anime insertado ' . $last_id1;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
-
-                try {
-                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = "DELETE FROM `eliminados_emision` where ID_Emision='$dato1'";
-                    $conn->exec($sql);
-                    echo $sql;
-                    echo "<br>";
-                    $conn = null;
-                } catch (PDOException $e) {
-                    $conn = null;
-                }
+                echo '<script>
+                Swal.fire({
+                    icon: "info",
+                    title: "El anime ' . $nombre . ' tiene registros en Eliminados de Emision",
+                    text:"Quiere usarlos?",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "./update_swal.php?variable=' . urlencode($id_emision) . '";
+                });
+                </script>';
             }
-
             try {
                 $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -818,16 +667,6 @@ if (mysqli_num_rows($emision) == 0) {
             DELETE_PENDIENTES();
             UPDATE_ANIME_ID();
 
-            //Eliminar Pendiente
-            echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "Creando registro de ' . $nombre . ' en Emision,Actualizando en Anime y Eliminando en Pendientes",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "' . $link . '";
-            });
-            </script>';
         } else if ($estado === "Pendiente") {
             echo "<br>";
             echo "Estado Pendiente";
