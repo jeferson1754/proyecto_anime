@@ -16,23 +16,6 @@
           text-align: center;
         }
 
-        .buttons-container {
-          display: flex;
-          justify-content: center;
-          /* Centrar horizontalmente */
-        }
-
-        .buttons-container button {
-          width: auto;
-          height: auto;
-          margin: 0 5px;
-          margin-bottom: 20px;
-          /* Espacio entre los botones */
-        }
-
-        i {
-          font-size: 40px;
-        }
       </style>
 
       <?php
@@ -74,21 +57,6 @@
       <div class="container" style="width: 100%; height: 100px;">
         <iframe src="./ejemplo.php?id=<?php echo $id_Registros; ?>" frameborder="0" ñ style="width: 100%; height: 100%;"></iframe>
       </div>
-
-
-      <script>
-        function copyToClipboard(text) {
-          var textarea = document.createElement("textarea");
-          textarea.value = text;
-          document.body.appendChild(textarea);
-          textarea.select();
-          document.execCommand("copy");
-          document.body.removeChild(textarea);
-          alert("Texto copiado al portapapeles: " + text);
-        }
-      </script>
-
-
 
     </div>
   </div>

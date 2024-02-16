@@ -50,6 +50,10 @@
 
       </div>
 
+      <div class="container" style="width: 100%; height: 100px;">
+        <iframe src="./ejemplo.php?id=<?php echo $id_Registros; ?>" frameborder="0" ñ style="width: 100%; height: 100%;"></iframe>
+      </div>
+
     </div>
   </div>
 </div>

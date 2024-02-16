@@ -174,6 +174,7 @@ $año = date("Y");
 
             while ($mostrar = mysqli_fetch_array($result)) {
                 $iden = $mostrar['ID_Anime'];
+                $id_Registros = $mostrar['ID'];
             ?>
 
 
