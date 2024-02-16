@@ -19,7 +19,7 @@ if (mysqli_connect_errno()) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
 
-$max_queries_per_hour = 500;
+$max_queries_per_hour = 700;
 
 $current_time = date("Y-m-d H:i:s", time());
 

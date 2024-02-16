@@ -19,9 +19,14 @@ $año = date("Y");
     <link rel="stylesheet" type="text/css" href="../css/style.css?<?php echo time(); ?>">
     <link rel="stylesheet" href="../css/checkbox.css">
 
+    <!-- Iconos -->
+    <script src="https://kit.fontawesome.com/8846655159.js" crossorigin="anonymous"></script>
+
+
     <!-- CSS de DataTables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
+
     <title>Openings
     </title>
 </head>
@@ -177,6 +182,7 @@ $año = date("Y");
 
 
             while ($mostrar = mysqli_fetch_array($result)) {
+                $id_Registros = $mostrar['ID'];
                 $iden = $mostrar['ID_Anime'];
                 $name = $mostrar['Nombre'];
                 $name2 = substr($name, 0, 8);
@@ -222,7 +228,7 @@ $año = date("Y");
         </table>
     </div>
 
-    <!-- jQuery -->
+    <!-- jQuery-->
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- DataTables -->
@@ -299,6 +305,7 @@ $año = date("Y");
                 x.style.display = "none";
             }
         }
+
     </script>
 </body>
 
