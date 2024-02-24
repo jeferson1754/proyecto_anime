@@ -48,7 +48,7 @@ if (isset($_GET['id'])) {
     <!-- Contenido HTML -->
     <?php
     // Consulta SQL para obtener los últimos 5 registros desde la base de datos
-    $consulta = "SELECT * FROM `op` where ID='$id' ORDER BY `ID` DESC";
+    $consulta = "SELECT * FROM `op` WHERE ID='$id' ORDER BY `ID` DESC LIMIT 5";
     $resultados = $conexion->query($consulta);
 
     if ($resultados->num_rows > 0) {
@@ -63,31 +63,31 @@ if (isset($_GET['id'])) {
             echo "<div class='buttons-container'>";
             echo '<button title="Copiar Titulo" onclick="copyToClipboard(\'' . $cancion . '\')"><i class="fa-solid fa-music"></i></button>';
 
-            $sql1 = "SELECT autor.Autor, op.ID, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones FROM autor JOIN op ON autor.ID = op.ID_Autor WHERE op.ID = '$id' AND autor.Autor != '' HAVING Repeticiones > 3;";
+            // Consultar el autor y las repeticiones
+            $sql1 = "SELECT autor.Autor, op.ID, (autor.Canciones + autor.Canciones_Musica) as Repeticiones 
+                FROM autor JOIN op ON autor.ID = op.ID_Autor 
+                WHERE op.ID='$id' HAVING Repeticiones > 3";
             $result1 = $conexion->query($sql1);
 
             if ($result1->num_rows > 0) {
-                while ($fila = $result1->fetch_assoc()) {
-                    // Acceder a los valores de las columnas
-                    $autor = $fila["Autor"];
-                    $repeticiones = $fila["Repeticiones"];
-
-                    echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $autor . '\')"><i class="fa-solid fa-user"></i></button>';
-                }
+                $fila = $result1->fetch_assoc();
+                $autor = $fila["Autor"];
+                $repeticiones = $fila["Repeticiones"];
+                echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $autor . '\')"><i class="fa-solid fa-user"></i></button>';
             } else {
                 echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $texto1 . ' OP ' . $texto2 . '\')"><i class="fa-solid fa-user"></i></button>';
             }
 
-            $sql2 = "SELECT op.*, anime.Anime FROM `op` INNER JOIN anime ON op.ID_Anime = anime.id WHERE op.ID = '$id'";
+            // Consultar el anime
+            $sql2 = "SELECT anime.Anime 
+                FROM `op` INNER JOIN anime ON op.ID_Anime = anime.id 
+                WHERE op.ID = '$id'";
             $result2 = $conexion->query($sql2);
 
             if ($result2->num_rows > 0) {
-                while ($fila = $result2->fetch_assoc()) {
-                    // Acceder a los valores de las columnas
-                    $anime = $fila["Anime"];
-
-                    echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
-                }
+                $fila = $result2->fetch_assoc();
+                $anime = $fila["Anime"];
+                echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
             } else {
                 echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
             }
@@ -97,8 +97,8 @@ if (isset($_GET['id'])) {
     } else {
         echo "No se encontraron resultados en la base de datos.";
     }
-
     ?>
+
 
     <!-- Definir la función para copiar texto al portapapeles en JavaScript -->
     <script>

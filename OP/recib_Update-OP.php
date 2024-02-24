@@ -105,6 +105,10 @@ try {
     echo $e;
 }
 
+// Actualizar los datos del registro de autor
+$sql2 = "UPDATE autor SET Canciones = (SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor= autor.ID);";
+$result2 = $conexion->query($sql2);
+
 // Mensaje de éxito con SweetAlert
 echo '<script>
     Swal.fire({
