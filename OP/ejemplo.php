@@ -78,7 +78,20 @@ if (isset($_GET['id'])) {
                 echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $texto1 . ' OP ' . $texto2 . '\')"><i class="fa-solid fa-user"></i></button>';
             }
 
-            echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
+            $sql2 = "SELECT op.*, anime.Anime FROM `op` INNER JOIN anime ON op.ID_Anime = anime.id WHERE op.ID = '$id'";
+            $result2 = $conexion->query($sql2);
+
+            if ($result2->num_rows > 0) {
+                while ($fila = $result2->fetch_assoc()) {
+                    // Acceder a los valores de las columnas
+                    $anime = $fila["Anime"];
+
+                    echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
+                }
+            } else {
+                echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
+            }
+
             echo "</div>"; // Cierre del div 'buttons-container'
         }
     } else {
