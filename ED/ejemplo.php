@@ -66,7 +66,7 @@ if (isset($_GET['id'])) {
             // Consultar el autor y las repeticiones
             $sql1 = "SELECT autor.Autor, ed.ID, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones 
                 FROM autor JOIN ed ON autor.ID = ed.ID_Autor 
-                WHERE ed.ID = '$id' AND autor.Autor != '' HAVING Repeticiones > 3";
+                WHERE ed.ID = '$id' AND autor.Autor != '' HAVING Repeticiones > 5";
             $result1 = $conexion->query($sql1);
 
             if ($result1->num_rows > 0) {

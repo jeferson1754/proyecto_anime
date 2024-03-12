@@ -66,7 +66,7 @@ if (isset($_GET['id'])) {
             // Consultar el autor y las repeticiones
             $sql1 = "SELECT autor.Autor, op.ID, (autor.Canciones + autor.Canciones_Musica) as Repeticiones 
                 FROM autor JOIN op ON autor.ID = op.ID_Autor 
-                WHERE op.ID='$id' HAVING Repeticiones > 3";
+                WHERE op.ID='$id' HAVING Repeticiones > 5";
             $result1 = $conexion->query($sql1);
 
             if ($result1->num_rows > 0) {

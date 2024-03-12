@@ -90,28 +90,28 @@ require '../bd.php';
         </div>
         <?php
 
-        $where = "WHERE ID_Pendientes>1 ORDER BY `pendientes`.`Pendientes` ASC, `pendientes`.`Tipo` ASC;;";
+        $where = "AND ID_Pendientes>1  ORDER BY rn, Tipo, Pendientes ASC;";
 
         if (isset($_GET['borrar'])) {
             $busqueda = "";
 
-            $where = "WHERE ID_Pendientes>1 ORDER BY `pendientes`.`Pendientes` ASC, `pendientes`.`Tipo` ASC;";
+            $where = "AND ID_Pendientes>1  ORDER BY rn, Tipo, Pendientes ASC;";
         } else if (isset($_GET['filtrar'])) {
             if (isset($_GET['tipo'])) {
                 $tipo   = $_REQUEST['tipo'];
 
-                $where = "WHERE Tipo='" . $tipo . "' AND ID_Pendientes>1 ORDER BY `pendientes`.`Pendientes` ASC, `pendientes`.`Tipo` ASC;";
+                $where = "AND Tipo='" . $tipo . "' AND ID_Pendientes>1 ORDER BY rn, Tipo, Pendientes ASC;";
             }
         } else if (isset($_GET['link'])) {
 
-            $where = "WHERE Link='' AND Estado_link='Faltante' OR Estado_link='Erroneo/Inexistente' ORDER BY `pendientes`.`ID_Pendientes` ASC";
+            $where = "AND Link='' AND Estado_link='Faltante' OR Estado_link='Erroneo/Inexistente'  ORDER BY rn, Tipo, Pendientes ASC;";
         } else if (isset($_GET['buscar'])) {
 
             if (isset($_GET['busqueda_pendientes'])) {
 
                 $busqueda   = $_REQUEST['busqueda_pendientes'];
 
-                $where = "WHERE Nombre LIKE '%$busqueda%' ORDER BY `pendientes`.`ID_Pendientes` ASC";
+                $where = "AND Nombre LIKE '%$busqueda%'  ORDER BY rn, Tipo, Pendientes ASC;";
             }
         }
         ?>
@@ -135,7 +135,7 @@ require '../bd.php';
             </thead>
             <?php
 
-            $sql1 = "SELECT * FROM `pendientes`$where";
+            $sql1 = "SELECT *, ROW_NUMBER() OVER (PARTITION BY Tipo ORDER BY Pendientes ASC, ID_Pendientes ASC) AS rn FROM `pendientes` WHERE Tipo IN ('Pelicula', 'Ova y Otros', 'Anime')$where";
             //echo $sql1;
             $result = mysqli_query($conexion, $sql1);
 
