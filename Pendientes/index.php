@@ -183,9 +183,7 @@ require '../bd.php';
     <script>
         $(document).ready(function() {
             $('#example').DataTable({
-                    order: [
-                        [4, 'asc']
-                    ],
+                    "order": [],
                     language: {
                         processing: "Tratamiento en curso...",
                         search: "Buscar:",
