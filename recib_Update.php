@@ -306,6 +306,21 @@ if (mysqli_num_rows($emision) == 0) {
             try {
                 $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $sql = "INSERT INTO emision (`Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
+                VALUES ( '" . $estado . "','" . $nombre . " " . $temps . "','1','12','" . $dia . "','" . $duracion . "')";
+                $conn->exec($sql);
+                $last_id1 = $conn->lastInsertId();
+                echo $sql;
+                echo 'ultimo anime insertado ' . $last_id1;
+                echo "<br>";
+                $conn = null;
+            } catch (PDOException $e) {
+                $conn = null;
+            }
+
+            try {
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql = "UPDATE anime SET 
                 Anime ='" . $nombre . "',
                 Temporadas ='" . $temps . "',
@@ -313,8 +328,9 @@ if (mysqli_num_rows($emision) == 0) {
                 Spin_Off ='" . $spin . "',
                 Estado ='" . $estado . "',
                `id_Pendientes`=1,
-               Ano ='" . $fecha . "',
-               Id_Temporada ='" . $temp . "'
+               `id_Emision`='" . $last_id1 . "',
+                Ano ='" . $fecha . "',
+                Id_Temporada ='" . $temp . "'
                 WHERE id='" . $idRegistros . "'";
                 $conn->exec($sql);
                 $last_id2 = $conn->lastInsertId();
@@ -326,6 +342,8 @@ if (mysqli_num_rows($emision) == 0) {
                 $conn = null;
                 echo $e;
             }
+
+
 
             UPDATE_ANIME_ID();
 
@@ -666,7 +684,6 @@ if (mysqli_num_rows($emision) == 0) {
 
             DELETE_PENDIENTES();
             UPDATE_ANIME_ID();
-
         } else if ($estado === "Pendiente") {
             echo "<br>";
             echo "Estado Pendiente";
