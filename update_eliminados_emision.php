@@ -9,7 +9,7 @@ if (isset($_GET['variable'])) {
     // Obtener el valor de id_deudor
     $id = $_GET['variable'];
     // Aquí puedes usar $id_deudor como necesites en tu código
-    $sql = "SELECT * FROM `eliminados_emision` WHERE ID_Emision='$id' LIMIT 1";
+    $sql = "SELECT * FROM `eliminados_emision` WHERE ID='$id' LIMIT 1";
     $eliminados_emision = mysqli_query($conexion, $sql);
 
     echo "Existe en eliminados emision<br>";
@@ -61,7 +61,7 @@ if (isset($_GET['variable'])) {
         echo '<script>
         Swal.fire({
             icon: "success",
-            title: "Creando registro de ' . $dato['Nombre'] . '  en Emision y Actualizando en Anime",
+            title: "Creando registro de ' . $dato['Nombre'] . '  en Emision",
             confirmButtonText: "OK"
         }).then(function() {
             window.location = "./";
