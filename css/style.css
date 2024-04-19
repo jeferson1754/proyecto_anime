@@ -47,6 +47,17 @@ div.dataTables_wrapper div.dataTables_filter input {
 
 }
 
+.link {
+    text-decoration: none !important;
+    color: white !important;
+}
+
+.centrar {
+    width: 80%;
+    height: auto;
+    margin: 0 auto auto 10%;
+}
+
 
 @media screen and (max-width: 600px) {
     table {
@@ -71,6 +82,7 @@ div.dataTables_wrapper div.dataTables_filter input {
         background-color: #369681 !important;
         color: white !important;
     }
+
     /*   */
     tbody td {
         display: block;
@@ -83,7 +95,7 @@ div.dataTables_wrapper div.dataTables_filter input {
         display: block;
         text-align: center !important;
     }
- 
+
 
     .op {
         width: 10%;
@@ -108,5 +120,49 @@ div.dataTables_wrapper div.dataTables_filter input {
         margin-bottom: 10px;
     }
 
+}
 
+/* RATING BOX*/
+
+.rating-box {
+    position: relative;
+    background: #fff;
+    padding: 25px 50px 35px;
+    border-radius: 25px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+    max-width: 500px;
+    width: auto;
+    margin: 50px auto auto auto;
+    text-align: center;
+}
+
+
+.rating-box header {
+    font-size: 22px;
+    color: #04151F;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.rating-box .stars {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 50px;
+}
+
+.stars i {
+    color: #e6e6e6;
+    font-size: 35px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.stars i.active {
+    color: #ff9c1a;
+}
+
+.rating-text {
+    font-size: 18px;
+    font-weight: bold;
 }

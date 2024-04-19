@@ -100,6 +100,54 @@
               ?>
             </select>
           </div>
+          <div class="form-group">
+            <div class="rating-box">
+              <header>Calificacion del Anime</header>
+              <div class="stars product-stars">
+                <!-- Estrellas del anime -->
+                <?php
+
+                $sql2 = "SELECT promedio FROM calificaciones WHERE ID_Anime=$iden"; // Ajusta el ID según tu estructura de base de datos
+                //echo $sql;
+                $result2 = $conexion->query($sql2);
+
+                // Obtener y almacenar las calificaciones en el array
+                if ($result2->num_rows > 0) {
+                  // Obtener la primera fila (solo debería haber una fila si estás buscando un ID específico)
+                  $row = $result2->fetch_assoc();
+
+                  $calificacion = $row["promedio"];
+                  $texto = "Promedio:";
+                } else {
+                  $calificacion = "";
+                  $texto = "Sin Calificar Aun";
+                }
+
+
+                // Establecer el número de estrellas activas según la calificación
+                for ($i = 1; $i <= 5; $i++) {
+                  if ($i <= $calificacion) {
+                    echo '<i class="fa-solid fa-star active"></i>';
+                  } else {
+                    echo '<i class="fa-solid fa-star"></i>';
+                  }
+                }
+                ?>
+              </div>
+              <!-- Texto de calificación del anime -->
+
+              <div class="rating-text product-rating"><?php echo $texto ?> <span class="product-rating-value"><?php echo $calificacion ?></span></div>';
+
+            </div>
+            <?php
+            $variable_nombre = urlencode($mostrar["Anime"]); // Asegúrate de codificar el nombre para que sea seguro en una URL
+            ?>
+            <div class=" btn btn-secondary centrar">
+              <a href="editar_stars.php?id=<?php echo $iden; ?>&nombre=<?php echo $variable_nombre; ?>" class="link">
+                Cambiar Calificacion
+              </a>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
