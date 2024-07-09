@@ -27,10 +27,8 @@
 
     <!-- navbar -->
 
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav"> <a class="navbar-brand" href="../Anime 2.0/"
-            target="menu">Lista de Animes</a>
-        <button type="button" class="navbar-toggler bg-dark" data-toggle="collapse" data-target="#nav"> <span
-                class="navbar-toggler-icon"></span> </button>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav"> <a class="navbar-brand" href="../Anime 2.0/" target="menu">Lista de Animes</a>
+        <button type="button" class="navbar-toggler bg-dark" data-toggle="collapse" data-target="#nav"> <span class="navbar-toggler-icon"></span> </button>
 
         <div class="collapse navbar-collapse justify-content-between" id="nav">
 
@@ -46,23 +44,45 @@
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/peliculas/">Peliculas</a> </li>
             </ul>
+
+
+
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Anime/Horarios/">Horario</a> </li>
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Horarios
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/Anime/Horarios/">Horario</a>
+                        <a class="dropdown-item" href="/Anime/Horarios/horarios.php">Horarios</a>
+                    </div>
+                </li>
             </ul>
+
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Anime/Horarios/horarios.php">Horarios</a> </li>
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Op y ED
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="../../Graficos/index.php">Graficos</a>
+                        <a class="dropdown-item" href="/Anime/OP/">OP</a>
+                        <a class="dropdown-item" href="/Anime/ED/">ED</a>
+                    </div>
+                </li>
             </ul>
+
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Anime/OP/">OP</a> </li>
-            </ul>
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Anime/ED/">ED</a> </li>
-            </ul>
-                <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Manga/">Manga</a> </li>
-            </ul>
-                <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"> <a class="nav-link" href="/Series/">Series</a> </li>
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Extras
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/Manga/">Mangas</a>
+                        <a class="dropdown-item" href="/Series/">Series</a>
+                        <a class="dropdown-item" href="../../calculador_anime.html">Calculador de Anime</a>
+                    </div>
+                </li>
             </ul>
         </div>
     </nav>
