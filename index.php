@@ -51,6 +51,17 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
+
+<head>
+    <?php
+    include 'cabecera.php';
+    ?>
+
+    <title>Anime
+    </title>
+</head>
+
 <style>
     .op {
         width: 25% !important;
@@ -67,16 +78,6 @@ if ($mes == "January" || $mes == "February" || $mes == "March") {
         }
     }
 </style>
-
-<head>
-    <?php
-    include 'cabecera.php';
-    ?>
-
-    <title>Anime
-    </title>
-</head>
-
 
 <body>
     <?php

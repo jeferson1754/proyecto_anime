@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-
-<html>
+<html lang="en">
 
 <head>
 
@@ -22,15 +21,15 @@
     <!--This is used for search icon. Instead putting icon manually it is loaded from fontawesome-->
 
 </head>
+<style>
+
+</style>
 
 <body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark"> <a class="navbar-brand" href="/Anime/" target="menu">Lista de Animes</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
 
-    <!-- navbar -->
-
-    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark" id="nav"> <a class="navbar-brand" href="../Anime 2.0/" target="menu">Lista de Animes</a>
-        <button type="button" class="navbar-toggler bg-dark" data-toggle="collapse" data-target="#nav"> <span class="navbar-toggler-icon"></span> </button>
-
-        <div class="collapse navbar-collapse justify-content-between" id="nav">
+        <div class="collapse navbar-collapse" id="navbarCollapse">
 
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/">Animes</a> </li>
@@ -87,10 +86,17 @@
             </ul>
         </div>
     </nav>
-</body>
-<br>
-<br>
-<br>
 
+    <br>
+    <br>
+    <br>
+
+    <script src="./js/jquery-1.12.4-jquery.min.js"></script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
 
 </html>
