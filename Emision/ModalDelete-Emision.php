@@ -41,10 +41,25 @@
             <?php echo $mostrar['Totales']; ?>
           </h2>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Borrar</button>
+        <div class="modal-footer" style="display: flex; flex-direction: column; align-items: center;">
+          <div>
+            <button type="submit" name="Calificar_Ahora" class="btn btn-primary" style="font-size: 18px;">
+              <i class="fa-solid fa-star"></i> Borrar y Calificar Anime Ahora
+            </button>
+          </div>
+          <div style="margin-top: 10px;">
+            <button type="submit" name="Calificar_Luego" class="btn btn-warning" style="font-size: 18px;">
+              <i class="fa-solid fa-clock"></i> Borrar y Calificar Anime Luego
+            </button>
+          </div>
+          <div style="margin-top: 10px;">
+            <button type="submit" class="btn btn-danger" style="font-size: 18px;">
+              <i class="fa-solid fa-trash"></i> Borrar y No Calificar
+            </button>
+          </div>
         </div>
+
+
       </form>
 
     </div>

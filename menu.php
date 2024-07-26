@@ -80,7 +80,7 @@
                         <a class="dropdown-item" href="/Manga/">Mangas</a>
                         <a class="dropdown-item" href="/Series/">Series</a>
                         <a class="dropdown-item" href="/Buscador/anime.php">Buscador de Anime</a>
-                        <a class="dropdown-item" href="../../calculador_anime.html">Calculador de Anime</a>
+                        <a class="dropdown-item" href="../../calculador_anime.php">Calculador de Anime</a>
                     </div>
                 </li>
             </ul>

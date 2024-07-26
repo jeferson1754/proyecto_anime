@@ -8,10 +8,11 @@ include '../bd.php';
 
 $fecha_actual = date('Y-m-d');
 
-$idRegistros = $_REQUEST['id'];
+$idRegistros    = $_REQUEST['id'];
 $nombre         = $_REQUEST['nombre'];
 $accion         = $_REQUEST['accion'];
-$link         = $_REQUEST['link'];
+$link           = $_REQUEST['link'];
+
 
 
 
@@ -118,19 +119,46 @@ try {
 
 
 
-echo '<script>
-Swal.fire({
-    icon: "success",
-    title: "Actualizando Estado de ' . $nombre . '  a Finalizado",
-    confirmButtonText: "OK"
-}).then(function() {
-    window.location = "' . $link . '";
-});
-</script>';
+
+
+if (isset($_POST['Calificar_Ahora'])) {
+    echo "Calificar Ahora";
+    header("location:../editar_stars.php?id=$idRegistros&nombre=$nombre");
+} else if (isset($_POST['Calificar_Luego'])) {
+
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "INSERT INTO `calificaciones` (`ID_Anime`) VALUES ('$idRegistros')";
+        $conn->exec($sql);
+        echo $sql . "<br>";
+        $conn = null;
+    } catch (PDOException $e) {
+        $conn = null;
+    }
+
+    echo '<script>
+    Swal.fire({
+        icon: "success",
+        title: "Actualizando Estado de ' . $nombre . '  a Finalizado y Creando Calificacion en Pendiente",
+        confirmButtonText: "OK"
+    }).then(function() {
+        window.location = "' . $link . '";
+    });
+    </script>';
+} else {
+    echo '<script>
+    Swal.fire({
+        icon: "success",
+        title: "Actualizando Estado de ' . $nombre . '  a Finalizado",
+        confirmButtonText: "OK"
+    }).then(function() {
+        window.location = "' . $link . '";
+    });
+    </script>';
+}
 
 
 
-
-
-//header("location:index.php");
+//
 ?>
