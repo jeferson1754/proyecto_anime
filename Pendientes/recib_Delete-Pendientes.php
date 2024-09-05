@@ -8,6 +8,7 @@ include '../bd.php';
 $idRegistros = $_REQUEST['id'];
 $nombre = $_REQUEST['nombre'];
 $link    = $_REQUEST['link'];
+$tipo   = $_REQUEST['tipo'];
 
 $sql = ("SELECT * FROM `anime` where id_Pendientes='$idRegistros';");
 
@@ -20,6 +21,8 @@ $peli = mysqli_query($conexion, $sql1);
 
 echo $sql;
 echo "<br>";
+
+
 
 if (mysqli_num_rows($anime) == 0) {
 
@@ -133,6 +136,84 @@ if (mysqli_num_rows($anime) == 0) {
     </script>';
 }
 
+// Determinar el siguiente tipo
+switch ($tipo) {
+    case "Anime":
+        $siguiente = "Ova y Otros";
+        break;
+    case "Ova y Otros":
+        $siguiente = "Pelicula";
+        break;
+    default:
+        $siguiente = "Anime";
+        break;
+}
+
+// Preparar la consulta
+$sql2 = "SELECT COUNT(*) as cantidad, ID_Pendientes 
+         FROM pendientes 
+         WHERE tipo = ? 
+         GROUP BY Pendientes 
+         ORDER BY Pendientes ASC 
+         LIMIT 1";
+
+// Ejecutar la consulta
+$stmt = $conexion->prepare($sql2);
+$stmt->bind_param("s", $siguiente);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Obtener resultados
+$cantidad = 0;
+$id_Pendiente = null;
+
+if ($mostrar = $result->fetch_assoc()) {
+    $cantidad = $mostrar['cantidad'];
+    $id_Pendiente = $mostrar['ID_Pendientes'];
+}
+
+echo $cantidad . "<br>" . $id_Pendiente;
+
+// Si no hay registros, buscar en el siguiente tipo
+if ($cantidad == 0) {
+    switch ($siguiente) {
+        case "Anime":
+            $next = "Ova y Otros";
+            break;
+        case "Ova y Otros":
+            $next = "Pelicula";
+            break;
+        default:
+            $next = "Anime";
+            break;
+    }
+
+    // Repetir la consulta para el siguiente tipo
+    $stmt->bind_param("s", $next);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($mostrar = $result->fetch_assoc()) {
+        $id_Pendiente = $mostrar['ID_Pendientes'];
+    }
+}
+
+echo $id_Pendiente . "<br>";
+
+try {
+    // Conexión con PDO para la actualización
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    // Preparar consulta de actualización
+    $sql = "UPDATE pendientes SET Viendo = 'SI' WHERE ID_Pendientes = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$id_Pendiente]);
+
+    echo $sql . "<br>";
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 
 
 

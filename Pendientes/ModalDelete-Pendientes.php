@@ -23,6 +23,7 @@
         ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="tipo" value="<?php echo $mostrar['Tipo']; ?>">
 
         <div class="modal-body div1" id="cont_modal">
 

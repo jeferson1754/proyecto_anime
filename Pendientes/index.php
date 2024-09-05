@@ -16,6 +16,7 @@ require '../bd.php';
     <!-- CSS de DataTables -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
 
     <title>Pendientes
     </title>
@@ -146,7 +147,18 @@ require '../bd.php';
 
                 <tr>
                     <td class="max"><a href="<?php echo $mostrar['Link'] ?>" title="<?php echo $mostrar['Estado_Link'] ?>" class="enlace" target="_blank"><?php echo $mostrar['Nombre'] ?></a></td>
-                    <td><?php echo $mostrar['Tipo'] ?></td>
+                    <td>
+                        <?php
+                        // Mostrar el tipo de anime
+                        echo htmlspecialchars($mostrar['Tipo']);
+
+                        // Verificar si el anime está siendo visto y agregar el icono
+                        if ($mostrar['Viendo'] == "SI") {
+                            echo " - <i class='fa-solid fa-star' style='color: #FFD43B;' title='En progreso'></i>";
+                        }
+                        ?>
+                    </td>
+
                     <td><?php echo $mostrar['Vistos'] ?></td>
                     <td><?php echo $mostrar['Total'] ?></td>
                     <td><?php echo $mostrar['Pendientes'] ?></td>
