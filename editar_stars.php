@@ -42,7 +42,7 @@ $titulos = array("Historia", "Musica", "Animacion", "Desarrollo", "Final");
 
 
     // Consulta SQL para obtener las calificaciones desde la base de datos
-    $sql = "SELECT Calificacion_1, Calificacion_2, Calificacion_3, Calificacion_4, Calificacion_5 FROM `calificaciones` WHERE ID_Anime=$id_anime"; // Ajusta el ID según tu estructura de base de datos
+    $sql = "SELECT Calificacion_1, Calificacion_2, Calificacion_3, Calificacion_4, Calificacion_5, Link_Imagen FROM `calificaciones` WHERE ID_Anime=$id_anime"; // Ajusta el ID según tu estructura de base de datos
     //echo $sql;
     $result = $conexion->query($sql);
 
@@ -50,7 +50,7 @@ $titulos = array("Historia", "Musica", "Animacion", "Desarrollo", "Final");
     if ($result->num_rows > 0) {
         // Obtener la primera fila (solo debería haber una fila si estás buscando un ID específico)
         $row = $result->fetch_assoc();
-
+        echo '<img class="imagen" src='.$row["Link_Imagen"].'>';
         // Iterar sobre las columnas y agregar las calificaciones al array
         for ($i = 1; $i <= 5; $i++) {
             $column_name = "Calificacion_" . $i;
@@ -69,6 +69,7 @@ $titulos = array("Historia", "Musica", "Animacion", "Desarrollo", "Final");
     for ($i = 0; $i < count($calificaciones); $i++) {
         echo '
         <div class="rating-box">
+
             <header>' . $titulos[$i] . '</header>
             <div class="stars rating-stars-' . $i . '"></div>
             <div class="rating-text rating-value-' . $i . '"><span class="product-rating-value">' . $calificaciones[$i] . '</span></div>

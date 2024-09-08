@@ -44,7 +44,17 @@
                 <li class="nav-item active"> <a class="nav-link" href="/Anime/peliculas/">Peliculas</a> </li>
             </ul>
 
-
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Calificaciones
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="/Anime/Calificaciones/calificaciones.php">Calificaciones</a>
+                        <a class="dropdown-item" href="/Anime/Calificaciones/">Editar Calif.</a>
+                    </div>
+                </li>
+            </ul>
 
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active dropdown">
