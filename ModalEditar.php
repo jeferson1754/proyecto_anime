@@ -12,7 +12,7 @@
 
 
       <!--<form method="POST" action="recib_Update.php">-->
-      <form method="POST" action="recib_Update copy.php">
+      <form method="POST" action="recib_Update.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['id']; ?>">
         <input type="hidden" name="emision" value="<?php echo $mostrar['id_Emision']; ?>">
         <input type="hidden" name="pendientes" value="<?php echo $mostrar['id_Pendientes']; ?>">

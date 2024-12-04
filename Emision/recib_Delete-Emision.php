@@ -21,12 +21,14 @@ echo $sql . "<br>";
 
 $consulta      = mysqli_query($conexion, $sql);
 
-$sql = ("SELECT * FROM emision WHERE ID_Emision='$idRegistros';");
-echo $sql . "<br>";
+$sql2 = ("SELECT * FROM anime WHERE id_Emision='$idRegistros';");
+echo $sql2 . "<br>";
 
-$consulta      = mysqli_query($conexion, $sql);
+$consulta2      = mysqli_query($conexion, $sql2);
 
-
+while ($mostrar = mysqli_fetch_array($consulta2)) {
+    $id_anime = $mostrar['id'];
+}
 
 //Saca la ultima fecha registrada
 while ($mostrar = mysqli_fetch_array($consulta)) {
@@ -123,13 +125,13 @@ try {
 
 if (isset($_POST['Calificar_Ahora'])) {
     echo "Calificar Ahora";
-    header("location:../editar_stars.php?id=$idRegistros&nombre=$nombre");
+    header("location:../editar_stars.php?id=$id_anime&nombre=$nombre");
 } else if (isset($_POST['Calificar_Luego'])) {
 
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO `calificaciones` (`ID_Anime`) VALUES ('$idRegistros')";
+        $sql = "INSERT INTO `calificaciones` (`ID_Anime`) VALUES ('$id_anime')";
         $conn->exec($sql);
         echo $sql . "<br>";
         $conn = null;

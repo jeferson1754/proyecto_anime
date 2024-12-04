@@ -36,7 +36,16 @@
 
             <div class="rating-box">
                 <img class="imagen" src="<?php echo $fila["Link_Imagen"] ?>">
-                <header><?php echo $fila["Anime"] ?></header>
+                <header>
+                    <?php
+                    if (strlen($fila["Anime"]) > 40) {
+                        echo substr($fila["Anime"], 0, 40) . "...";
+                    } else {
+                        echo $fila["Anime"];
+                    }
+                    ?>
+                </header>
+
                 <div class="stars product-stars">
                     <!-- Estrellas del anime -->
                     <?php

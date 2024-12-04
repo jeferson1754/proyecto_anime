@@ -1,8 +1,8 @@
-<!---->
+<!--
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
-
+-->
 <?php
 include '../bd.php';
 $idRegistros    = $_POST['id'];
@@ -34,21 +34,21 @@ echo $sql3 . "<br>";
 
 
 while ($fila = mysqli_fetch_assoc($anime)) {
-    $temp = $fila["Id_Temporada"];
+    $temps = $fila["Id_Temporada"];
     $fecha = $fila["Ano"];
 }
 
-if ($temp == 1) {
-    $tempo = "Invierno";
-} else if ($temp == 2) {
-    $tempo = "Primavera";
-} else if ($temp == 3) {
-    $tempo = "Verano";
-} else if ($temp == 4) {
-    $tempo = "Otoño";
-} else if ($temp == 5) {
-    $tempo = "Desconocida";
-}
+// Mapeo de valores de temporada
+$temporadas = [
+    1 => "Invierno",
+    2 => "Primavera",
+    3 => "Verano",
+    4 => "Otoño",
+    5 => "Desconocida"
+];
+
+// Obtener el nombre de la temporada
+$tempo = isset($temporadas[$temps]) ? $temporadas[$temps] : "Desconocida";
 
 
 echo $sql;
@@ -75,74 +75,11 @@ while ($valores = mysqli_fetch_array($ending)) {
     $ed1 = $valores[0];
 }
 
-$mixes = $conexion->query("SELECT * FROM mix WHERE ID = (SELECT MAX(ID) FROM mix);");
 
-while ($valores = mysqli_fetch_array($mixes)) {
-    $mix = $valores[0];
-}
 
-$mix_ed = $conexion->query("SELECT * FROM mix_ed WHERE ID = (SELECT MAX(ID) FROM mix_ed);");
+include('../pruebas.php');
 
-while ($valores = mysqli_fetch_array($mix_ed)) {
-    $mix2 = $valores[0];
-}
 
-echo "<br>OP-";
-echo $op;
-echo "<br>OP1-";
-echo $op1;
-echo "<br>ED-";
-echo $ed;
-echo "<br>ED1-";
-echo $ed1;
-echo "<br>";
-echo $mix;
-echo "<br>";
-echo $mix2;
-echo "<br>";
-
-if ($op > $op1) {
-    echo "OP Mayor a Resultado";
-    echo "<br>";
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO  op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`) 
-        VALUES('" . $nombre . "', '" . $IdAnime . "','" . $op . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "',NOW())";
-        $conn->exec($sql);
-        echo $sql;
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
-    }
-} else {
-
-    echo "Iguales";
-    echo "<br>";
-}
-
-if ($ed > $ed1) {
-    echo "ED Mayor a Resultado";
-    echo "<br>";
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO  ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`) 
-        VALUES('" . $nombre . "', '" . $IdAnime . "','" . $ed . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "',NOW())";
-        $conn->exec($sql);
-        echo $sql;
-        $conn = null;
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
-    }
-} else {
-
-    echo "Iguales";
-    echo "<br>";
-}
-echo "<br>";
 
 if (mysqli_num_rows($horario) == 0) {
     try {
