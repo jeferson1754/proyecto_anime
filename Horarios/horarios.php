@@ -1,295 +1,331 @@
 <?php
-
 require '../bd.php';
 
 setlocale(LC_ALL, "es_ES");
-$año = date("Y");
-$mes = date("F");
-$day = date("D");
 
-if ($mes == "January" || $mes == "February" || $mes == "March") {
-    $tempo = "Invierno";
-    $img = "../img/winter.png";
-} else if ($mes == "April" || $mes == "May" || $mes == "June") {
-    $tempo = "Primavera";
-    $img = "../img/spring.png";
-} else if ($mes == "July" || $mes == "August" || $mes == "September") {
-    $tempo = "Verano";
-    $img = "../img/sun.png";
-} else if ($mes == "October" || $mes == "November" || $mes == "December") {
-    $tempo = "Otoño";
-    $img = "../img/autumn.png";
+$año_actual = date("Y");
+
+/* ESTO DA EL DIA ACTUAL EN ESPAÑOL PARA EL MODAL */
+$sql1 = "SELECT WEEKDAY(DATE_SUB(NOW(), INTERVAL 5 HOUR)) AS DiaSemana";
+$date = mysqli_query($conexion, $sql1);
+
+if ($rows = mysqli_fetch_array($date)) {
+    $dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    $day = $dias[$rows['DiaSemana']];
+    //echo $diaActual;
 }
 
-/* ESTO DA EL DIA ACTUAL EN ESPAÑOL PARA EL MODAL*/
-$sql1 = ("SELECT CONCAT( CASE WEEKDAY(DATE_SUB(NOW(), INTERVAL 5 HOUR)) WHEN 0 THEN 'Lunes' WHEN 1 THEN 'Martes' WHEN 2 THEN 'Miercoles' WHEN 3 THEN 'Jueves' WHEN 4 THEN 'Viernes' WHEN 5 THEN 'Sabado' WHEN 6 THEN 'Domingo' END ) AS DiaActual;");
-$date      = mysqli_query($conexion, $sql1);
-
-while ($rows = mysqli_fetch_array($date)) {
-
-    $day = $rows[0];
-    //echo $day;
+// Función para obtener la imagen según la temporada
+function obtenerImagenPorTemporada($temporada)
+{
+    $imagenes = [
+        "Invierno" => "../img/winter.png",
+        "Primavera" => "../img/spring.png",
+        "Verano" => "../img/sun.png",
+        "Otoño" => "../img/autumn.png"
+    ];
+    return $imagenes[$temporada] ?? null; // Devuelve la imagen correspondiente o null si no se encuentra
 }
-/* */
 
-$num = "SELECT * FROM `num_horario` where Temporada='$tempo' and Ano='$año'";
-$result2     = mysqli_query($conexion, $num);
+if (isset($_GET['filtrar']) && isset($_GET['anis'])) {
+    $estado = $_GET['anis'];
+    $sql1 = "SELECT * FROM num_horario WHERE Num='$estado'";
+    $result = mysqli_query($conexion, $sql1);
+    $row = mysqli_fetch_assoc($result);
 
-while ($mostrar = mysqli_fetch_array($result2)) {
+    // Asignación de variables a partir de la consulta
+    $año = $row['Ano'];
+    $tempo = $row['Temporada'];
+    $img = obtenerImagenPorTemporada($tempo);
+} else {
+    // Asignación automática basada en el mes actual
+    $mes = date("F");
+    $año = date("Y");
 
-    $number = $mostrar['Num'];
+    // Mapear meses a temporadas
+    $temporadas = [
+        ["Invierno", ["January", "February", "March"]],
+        ["Primavera", ["April", "May", "June"]],
+        ["Verano", ["July", "August", "September"]],
+        ["Otoño", ["October", "November", "December"]]
+    ];
+
+    // Buscar temporada correspondiente al mes
+    foreach ($temporadas as $temporada) {
+        if (in_array($mes, $temporada[1])) {
+            $tempo = $temporada[0];
+            $img = obtenerImagenPorTemporada($tempo);
+            break;
+        }
+    }
 }
+
+
+
+
+
+
+
+// Get schedule number
+$num_query = "SELECT * FROM `num_horario` WHERE Temporada='$tempo' AND Ano='$año'";
+$num_result = mysqli_query($conexion, $num_query);
+$num_row = mysqli_fetch_assoc($num_result);
+$number = $num_row['Num'];
+
+// Days of the week
+$dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo', 'Indefinido'];
+
+// Colors for each day
+$day_colors = [
+    'Lunes' => 'blue',
+    'Martes' => 'green',
+    'Miercoles' => 'yellow',
+    'Jueves' => 'red',
+    'Viernes' => 'pink',
+    'Sabado' => 'purple',
+    'Domingo' => 'blue',
+    'Indefinido' => 'gray'
+];
+
+// Prepare results for each day
+$daily_results = [];
+$total_hours = '00:00:00';
+$total_anime = 0;
+
+// Filtrar los horarios y animes según la temporada seleccionada
+if (isset($_GET['filtrar']) && isset($_GET['anis'])) {
+    $estado = $_GET['anis'];
+
+    foreach ($dias as $dia) {
+        // Fetch anime for the day
+        $anime_query = "SELECT Nombre, Duracion FROM horario where dia='$dia' AND num_horario='$estado' ORDER BY LENGTH(Nombre) DESC";
+        $anime_result = mysqli_query($conexion, $anime_query);
+
+        // Fetch total hours for the day
+        $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM horario where dia='$dia' AND num_horario='$estado'";
+        $hours_result = mysqli_query($conexion, $hours_query);
+        $hours_row = mysqli_fetch_assoc($hours_result);
+
+        $daily_results[$dia] = [
+            'animes' => mysqli_fetch_all($anime_result, MYSQLI_ASSOC),
+            'hours' => $hours_row['hours'] ?: '00:00:00'
+        ];
+    }
+
+    // Total weekly hours and anime count
+    $total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM horario where num_horario='$estado' AND Dia!='Indefinido'";
+    $total_hours_result = mysqli_query($conexion, $total_hours_query);
+    $total_hours_row = mysqli_fetch_assoc($total_hours_result);
+    $total_hours = $total_hours_row['hours'];
+
+    $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM horario where num_horario='$estado' AND Dia!='Indefinido'";
+    $total_anime_result = mysqli_query($conexion, $total_anime_query);
+    $total_anime_row = mysqli_fetch_assoc($total_anime_result);
+    $total_anime = $total_anime_row['Total_Registros'];
+} else {
+
+    foreach ($dias as $dia) {
+        // Fetch anime for the day
+        $anime_query = "SELECT Nombre, Duracion FROM emision WHERE Dia='$dia' AND Emision='Emision' ORDER BY LENGTH(Nombre) DESC";
+        $anime_result = mysqli_query($conexion, $anime_query);
+
+        // Fetch total hours for the day
+        $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='$dia' AND Emision='Emision'";
+        $hours_result = mysqli_query($conexion, $hours_query);
+        $hours_row = mysqli_fetch_assoc($hours_result);
+
+        $daily_results[$dia] = [
+            'animes' => mysqli_fetch_all($anime_result, MYSQLI_ASSOC),
+            'hours' => $hours_row['hours'] ?: '00:00:00'
+        ];
+    }
+
+    // Total weekly hours and anime count
+    $total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+    $total_hours_result = mysqli_query($conexion, $total_hours_query);
+    $total_hours_row = mysqli_fetch_assoc($total_hours_result);
+    $total_hours = $total_hours_row['hours'];
+
+    $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+    $total_anime_result = mysqli_query($conexion, $total_anime_query);
+    $total_anime_row = mysqli_fetch_assoc($total_anime_result);
+    $total_anime = $total_anime_row['Total_Registros'];
+}
+
+// El resto del código permanece igual
+$anime_result = mysqli_query($conexion, $anime_query);
+
+
+
+
+
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css">
-    <link rel="stylesheet" type="text/css" href="../css/horarios.css?v=<?php echo time(); ?>">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.8.8/semantic.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/dataTables.semanticui.min.css">
-    <link rel="stylesheet" href="//cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <title>Horario Semanal de Anime</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f8;
+            font-family: 'Inter', sans-serif;
+        }
 
-    <title>Horarios</title>
-</head>
+        .day-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
+        .day-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
 
-<body>
-    <?php include('../menu.php'); ?>
-    <div class="col-sm">
-        <!--- Formulario para registrar Cliente --->
-
-        <button type="button" class="btn btn-info " data-toggle="modal" data-target="#NuevoHorario">
-            Nuevo Anime
-        </button>
-        <button type="button" class="btn btn-info " onclick="myFunction()">
-            Filtrar por Temporada
-        </button>
-        <div class="class-control" id="myDIV" style="display:none;">
-            <form action="" method="GET">
-                <select name="anis" class="form-control" style="width:auto;">
-                    <?php
-                    if (isset($_GET['filtrar'])) {
-
-                        if (isset($_GET['anis'])) {
-                            $estado   = $_REQUEST['anis'];
-                            $query = $conexion->query("SELECT * FROM `num_horario` ORDER BY `num_horario`.`Num` DESC;");
-                            while ($valores = mysqli_fetch_array($query)) {
-                                echo '<option value="' . $valores['Num'] . '">' . $valores['Ano'] . '-' . $valores['Temporada'] . '</option>';
-                            }
-                        }
-                    } else {
-                        echo "<option value=''> Seleccione: </option>";
-                        $query = $conexion->query("SELECT * FROM `num_horario` ORDER BY `num_horario`.`Num` DESC;");
-                        while ($valores = mysqli_fetch_array($query)) {
-                            echo '<option value="' . $valores['Num'] . '">' . $valores['Ano'] . '-' . $valores['Temporada'] . '</option>';
-                        }
-                    }
-                    ?>
-                </select>
-
-
-                <button class="btn btn-outline-info" type="submit" name="filtrar"> <b>Filtrar </b> </button>
-                <button class="btn btn-outline-info" type="submit" name="borrar"> <b>Borrar </b> </button>
-
-            </form>
-        </div>
-        <?php include('ModalCrear-Horario.php');  ?>
-    </div>
-    <?php
-
-
-    if (isset($_GET['borrar'])) {
-        $estado   = $number;
-        echo '<h5 class="number" style="text-align:left;margin-left: 5%;">N°:' . $estado . '</h5>';
-        echo '<h1 class="tempo" style="text-align:center">' . $año . '-' . $tempo . '</h1>';
-    } else if (isset($_GET['filtrar'])) {
-        if (isset($_GET['anis'])) {
-            $estado   = $_REQUEST['anis'];
-            $sql1 = $conexion->query("SELECT * from num_horario where Num='$estado';");
-            while ($consulta = mysqli_fetch_array($sql1)) {
-                echo '<h5 class="number" style="text-align:left;margin-left: 5%;">N°:' . $estado . '</h5>';
-                echo '<h1 style="text-align:center">' . $consulta['Ano'] . '-' . $consulta['Temporada'] . '</h1>';
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 98% !important;
             }
         }
-    } else {
-        $estado   = $number;
-        echo '<h5 class="number" style="text-align:left;margin-left: 5%;">N°:' . $estado . '</h5>';
-        echo '<h1 class="tempo" style="text-align:center">' . $año . '-' . $tempo . '</h1>';
-    }
+    </style>
+</head>
+<?php include('../menu.php'); ?>
 
+<body class="bg-gray-100">
 
+    <div class="container mx-auto px-4 py-6">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+                <div class="flex space-x-4">
+                    <button
+                        type="button"
+                        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-300 shadow-md"
+                        data-toggle="modal"
+                        data-target="#NuevoHorario">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Nuevo Anime
+                    </button>
+                    <button
+                        type="button"
+                        class="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 shadow-md"
+                        onclick="myFunction()">
+                        <i class="fas fa-filter mr-2"></i>
+                        Filtrar por Temporada
+                    </button>
+                </div>
+            </div>
 
-    ?>
+            <div
+                id="myDIV"
+                class="transition-all duration-300 ease-in-out transform origin-top"
+                style="display:none;">
+                <form action="" method="GET" class="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+                        <select
+                            name="anis"
+                            class="w-full md:w-auto flex-grow px-4 py-2 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                            <?php
+                            // Obtener los valores de la base de datos y mostrar las opciones
+                            $query = $conexion->query("SELECT * FROM `num_horario` ORDER BY `num_horario`.`Num` DESC;");
+                            while ($valores = mysqli_fetch_array($query)) {
+                                // Verificar si el valor actual es el que ha sido seleccionado
+                                $selected = (isset($_GET['anis']) && $_GET['anis'] == $valores['Num']) ? 'selected' : '';
+                                echo '<option value="' . $valores['Num'] . '" ' . $selected . '>' . $valores['Num'] . '/' . $valores['Ano'] . '-' . $valores['Temporada'] . '</option>';
+                            }
+                            ?>
+                        </select>
 
+                        <div class="flex space-x-4">
+                            <button
+                                type="submit"
+                                name="filtrar"
+                                class="px-6 py-2 border-2 border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition duration-300 font-semibold">
+                                Filtrar
+                            </button>
+                            <button
+                                type="submit"
+                                name="borrar"
+                                class="px-6 py-2 border-2 border-red-500 text-red-500 rounded-md hover:bg-red-50 transition duration-300 font-semibold">
+                                Borrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <?php include('ModalCrear-Horario.php'); ?>
+        </div>
     </div>
 
-    <div class="main-container">
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Dias</th>
-                    <th>Anime</th>
-                </tr>
-            </thead>
-            <?php
+    <div class="container mx-auto">
+        <header class="text-center mb-10">
+            <div class="flex justify-center items-center mb-4">
+                <img src="<?php echo $img; ?>" alt="Ícono de Temporada" class="w-12 mr-4">
+                <h1 class="text-4xl font-bold text-gray-800">Horario de Anime <?php echo $año; ?></h1>
+            </div>
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white py-2 rounded-lg shadow-md">
+                <p class="text-xl font-semibold">Programación Semanal de Anime | Edición #<?php echo $number; ?></p>
+            </div>
+        </header>
 
-            $existe = "SELECT COUNT(ID) FROM horario where num_horario='$estado';";
-            $result     = mysqli_query($conexion, $existe);
-            //echo $existe . "<br>";
+        <div class="grid md:grid-cols-7 gap-6">
+            <!-- Días de la Semana -->
+            <div class="md:col-span-7 grid grid-cols-7 gap-2 mb-6">
+                <?php foreach (['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] as $dia_corto): ?>
+                    <div class="text-center font-bold text-gray-600"><?php echo $dia_corto; ?></div>
+                <?php endforeach; ?>
+            </div>
 
-            while ($mostrar = mysqli_fetch_array($result)) {
-
-                $final = $mostrar['0'];
-            }
-            //echo $final;
-
-            // Días de la semana
-            $dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo', 'Indefinido'];
-
-            // Inicializar el array para almacenar los resultados
-            $resultados = [];
-
-            // Consultas y resultados
-            foreach ($dias as $dia) {
-                $consulta = "SELECT Nombre,Dia FROM horario where dia='$dia' AND num_horario='$estado' ORDER BY LENGTH(Nombre) DESC";
-                $resultado = mysqli_query($conexion, $consulta);
-
-                // Verificar si hay resultados
-                if ($resultado) {
-                    // Guardar los resultados en el array
-                    $resultados[$dia] = $resultado;
-                } else {
-                    // Manejar errores si es necesario
-                    echo "Error en la consulta para $dia";
-                }
-            }
-
-            //$name8 = "SELECT * from horario where Dia='Indefinido' AND num_horario='$estado' OR  Dia='' AND num_horario='$estado' ORDER BY LENGTH(Nombre) DESC;";
-
-            // Array para almacenar los resultados
-            $resultados2 = [];
-
-            // Consultas y resultados
-            foreach ($dias as $dia) {
-                $consulta = "SELECT COUNT(dia) as conteo,Dia FROM horario where dia='$dia' AND num_horario='$estado';";
-                $resultado = mysqli_query($conexion, $consulta);
-
-                // Verificar si hay resultados
-                if ($resultado) {
-                    // Guardar los resultados en el array
-                    $resultados2[$dia] = $resultado;
-                } else {
-                    // Manejar errores si es necesario
-                    echo "Error en la consulta para $dia";
-                }
-            }
-
-            // Array para almacenar los resultados
-            $resultados3 = [];
-
-            // Consultas y resultados
-            foreach ($dias as $dia) {
-                $consulta = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM horario WHERE Dia='$dia' AND num_horario='$estado';";
-                $resultado = mysqli_query($conexion, $consulta);
-
-                // Verificar si hay resultados
-                if ($resultado) {
-                    // Guardar los resultados en el array
-                    $resultados3[$dia] = $resultado;
-                } else {
-                    // Manejar errores si es necesario
-                    echo "Error en la consulta para $dia";
-                }
-            }
-
-            $consulta = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM horario WHERE Dia!='Indefinido' AND num_horario='$estado';";
-            $resultado = mysqli_query($conexion, $consulta);
-
-            // Verificar si hay resultados
-            if ($resultado) {
-                // Obtener el resultado directamente
-                $fila = mysqli_fetch_assoc($resultado);
-
-                // Asignar el valor a la variable
-                $total_tiempo = $fila['hours'];
-
-                // Liberar memoria del resultado
-                mysqli_free_result($resultado);
-            } else {
-                // Manejar errores si es necesario
-                echo "Error en la consulta";
-            }
-
-            $consulta = "SELECT COUNT(*) AS Total_Registros FROM horario WHERE num_horario='$estado';";
-            $resultado = mysqli_query($conexion, $consulta);
-
-            // Verificar si hay resultados
-            if ($resultado) {
-                // Obtener el resultado directamente
-                $fila = mysqli_fetch_assoc($resultado);
-
-                // Asignar el valor a la variable
-                $total_anime = $fila['Total_Registros'];
-
-                // Liberar memoria del resultado
-                mysqli_free_result($resultado);
-            } else {
-                // Manejar errores si es necesario
-                echo "Error en la consulta";
-            }
-
-
-            foreach ($dias as $dia) {
-                $resultadosDia = mysqli_fetch_all($resultados[$dia], MYSQLI_ASSOC);
-                $resultadosDia2 = mysqli_fetch_all($resultados2[$dia], MYSQLI_ASSOC);
-                $resultadosDia3 = mysqli_fetch_all($resultados3[$dia], MYSQLI_ASSOC);
-
-                // Verificar si hay resultados
-                if (!empty($resultadosDia) && !empty($resultadosDia2) && !empty($resultadosDia3)) {
-                    // Iterar sobre los resultados
-                    foreach ($resultadosDia2 as $mostrar2) {
+            <!-- Tarjetas de Horarios por Día -->
+            <?php foreach ($dias as $dia):
+                $color = $day_colors[$dia];
+                $animes = $daily_results[$dia]['animes'];
+                $hours = $daily_results[$dia]['hours'];
             ?>
-                        <tr>
-                            <td rowspan="<?php echo $mostrar2['conteo'] ?>" class="auto-style3 <?php echo $dia ?>">
+                <div class="day-card bg-white rounded-lg shadow-md p-4 transform transition hover:scale-105">
+                    <h2 class="text-2xl font-bold text-<?php echo $color; ?>-600 mb-4 flex justify-between">
+                        <?php echo $dia; ?>
+                        <span class="text-sm text-gray-500"><?php echo $hours; ?></span>
+                    </h2>
+                    <ul class="space-y-2">
+                        <?php foreach ($animes as $anime): ?>
+                            <li class="bg-<?php echo $color; ?>-100 p-2 rounded hover:bg-<?php echo $color; ?>-200 transition">
+                                <?php echo htmlspecialchars($anime['Nombre']); ?>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            <?php endforeach; ?>
+        </div>
 
-                                <div class="auto-style8"><?php echo $mostrar2['Dia']   ?>
-                                    <?php
-                                    foreach ($resultadosDia3 as $mostrar3) {
-                                    ?>
+        <div class="mt-10 text-center bg-white rounded-lg shadow-md p-6">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-700">
+                        <i class="fas fa-clock mr-2 text-blue-500"></i>Total de Horas Semanales
+                    </h3>
+                    <p class="text-3xl font-bold text-green-600"><?php echo $total_hours; ?></p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-700">
+                        <i class="fas fa-film mr-2 text-purple-500"></i>Total de Animes en la Semana
+                    </h3>
+                    <p class="text-3xl font-bold text-indigo-600"><?php echo $total_anime; ?></p>
+                </div>
+            </div>
+        </div>
 
-                                        <div class="auto-style4"> <?php echo $mostrar3['hours'] ?></div>
-                                    <?php
-                                    }
-                                    ?>
-                                </div>
-                            </td>
-                        <?php
-                    }
-
-                    // Iterar sobre los resultados
-                    foreach ($resultadosDia as $mostrar) {
-                        ?>
-                            <td><?php echo $mostrar['Nombre'] ?></td>
-                        </tr>
-            <?php
-                    }
-                }
-            } ?>
-        </table>
+        <footer class="mt-10 text-center text-gray-500">
+            <p>© <?php echo $año_actual; ?> Seguimiento de Horario de Anime</p>
+        </footer>
     </div>
-    <div style="text-align: center;">
-        <h2 class="auto-style14">Horas Total Semana: <?php echo $total_tiempo ?> -</h2>
-        <h2 class="auto-style14">Total Animes Semana : <?php echo $total_anime ?> </h2>
-    </div>
-    <br>
-    <br>
 
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
         function myFunction() {
             var x = document.getElementById("myDIV");
@@ -303,3 +339,7 @@ while ($mostrar = mysqli_fetch_array($result2)) {
 </body>
 
 </html>
+<?php
+// Close database connection
+mysqli_close($conexion);
+?>
