@@ -66,7 +66,7 @@ if ($count >= 1 && $num_queries_last_day < $max_queries_per_day) {
     $query = "INSERT INTO actualizaciones_anime (Fecha) VALUES ('$current_time')";
     mysqli_query($conexion, $query);
 
-    $sql = "UPDATE `emision` SET `Faltantes` = `Faltantes` + 1 WHERE `Dia`= '$day' AND Emision='Emision'";
+    $sql = "UPDATE `emision` SET `Faltantes` = `Faltantes` + 1 WHERE `Dia`= '$day' AND Emision='Emision' AND Faltantes != Totales";
     mysqli_query($conexion, $sql);
 }
 
