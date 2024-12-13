@@ -1,12 +1,13 @@
-<!--
+<!---->
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
--->
+
 <?php
 include '../bd.php';
 $idRegistros    = $_POST['id'];
 $caps           = $_POST['caps'];
+$faltantes      = $_POST['faltantes'];
 $total          = $_POST['total'];
 $dias           = $_POST['dias'];
 $nombre         = $_POST['nombre'];
@@ -184,6 +185,7 @@ if (mysqli_num_rows($anime) == 0) {
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE emision SET 
         Capitulos ='" . $caps . "',
+        Faltantes =" . $caps .  " + " . $faltantes . ",
         Totales ='" . $total . "',
         Emision='" . $estado . "',
         Dia='" . $dias . "',
@@ -230,6 +232,7 @@ if (mysqli_num_rows($anime) == 0) {
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE emision SET 
         Capitulos ='" . $caps . "',
+        Faltantes ='" . $caps . " + " . $faltantes . " ',
         Totales ='" . $total . "',
         Dia='" . $dias . "',
         Emision='" . $estado . "',

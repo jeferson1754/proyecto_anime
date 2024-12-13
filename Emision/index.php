@@ -1,6 +1,8 @@
 <?php
 
 require '../bd.php';
+
+include '../update_emision.php';
 // Establecer la zona horaria para Santiago de Chile.
 date_default_timezone_set('America/Santiago');
 
@@ -9,7 +11,13 @@ $fecha_actual_retrasada = date('Y-m-d H:i:s', strtotime('-5 hours'));
 
 // Array con los nombres de los días en español.
 $nombres_dias = array(
-    'domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'
+    'domingo',
+    'lunes',
+    'martes',
+    'miércoles',
+    'jueves',
+    'viernes',
+    'sábado'
 );
 
 // Obtener el número del día de la semana (0 para domingo, 1 para lunes, etc.).
@@ -130,8 +138,8 @@ $nombre_dia = $nombres_dias[$numero_dia];
                 <thead>
                     <tr>
                         <th>Nombre</th>
-                        <th>Estado</th>
                         <th>N° Capitulos Vistos</th>
+                        <th>N° Capitulos Faltantes</th>
                         <th>N° Capitulos Totales</th>
                         <th>Dia Emision</th>
                         <th>Duracion</th>
@@ -145,12 +153,14 @@ $nombre_dia = $nombres_dias[$numero_dia];
 
                 while ($mostrar = mysqli_fetch_array($result)) {
 
+                    $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos'];
+                    $total_faltantes = $mostrar['Totales'] - $mostrar['Capitulos'];
                 ?>
 
                     <tr>
                         <td><?php echo $mostrar['Nombre'] ?></td>
-                        <td><?php echo $mostrar['Emision'] ?></td>
                         <td><?php echo $mostrar['Capitulos'] ?></td>
+                        <td><?php echo $faltantes ?></td>
                         <td><?php echo $mostrar['Totales'] ?></td>
                         <td><?php echo $mostrar['Dia'] ?></td>
                         <td><?php echo $mostrar['Duracion'] ?></td>

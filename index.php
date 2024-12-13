@@ -1,6 +1,7 @@
 <?php
 
 require 'bd.php';
+include 'update_emision.php';
 //require_once('excel/php-excel-reader/excel_reader2.php');
 //require_once('excel/SpreadsheetReader.php');
 
