@@ -69,7 +69,7 @@
 
           <div class="form-group">
             <label for="recipient-name" class="col-form-label">Capitulos Faltantes:</label>
-            <input type="number" name="faltantes" class="form-control" min="1" max="<?php echo $total_faltantes ?>" value="<?php echo $faltantes ?>" required="true">
+            <input type="number" name="faltantes" class="form-control" min="0" max="<?php echo $total_faltantes ?>" value="<?php echo $faltantes ?>" required="true">
           </div>
 
           <div class="form-group">

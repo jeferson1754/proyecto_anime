@@ -68,7 +68,7 @@ $nombre_dia = $nombres_dias[$numero_dia];
                 <button class="btn btn-outline-info mostrar" type="submit" name="enviar"><b>HOY </b> </button>
                 <button class="btn btn-outline-info mostrar" type="submit" name="borrar"> <b>Borrar </b> </button>
                 <input type="hidden" name="accion" value="HOY">
-
+                <button class="btn btn-outline-info mostrar" type="submit" name="faltantes"><b>Faltantes </b> </button>
                 <button type="button" class="btn btn-info mostrar" onclick="myFunction()">
                     Filtrar
                 </button>
@@ -124,9 +124,11 @@ $nombre_dia = $nombres_dias[$numero_dia];
                 $accion2 = $_REQUEST['accion'];
 
                 $busqueda = $dia;
+            } else if (isset($_GET['faltantes'])) {
 
-                $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
+                $where = "WHERE Faltantes > Capitulos AND Emision='Emision' AND ID_Emision > 1 ORDER BY (Faltantes - Capitulos) ASC;";
             }
+
 
 
             ?>

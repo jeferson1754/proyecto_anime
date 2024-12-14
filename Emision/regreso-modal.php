@@ -11,6 +11,12 @@ if (isset($_GET['enviar'])) //BOTON HOY
    echo "<input type='hidden' name='accion' value='  $accion2 '>";
    $link = "./?dias=$dia&enviar2=&accion=Filtro";
    echo "<input type='hidden' name='link' value='  $link  '>";
+} else if (isset($_GET['faltantes'])) {
+
+   $accion2 = $_REQUEST['accion'];
+   echo "<input type='hidden' name='accion' value='  $accion2 '>";
+   $link = "./?accion=HOY&faltantes=";
+   echo "<input type='hidden' name='link' value='  $link  '>";
 } else //BOTON BORRAR Y DEMAS 
 {
    $accion2 = "nose";
