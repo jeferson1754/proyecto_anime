@@ -124,6 +124,8 @@ $nombre_dia = $nombres_dias[$numero_dia];
                 $accion2 = $_REQUEST['accion'];
 
                 $busqueda = $dia;
+
+                $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
             } else if (isset($_GET['faltantes'])) {
 
                 $where = "WHERE Faltantes > Capitulos AND Emision='Emision' AND ID_Emision > 1 ORDER BY (Faltantes - Capitulos) ASC;";
