@@ -15,7 +15,7 @@ $query = "
 FROM 
     actualizaciones_anime 
 WHERE 
-    Fecha > DATE_SUB(NOW(), INTERVAL 1 DAY);
+    Fecha LIKE '%$Hoy%'
 ;
 ";
 
