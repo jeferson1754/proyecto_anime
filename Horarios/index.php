@@ -71,6 +71,7 @@ $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision WHERE Emis
 $total_anime_result = mysqli_query($conexion, $total_anime_query);
 $total_anime_row = mysqli_fetch_assoc($total_anime_result);
 $total_anime = $total_anime_row['Total_Registros'];
+$total_faltantes = 0;
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -112,6 +113,11 @@ $total_anime = $total_anime_row['Total_Registros'];
             font-weight: bold;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
+
+        .text-orange-600 {
+            --tw-text-opacity: 1;
+            color: rgba(255, 165, 0, var(--tw-text-opacity));
+        }
     </style>
 
 </head>
@@ -145,15 +151,21 @@ $total_anime = $total_anime_row['Total_Registros'];
                             $faltantes = $anime['Faltantes'] - $anime['Capitulos'];
                         ?>
                             <li class="bg-<?php echo $color; ?>-100 p-2 rounded hover:bg-<?php echo $color; ?>-200 transition flex justify-between items-center">
-                                <span><?php echo htmlspecialchars($anime['Nombre']); ?></span>
-                                <?php if ($faltantes > 0): // Mostrar el círculo solo si faltantes > 0 
+                                <!-- Nombre del anime -->
+                                <span class="font-medium text-gray-700"><?php echo htmlspecialchars($anime['Nombre']); ?></span>
+
+                                <!-- Mostrar el círculo solo si faltantes > 0 -->
+                                <?php if ($faltantes > 0):
+                                    $total_faltantes += $faltantes; // Acumular faltantes
                                 ?>
-                                    <div class="circle-count border border-<?php echo $color; ?>-500 bg-<?php echo $color; ?>-100 hover:bg-<?php echo $color; ?>-200 text-<?php echo $color; ?>-600">
+                                    <div
+                                        class="circle-count flex items-center justify-center border border-<?php echo $color; ?>-500 bg-<?php echo $color; ?>-100 hover:bg-<?php echo $color; ?>-200 text-<?php echo $color; ?>-600 font-bold"
+                                        style="width: 24px; height: 24px; border-radius: 50%; font-size: 0.875rem; transition: all 0.3s ease;">
                                         <?php echo htmlspecialchars($faltantes); ?>
                                     </div>
-
                                 <?php endif; ?>
                             </li>
+
                         <?php endforeach; ?>
                     </ul>
                 </div>
@@ -161,7 +173,7 @@ $total_anime = $total_anime_row['Total_Registros'];
         </div>
 
         <div class="mt-10 text-center bg-white rounded-lg shadow-md p-6">
-            <div class="grid md:grid-cols-2 gap-4">
+            <div class="grid md:grid-cols-3 gap-4">
                 <div>
                     <h3 class="text-2xl font-bold text-gray-700">
                         <i class="fas fa-clock mr-2 text-blue-500"></i>Total de Horas Semanales
@@ -173,6 +185,12 @@ $total_anime = $total_anime_row['Total_Registros'];
                         ?>
                     </p>
 
+                </div>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-700">
+                        <i class="fas fa-tasks mr-2 text-orange-600"></i>Capitulos Faltantes
+                    </h3>
+                    <p class="text-3xl font-bold text-orange-600"><?php echo $total_faltantes; ?></p>
                 </div>
                 <div>
                     <h3 class="text-2xl font-bold text-gray-700">
