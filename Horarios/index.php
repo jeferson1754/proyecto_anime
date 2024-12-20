@@ -5,31 +5,31 @@ setlocale(LC_ALL, "es_ES");
 $año = date("Y");
 $mes = date("F");
 
-// Determine season and image
-if ($mes == "January" || $mes == "February" || $mes == "March") {
+// Determinar temporada e imagen
+if (in_array($mes, ["January", "February", "March"])) {
     $tempo = "Invierno";
     $img = "../img/winter.png";
-} else if ($mes == "April" || $mes == "May" || $mes == "June") {
+} elseif (in_array($mes, ["April", "May", "June"])) {
     $tempo = "Primavera";
     $img = "../img/spring.png";
-} else if ($mes == "July" || $mes == "August" || $mes == "September") {
+} elseif (in_array($mes, ["July", "August", "September"])) {
     $tempo = "Verano";
     $img = "../img/sun.png";
-} else if ($mes == "October" || $mes == "November" || $mes == "December") {
+} else {
     $tempo = "Otoño";
     $img = "../img/autumn.png";
 }
 
-// Get schedule number
+// Obtener número de horario
 $num_query = "SELECT * FROM `num_horario` WHERE Temporada='$tempo' AND Ano='$año'";
 $num_result = mysqli_query($conexion, $num_query);
 $num_row = mysqli_fetch_assoc($num_result);
 $number = $num_row['Num'];
 
-// Days of the week
+// Días de la semana
 $dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
 
-// Colors for each day
+// Colores para cada día
 $day_colors = [
     'Lunes' => 'blue',
     'Martes' => 'green',
@@ -40,28 +40,28 @@ $day_colors = [
     'Domingo' => 'blue'
 ];
 
-// Prepare results for each day
+// Preparar resultados para cada día
 $daily_results = [];
 $total_hours = '00:00:00';
 $total_anime = 0;
 
 foreach ($dias as $dia) {
-    // Fetch anime for the day
-    $anime_query = "SELECT Nombre, Duracion FROM emision WHERE Dia='$dia' AND Emision='Emision' ORDER BY LENGTH(Nombre) DESC";
+    // Obtener animes para el día
+    $anime_query = "SELECT Nombre, Duracion, Faltantes,Capitulos FROM emision WHERE Dia='$dia' AND Emision='Emision' ORDER BY LENGTH(Nombre) DESC";
     $anime_result = mysqli_query($conexion, $anime_query);
 
-    // Fetch total hours for the day
+    // Obtener total de horas para el día
     $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='$dia' AND Emision='Emision'";
     $hours_result = mysqli_query($conexion, $hours_query);
     $hours_row = mysqli_fetch_assoc($hours_result);
 
     $daily_results[$dia] = [
         'animes' => mysqli_fetch_all($anime_result, MYSQLI_ASSOC),
-        'hours' => $hours_row['hours'] ?: '00:00:00'
+        'hours' => $hours_row['hours'] ?: '00:00:00',
     ];
 }
 
-// Total weekly hours and anime count
+// Total de horas semanales y animes
 $total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
 $total_hours_result = mysqli_query($conexion, $total_hours_query);
 $total_hours_row = mysqli_fetch_assoc($total_hours_result);
@@ -80,7 +80,6 @@ $total_anime = $total_anime_row['Total_Registros'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Horario Semanal de Anime</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f4f4f8;
@@ -101,12 +100,24 @@ $total_anime = $total_anime_row['Total_Registros'];
                 max-width: 98% !important;
             }
         }
+
+        .circle-count {
+            border-radius: 50%;
+            width: 22px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
     </style>
+
 </head>
 <?php include('../menu.php'); ?>
 
 <body class="bg-gray-100">
-
     <div class="container mx-auto">
         <header class="text-center mb-10">
             <div class="flex justify-center items-center mb-4">
@@ -119,28 +130,29 @@ $total_anime = $total_anime_row['Total_Registros'];
         </header>
 
         <div class="grid md:grid-cols-7 gap-6">
-            <!-- Días de la Semana -->
-            <div class="md:col-span-7 grid grid-cols-7 gap-2 mb-6">
-                <?php foreach (['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] as $dia_corto): ?>
-                    <div class="text-center font-bold text-gray-600"><?php echo $dia_corto; ?></div>
-                <?php endforeach; ?>
-            </div>
-
-            <!-- Tarjetas de Horarios por Día -->
             <?php foreach ($dias as $dia):
                 $color = $day_colors[$dia];
                 $animes = $daily_results[$dia]['animes'];
                 $hours = $daily_results[$dia]['hours'];
             ?>
-                <div class="day-card bg-white rounded-lg shadow-md p-4 transform transition hover:scale-105">
+                <div class="day-card relative bg-white rounded-lg shadow-md p-4 transform transition hover:scale-105">
                     <h2 class="text-2xl font-bold text-<?php echo $color; ?>-600 mb-4 flex justify-between">
                         <?php echo $dia; ?>
                         <span class="text-sm text-gray-500"><?php echo $hours; ?></span>
                     </h2>
                     <ul class="space-y-2">
-                        <?php foreach ($animes as $anime): ?>
-                            <li class="bg-<?php echo $color; ?>-100 p-2 rounded hover:bg-<?php echo $color; ?>-200 transition">
-                                <?php echo htmlspecialchars($anime['Nombre']); ?>
+                        <?php foreach ($animes as $anime):
+                            $faltantes = $anime['Faltantes'] - $anime['Capitulos'];
+                        ?>
+                            <li class="bg-<?php echo $color; ?>-100 p-2 rounded hover:bg-<?php echo $color; ?>-200 transition flex justify-between items-center">
+                                <span><?php echo htmlspecialchars($anime['Nombre']); ?></span>
+                                <?php if ($faltantes > 0): // Mostrar el círculo solo si faltantes > 0 
+                                ?>
+                                    <div class="circle-count border border-<?php echo $color; ?>-500 bg-<?php echo $color; ?>-100 hover:bg-<?php echo $color; ?>-200 text-<?php echo $color; ?>-600">
+                                        <?php echo htmlspecialchars($faltantes); ?>
+                                    </div>
+
+                                <?php endif; ?>
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -154,7 +166,13 @@ $total_anime = $total_anime_row['Total_Registros'];
                     <h3 class="text-2xl font-bold text-gray-700">
                         <i class="fas fa-clock mr-2 text-blue-500"></i>Total de Horas Semanales
                     </h3>
-                    <p class="text-3xl font-bold text-green-600"><?php echo $total_hours; ?></p>
+                    <p class="text-3xl font-bold text-green-600">
+                        <?php
+                        $time_parts = explode(":", $total_hours); // Divide el tiempo en horas, minutos y segundos
+                        echo sprintf("%02d hrs %02d min", $time_parts[0], $time_parts[1]); // Formato deseado
+                        ?>
+                    </p>
+
                 </div>
                 <div>
                     <h3 class="text-2xl font-bold text-gray-700">
@@ -175,6 +193,5 @@ $total_anime = $total_anime_row['Total_Registros'];
 
 </html>
 <?php
-// Close database connection
 mysqli_close($conexion);
 ?>

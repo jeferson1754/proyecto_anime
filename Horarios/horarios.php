@@ -309,7 +309,12 @@ $anime_result = mysqli_query($conexion, $anime_query);
                     <h3 class="text-2xl font-bold text-gray-700">
                         <i class="fas fa-clock mr-2 text-blue-500"></i>Total de Horas Semanales
                     </h3>
-                    <p class="text-3xl font-bold text-green-600"><?php echo $total_hours; ?></p>
+                    <p class="text-3xl font-bold text-green-600">
+                        <?php
+                        $time_parts = explode(":", $total_hours); // Divide el tiempo en horas, minutos y segundos
+                        echo sprintf("%02d hrs %02d min", $time_parts[0], $time_parts[1]); // Formato deseado
+                        ?>
+                    </p>
                 </div>
                 <div>
                     <h3 class="text-2xl font-bold text-gray-700">
