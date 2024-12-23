@@ -1,7 +1,6 @@
 <?php
 
-require 'bd.php';
-include 'update_emision.php';
+require '../bd.php';
 
 setlocale(LC_ALL, "es_ES");
 $año = date("Y");
@@ -58,7 +57,9 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- DataTables -->
     <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
     <style>
         :root {
             --primary-color: #4f46e5;
@@ -186,6 +187,13 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
             padding: 1.5rem;
         }
 
+        .main-container {
+            max-width: 600%;
+            margin: 30px 20px;
+
+        }
+
+
         @media (max-width: 768px) {
             .action-buttons {
                 flex-direction: column;
@@ -220,14 +228,477 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
             color: white !important;
             border: none;
         }
+
+        .modal-content {
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #6b46c1 0%, #4299e1 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: #6b46c1;
+            box-shadow: 0 0 0 2px rgba(107, 70, 193, 0.2);
+        }
+
+        .inline-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .inline-group .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        /*
+
+        .rating-box {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating-box header {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .fa-star {
+            color: #cbd5e0;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+
+        .fa-star.active {
+            color: #ecc94b;
+        }
+
+        */
+
+
+        /* Contenedor principal del rating */
+        .rating-box {
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05),
+                -5px -5px 15px rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .rating-box:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Encabezado del rating */
+        .rating-box header {
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .rating-box header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, #ecc94b, #d69e2e);
+            border-radius: 2px;
+        }
+
+        /* Contenedor de estrellas */
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        /* Estrellas individuales */
+        .fa-star {
+            color: #e2e8f0;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Efectos hover en las estrellas */
+        .fa-star:hover {
+            transform: scale(1.2);
+        }
+
+        .fa-star:hover~.fa-star {
+            transform: scale(0.9);
+            opacity: 0.8;
+        }
+
+        /* Estrellas activas */
+        .fa-star.active {
+            color: #fbbf24;
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.5));
+            animation: starPulse 1s ease-in-out infinite;
+        }
+
+        /* Texto del rating */
+        .rating-text {
+            color: #4a5568;
+            font-weight: 500;
+            margin-top: 1rem;
+        }
+
+        .rating-value {
+            background: linear-gradient(90deg, #fbbf24, #d97706);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-left: 0.5rem;
+        }
+
+        /* Animación de pulso para las estrellas activas */
+        @keyframes starPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Efecto de resplandor al hacer hover en el contenedor */
+        .rating-box:hover .stars {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0.8;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Estilo para el botón de cambiar calificación */
+        .rating-box .btn-secondary {
+            background: linear-gradient(145deg, #718096, #4a5568);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .rating-box .btn-secondary:hover {
+            background: linear-gradient(145deg, #4a5568, #2d3748);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Ajustes responsive */
+        @media (max-width: 768px) {
+            .rating-box {
+                padding: 1.5rem;
+            }
+
+            .fa-star {
+                font-size: 1.75rem;
+            }
+
+            .rating-box header {
+                font-size: 1.1rem;
+            }
+        }
+
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #6b46c1;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: #553c9a;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #718096;
+            border: none;
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        .modal-footer {
+            border-top: 1px solid #e2e8f0;
+            padding: 1.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .modal-dialog {
+                margin: 0.5rem;
+            }
+
+            .inline-group {
+                flex-direction: column;
+            }
+
+            .modal-body {
+                padding: 1.5rem;
+            }
+
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+
+        /* Estilos para el modal de eliminación */
+        .delete-modal .modal-content {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .delete-modal .modal-header {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .delete-modal .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .delete-modal .close {
+            color: white;
+            opacity: 1;
+            text-shadow: none;
+            transition: transform 0.3s ease;
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+        }
+
+        .delete-modal .close:hover {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+
+        .delete-modal .modal-body {
+            padding: 2rem;
+            text-align: center;
+            background: #fff;
+        }
+
+        .delete-modal .anime-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+
+        .delete-modal .anime-details {
+            font-size: 1.25rem;
+            color: #6b7280;
+            margin: 0.5rem 0;
+        }
+
+        .delete-modal .warning-icon {
+            font-size: 4rem;
+            color: #ef4444;
+            margin-bottom: 1.5rem;
+            animation: warningPulse 2s infinite;
+        }
+
+        @keyframes warningPulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .delete-modal .modal-footer {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .delete-modal .btn {
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .delete-modal .btn-cancel {
+            background: #f3f4f6;
+            color: #4b5563;
+            border: 1px solid #e5e7eb;
+        }
+
+        .delete-modal .btn-cancel:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+        }
+
+        .delete-modal .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+        }
+
+        .delete-modal .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Animación de entrada */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .delete-modal .modal-body {
+                padding: 1.5rem;
+            }
+
+            .delete-modal .anime-title {
+                font-size: 1.5rem;
+            }
+
+            .delete-modal .anime-details {
+                font-size: 1rem;
+            }
+
+            .delete-modal .modal-footer {
+                flex-direction: column;
+            }
+
+            .delete-modal .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
+
+
 
 <body>
     <?php
     include 'menu.php';
     ?>
     <div class="main-container">
+
         <!-- Barra de acciones -->
         <div class="action-bar">
             <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
@@ -247,39 +718,67 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                     </button>
                 </div>
             </div>
-
-            <!-- Filtros y búsqueda -->
-            <div class="search-filters" id="filtersContainer" style="display: none;">
-                <div class="flex-grow-1">
-                    <input type="text" class="form-control" placeholder="Buscar anime...">
+            <form action="" method="GET">
+                <div class="search-filters" id="filtersContainer" style="display: none;">
+                    <div class="flex-grow-1">
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Buscar anime..."
+                            name="busqueda_anime"
+                            value="<?= htmlspecialchars($_GET['busqueda_anime'] ?? '', ENT_QUOTES) ?>">
+                    </div>
+                    <select class="form-select" style="max-width: 200px;" name="estado">
+                        <option value="">Estado</option>
+                        <option value="Emision" <?= (isset($_GET['estado']) && $_GET['estado'] === "Emision") ? 'selected' : '' ?>>En Emision</option>
+                        <option value="Finalizado" <?= (isset($_GET['estado']) && $_GET['estado'] === "Finalizado") ? 'selected' : '' ?>>Finalizado</option>
+                        <option value="Pausado" <?= (isset($_GET['estado']) && $_GET['estado'] === "Pausado") ? 'selected' : '' ?>>En Pausado</option>
+                        <option value="Pendiente" <?= (isset($_GET['estado']) && $_GET['estado'] === "Pendiente") ? 'selected' : '' ?>>Pendiente</option>
+                    </select>
+                    <select class="form-select" style="max-width: 200px;" name="temporada">
+                        <option value="">Temporada</option>
+                        <option value="1" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "1") ? 'selected' : '' ?>>Invierno</option>
+                        <option value="2" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "2") ? 'selected' : '' ?>>Primavera</option>
+                        <option value="3" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "3") ? 'selected' : '' ?>>Verano</option>
+                        <option value="4" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "4") ? 'selected' : '' ?>>Otoño</option>
+                        <option value="5" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "5") ? 'selected' : '' ?>>Desconocida</option>
+                    </select>
+                    <button class="btn btn-custom btn-outline-secondary" type="submit" name="buscar">
+                        <b>Buscar</b>
+                    </button>
                 </div>
-                <select class="form-select" style="max-width: 200px;">
-                    <option value="">Estado</option>
-                    <option value="en-emision">En emisión</option>
-                    <option value="finalizado">Finalizado</option>
-                </select>
-                <select class="form-select" style="max-width: 200px;">
-                    <option value="">Temporada</option>
-                    <option value="invierno">Invierno</option>
-                    <option value="primavera">Primavera</option>
-                    <option value="verano">Verano</option>
-                    <option value="otono">Otoño</option>
-                </select>
-            </div>
+            </form>
         </div>
         <?php
 
         $where = "ORDER BY `anime`.`id` DESC LIMIT 10";
 
+        // Limpiar parámetros GET y prevenir inyección SQL
+        $estado = isset($_GET['estado']) ? mysqli_real_escape_string($conexion, $_GET['estado']) : '';
+        $busqueda = isset($_GET['busqueda_anime']) ? mysqli_real_escape_string($conexion, $_GET['busqueda_anime']) : '';
+        $temporada = isset($_GET['temporada']) ? mysqli_real_escape_string($conexion, $_GET['temporada']) : '';
+
         if (isset($_GET['borrar'])) {
             $where = "ORDER BY `anime`.`id` DESC LIMIT 10";
-        } elseif (isset($_GET['filtrar']) && isset($_GET['estado'])) {
-            $estado = $_REQUEST['estado'];
-            $where = "WHERE anime.Estado LIKE '%" . mysqli_real_escape_string($conexion, $estado) . "%' ORDER BY `anime`.`id` DESC LIMIT 10";
-        } elseif (isset($_GET['buscar']) && isset($_GET['busqueda_anime'])) {
-            $busqueda = $_REQUEST['busqueda_anime'];
-            $where = "WHERE anime.Anime LIKE '%" . mysqli_real_escape_string($conexion, $busqueda) . "%' ORDER BY `anime`.`id` DESC LIMIT 10";
+        } elseif (isset($_GET['buscar'])) {
+            $conditions = [];
+
+            if (!empty($busqueda)) {
+                $conditions[] = "anime.Anime LIKE '%$busqueda%'";
+            }
+            if (!empty($estado)) {
+                $conditions[] = "anime.Estado = '$estado'";
+            }
+            if (!empty($temporada)) {
+                $conditions[] = "anime.ID_Temporada = '$temporada'";
+            }
+
+            if (!empty($conditions)) {
+                $where = "WHERE " . implode(' AND ', $conditions) . " ORDER BY `anime`.`id` DESC LIMIT 10";
+            }
         }
+
+
 
         include('ModalCrear.php');
         ?>
@@ -302,6 +801,8 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                 <tbody>
                     <?php
                     $sql = "SELECT anime.id,anime.Anime,anime.Temporadas,anime.Peliculas,anime.Spin_Off,anime.Estado,anime.id_Emision,anime.id_Pendientes,anime.Ano,anime.Id_Temporada,temporada.Temporada FROM `anime` JOIN temporada ON anime.Id_Temporada=temporada.ID $where";
+
+                    //echo $sql;
 
                     $result = mysqli_query($conexion, $sql);
                     while ($mostrar = mysqli_fetch_array($result)) {
@@ -346,6 +847,9 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+
 
     <script>
         $(document).ready(function() {

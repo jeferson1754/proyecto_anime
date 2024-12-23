@@ -51,11 +51,15 @@
                 display: block;
             }
         }
+
+        .main-container{
+            margin-top: 80px;
+        }
     </style>
 </head>
 
 <body class="bg-gray-100">
-    <nav class="bg-white shadow-lg fixed w-full top-0 z-50">
+    <nav id="menu" class="bg-white shadow-lg fixed w-full top-0 z-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
