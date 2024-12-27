@@ -8,6 +8,14 @@ $conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podi
 mysqli_query($conexion, "SET SESSION collation_connection ='utf8_unicode_ci'");
 $db = mysqli_select_db($conexion, $basededatos) or die("Upps! Error en conectar a la Base de Datos");
 
+try {
+    $connect = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Error de conexión: " . $e->getMessage());
+}
+
+
 //Linea para los caracteres �
 
 if (!mysqli_set_charset($conexion, "utf8mb4")) {

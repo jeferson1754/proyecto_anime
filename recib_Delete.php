@@ -13,19 +13,23 @@ $link = $_REQUEST['link'];
 switch ($estado) {
     case "Emision":
     case "Pausado":
+        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE anime.*,emision.*
                        FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
                        WHERE anime.id='$idRegistros'";
         break;
 
     case "Finalizado":
+        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE FROM anime WHERE anime.id='$idRegistros'";
         break;
 
     case "Pendiente":
+        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE anime.*,pendientes.*
                        FROM anime JOIN pendientes ON anime.id_Pendientes=pendientes.ID_Pendientes
                        WHERE anime.id='$idRegistros'";
+
         break;
 
     default:
@@ -76,4 +80,3 @@ if (isset($mensaje)) {
         </script>';
 }
 ?>
-

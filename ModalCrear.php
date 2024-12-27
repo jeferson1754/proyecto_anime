@@ -1,99 +1,230 @@
-<!--ventana para Update--->
-<div class="modal fade" id="NuevoAnime" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<!-- Modal para Nuevo Anime -->
+<div class="modal fade" id="NuevoAnime" tabindex="-1" aria-labelledby="animeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background-color: #563d7c !important;">
-        <h6 class="modal-title" style="color: #fff; text-align: center;">
-          Nuevo Anime
-        </h6>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="animeModalLabel">
+          <i class="fas fa-plus-circle me-2"></i>Nuevo Anime
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form name="form-data" action="recibCliente.php" method="POST">
+      <form name="form-data" action="recibCliente.php" method="POST" class="needs-validation" novalidate>
         <?php
         include('regreso-modal.php');
         ?>
-        <div class="modal-body" id="cont_modal">
-          <input type="hidden" min="1" name="id" value="<?php echo $ani1 ?>" class="form-control">
-          <input type="hidden" name="tempo" value="<?php echo $tempo ?>" class="form-control">
+        <div class="modal-body">
+          <!-- Campos ocultos -->
+          <input type="hidden" name="id" value="<?php echo $ani1 ?>">
+          <input type="hidden" name="tempo" value="<?php echo $tempo ?>">
 
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Nombre del Anime:</label>
-            <input type="text" name="anime" class="form-control" required="true">
-          </div>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Estado:</label>
-            <select name="estado" class="form-control" required>
-              <option value="">Seleccione:</option>
-              <?php
-              $query = $conexion->query("SELECT ID,Estado FROM `estado`;");
-              while ($valores = mysqli_fetch_array($query)) {
-                echo '<option value="' . $valores['Estado'] . '">' . $valores['Estado'] . '</option>';
-              }
-              ?>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Año:</label>
-            <input type="number" name="fecha" min="1900" max="<?php echo $año ?>" class="form-control" value="<?php echo $año ?>" required="true">
-          </div>
-
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Temporada:</label>
-            <select name="temp" class="form-control" required>
-              <option value="<?php echo $id_tempo ?>"><?php echo $tempo ?></option>
-              <?php
-              $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `temporada`.`ID` ASC;");
-              while ($valores = mysqli_fetch_array($query)) {
-                echo '<option value="' . $valores['ID'] . '">' . $valores['Meses'] . '</option>';
-              }
-              ?>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Dia de Emision:</label>
-            <select name="dias" class="form-control" required>
-              <option value="<?php echo $day ?>"><?php echo $day ?></option>
-              <?php
-              $query = $conexion->query("SELECT * FROM `dias`");
-              while ($valores = mysqli_fetch_array($query)) {
-                echo '<option value="' . $valores['Dia'] . '">' . $valores['Dia'] . '</option>';
-              }
-              ?>
-            </select>
-          </div>
-
-          <div class="todo">
-            <label class="container">
-              <input type="checkbox" name="OP" value="SI" unchecked>
-              <span class="text">OP</span>
-              <div class="checkmark"></div>
+          <!-- Nombre del Anime -->
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-film me-2"></i>Nombre del Anime
             </label>
-
-            <label class="container">
-              <input type="checkbox" name="ED" value="SI" unchecked>
-              <span class="text">ED</span>
-              <div class="checkmark"></div>
-            </label>
+            <input type="text" name="anime" class="form-control" required>
+            <div class="invalid-feedback">
+              Por favor ingrese el nombre del anime
+            </div>
           </div>
-          <!---->
 
+          <!-- Estado y Año (en la misma fila) -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fas fa-info-circle me-2"></i>Estado
+              </label>
+              <select name="estado" class="form-select" required>
+                <option value="">Seleccione estado</option>
+                <?php
+                $query = $conexion->query("SELECT ID,Estado FROM `estado` ORDER BY Estado ASC");
+                while ($valores = mysqli_fetch_array($query)) {
+                  echo '<option value="' . htmlspecialchars($valores['Estado']) . '">'
+                    . htmlspecialchars($valores['Estado']) . '</option>';
+                }
+                ?>
+              </select>
+              <div class="invalid-feedback">
+                Seleccione un estado
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fas fa-calendar-alt me-2"></i>Año
+              </label>
+              <input type="number" name="fecha" class="form-control"
+                min="1900" max="<?php echo $año ?>"
+                value="<?php echo $año ?>" required>
+              <div class="invalid-feedback">
+                Ingrese un año válido
+              </div>
+            </div>
+          </div>
 
+          <!-- Temporada y Día (en la misma fila) -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fas fa-clock me-2"></i>Temporada
+              </label>
+              <select name="temp" class="form-select" required>
+                <option value="<?php echo $id_tempo ?>"><?php echo $tempo ?></option>
+                <?php
+                $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `ID` ASC");
+                while ($valores = mysqli_fetch_array($query)) {
+                  echo '<option value="' . htmlspecialchars($valores['ID']) . '">'
+                    . htmlspecialchars($valores['Meses']) . '</option>';
+                }
+                ?>
+              </select>
+              <div class="invalid-feedback">
+                Seleccione una temporada
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">
+                <i class="fa-solid fa-calendar-day me-2"></i>Día de Emisión
+              </label>
+              <select name="dias" class="form-select" required>
+                <option value="<?php echo $day ?>"><?php echo $day ?></option>
+                <?php
+                $query = $conexion->query("SELECT * FROM `dias` ORDER BY ID ASC");
+                while ($valores = mysqli_fetch_array($query)) {
+                  echo '<option value="' . htmlspecialchars($valores['Dia']) . '">'
+                    . htmlspecialchars($valores['Dia']) . '</option>';
+                }
+                ?>
+              </select>
+              <div class="invalid-feedback">
+                Seleccione un día
+              </div>
+            </div>
+          </div>
+
+          <div class="song-options">
+            <label class="song-label">
+              <i class="fas fa-music"></i>Canciones del Anime
+            </label>
+            <div class="checkbox-group">
+              <div class="custom-checkbox">
+                <input type="checkbox" id="checkOP" name="OP" value="SI">
+                <label for="checkOP">Opening (OP)</label>
+              </div>
+              <div class="custom-checkbox">
+                <input type="checkbox" id="checkED" name="ED" value="SI">
+                <label for="checkED">Ending (ED)</label>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary" id="btnEnviar">
-            Registrar Anime
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Guardar Anime
           </button>
         </div>
+      </form>
     </div>
-    </form>
-
   </div>
 </div>
-</div>
-<!---fin ventana Update --->
+
+<style>
+  /* Estilos personalizados para el modal */
+  .modal-content {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-header {
+    border-radius: 1rem 1rem 0 0;
+    padding: 1rem 1.5rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #495057;
+  }
+
+  .form-control,
+  .form-select {
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  }
+
+  .form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+
+  .btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+  }
+
+  .was-validated .form-control:invalid,
+  .was-validated .form-select:invalid {
+    border-color: #dc3545;
+  }
+
+  .was-validated .form-control:valid,
+  .was-validated .form-select:valid {
+    border-color: #198754;
+  }
+</style>
+
+<script>
+  // Validación del formulario
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+
+    form.addEventListener('submit', function(event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      form.classList.add('was-validated');
+    });
+
+    // Actualizar año máximo automáticamente
+    const fechaInput = document.querySelector('input[name="fecha"]');
+    const currentYear = new Date().getFullYear();
+    fechaInput.max = currentYear;
+
+    // Mostrar tooltip con el rango válido de años
+    fechaInput.title = `Año válido entre 1900 y ${currentYear}`;
+  });
+</script>
