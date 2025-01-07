@@ -761,6 +761,10 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                 width: 100%;
                 justify-content: center;
             }
+
+            .table td {
+                border-top: none !important;
+            }
         }
 
         .song-options {
@@ -859,6 +863,7 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                 width: 100%;
                 justify-content: flex-start;
             }
+
         }
 
         /* Animación al hacer check */

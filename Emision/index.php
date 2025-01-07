@@ -88,6 +88,10 @@ include '../update_emision.php';
                 border: none !important;
             }
 
+            .form-select {
+                max-width: 100% !important;
+            }
+
             .progress-cell {
                 display: none !important;
             }

@@ -15,7 +15,7 @@
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form method="POST" action="recib_Update-Emision.php" class="needs-validation" novalidate>
+      <form method="POST" action="recib_Update-Emision.php" class="needs-validation" id="Edicion_Emision<?php echo $mostrar['ID_Emision']; ?>" novalidate>
         <!-- Hidden Fields -->
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
@@ -44,7 +44,7 @@
             </div>
 
             <!-- Primera fila: Estado y Posición -->
-            <div class="row mb-3">
+            <div class="row">
               <div class="col-md-3">
                 <div class="form-floating mb-3">
                   <select name="estado" class="form-select" id="estadoSelect" required>
@@ -69,8 +69,8 @@
                   ?>
                   <input type="number"
                     name="posicion"
-                    class="form-control"
-                    id="posicionInput"
+                    class="form-control mb-3"
+                    id="posicionInput<?php echo $mostrar['ID_Emision']; ?>"
                     min="0"
                     max="<?php echo $conteo; ?>"
                     value="<?php echo $mostrar['Posicion']; ?>"
@@ -78,13 +78,13 @@
                   <label for="posicionInput">Posición</label>
 
                   <!-- Mensaje de error -->
-                  <div id="posicionError" class="invalid-feedback">
+                  <div id="posicionError<?php echo $mostrar['ID_Emision']; ?>" class="invalid-feedback">
                     Por favor ingrese una posición válida (entre 0 y <?php echo $conteo; ?>)
                   </div>
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <select name="dias" class="form-select" id="diasSelect" required>
                     <!-- Opción preseleccionada -->
                     <option value="<?php echo $mostrar['Dia']; ?>" selected><?php echo $mostrar['Dia']; ?></option>
@@ -107,7 +107,7 @@
                 </div>
               </div>
               <div class="col-md-3">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <select name="duracion" class="form-select" id="duracionSelect" required>
                     <!-- Opción preseleccionada -->
                     <option value="<?php echo $mostrar['Duracion']; ?>" selected><?php echo $mostrar['Duracion']; ?></option>
@@ -129,12 +129,12 @@
                   <label for="duracionSelect">Duración</label>
                 </div>
               </div>
-            </div>
 
+            </div>
             <!-- Segunda fila: Capítulos -->
-            <div class="row mb-3">
+            <div class="row">
               <div class="col-md-4">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="number"
                     name="caps"
                     class="form-control"
@@ -147,20 +147,22 @@
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="number"
                     name="faltantes"
                     class="form-control"
-                    id="faltantesInput"
+                    id="faltantesInput<?php echo $mostrar['ID_Emision']; ?>"
                     min="0"
-                    max="<?php echo $total_faltantes ?>"
                     value="<?php echo $faltantes ?>"
                     required>
                   <label for="faltantesInput">Capítulos Faltantes</label>
+                  <div id="faltantesError<?php echo $mostrar['ID_Emision']; ?>" class="invalid-feedback">
+                    Por favor ingrese una numero válido (mayor o igual a 0)
+                  </div>
                 </div>
               </div>
               <div class="col-md-4">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="number"
                     name="total"
                     class="form-control"
@@ -188,7 +190,7 @@
             ?>
             <div class="row mb-3">
               <div class="col-md-6">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="number"
                     name="op"
                     class="form-control"
@@ -201,7 +203,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <div class="form-floating">
+                <div class="form-floating mb-3">
                   <input type="number"
                     name="ed"
                     class="form-control"
@@ -403,9 +405,10 @@
   (function() {
     'use strict';
     window.addEventListener('load', function() {
-      var forms = document.getElementsByClassName('needs-validation');
+      // Seleccionar todos los formularios que tienen la clase `needs-validation`
+      const forms = document.querySelectorAll('.needs-validation');
 
-      Array.prototype.filter.call(forms, function(form) {
+      forms.forEach(function(form) {
         form.addEventListener('submit', function(event) {
           // Prevenir el envío si el formulario es inválido
           if (form.checkValidity() === false) {
@@ -416,16 +419,23 @@
           // Agregar la clase 'was-validated' para aplicar los estilos
           form.classList.add('was-validated');
 
-          // Validación adicional: verificar si un campo específico es inválido
-          var inputPosicion = document.getElementById('posicionInput');
-          var errorMessage = document.getElementById('posicionError');
+          // Función para manejar la validación de campos
+          function validarCampo(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const errorMessage = document.getElementById(errorId);
 
-          // Verificar si el campo es inválido
-          if (!inputPosicion.validity.valid) {
-            errorMessage.style.display = "block"; // Mostrar el mensaje de error
-          } else {
-            errorMessage.style.display = "none"; // Ocultar el mensaje de error si es válido
+            if (input && errorMessage) { // Verificar que los elementos existan
+              // Mostrar u ocultar el mensaje de error según la validez del campo
+              errorMessage.style.display = input.validity.valid ? "none" : "block";
+            }
           }
+
+          // Obtener el ID dinámico del formulario actual
+          const formId = form.getAttribute('id').replace('Edicion_Emision', '');
+
+          // Validaciones específicas
+          validarCampo(`posicionInput${formId}`, `posicionError${formId}`);
+          validarCampo(`faltantesInput${formId}`, `faltantesError${formId}`);
         }, false);
       });
     }, false);
