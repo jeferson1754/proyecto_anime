@@ -60,3 +60,34 @@ if (!$result) {
     die("La consulta falló: " . mysqli_error($conexion));
 }
 
+// Establecer la zona horaria para Santiago de Chile.
+date_default_timezone_set('America/Santiago');
+
+// Obtener la fecha y hora actual con 5 horas de retraso.
+$fecha_actual_retrasada = date('Y-m-d H:i:s', strtotime('-5 hours'));
+
+// Array con los nombres de los días en español.
+$nombres_dias = array(
+    'Lunes',
+    'Martes',
+    'Miercoles',
+    'Jueves',
+    'Viernes',
+    'Sabado',
+    'Domingo'
+);
+
+// Obtener el número del día de la semana (0 para domingo, 1 para lunes, etc.).
+$numero_dia = date('w', strtotime($fecha_actual_retrasada));
+
+// Obtener el nombre del día actual en español.
+$day = $nombres_dias[$numero_dia];
+
+// Mapeo de valores de temporada
+$temporadas = [
+    1 => "Invierno",
+    2 => "Primavera",
+    3 => "Verano",
+    4 => "Otoño",
+    5 => "Desconocida"
+];

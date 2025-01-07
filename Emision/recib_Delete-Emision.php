@@ -1,4 +1,3 @@
-<!---->
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
@@ -13,154 +12,116 @@ $nombre         = $_REQUEST['nombre'];
 $accion         = $_REQUEST['accion'];
 $link           = $_REQUEST['link'];
 
-
-
-
-$sql = ("SELECT * FROM emision WHERE ID_Emision='$idRegistros';");
-echo $sql . "<br>";
-
-$consulta      = mysqli_query($conexion, $sql);
-
-$sql2 = ("SELECT * FROM anime WHERE id_Emision='$idRegistros';");
-echo $sql2 . "<br>";
-
-$consulta2      = mysqli_query($conexion, $sql2);
-
-while ($mostrar = mysqli_fetch_array($consulta2)) {
-    $id_anime = $mostrar['id'];
-}
-
-//Saca la ultima fecha registrada
-while ($mostrar = mysqli_fetch_array($consulta)) {
-
-    $dato1 = $mostrar['ID_Emision'];
-    $dato2 = $mostrar['Emision'];
-    $dato3 = $mostrar['Nombre'];
-    $dato4 = $mostrar['Capitulos'];
-    $dato5 = $mostrar['Totales'];
-    $dato6 = $mostrar['Dia'];
-    $dato8 = $mostrar['Posicion'];
-    $dato10 = $mostrar['Duracion'];
-}
-
-echo $dato1;
-echo "<br>";
-echo $dato2;
-echo "<br>";
-echo $dato3;
-echo "<br>";
-echo $dato4;
-echo "<br>";
-echo $dato5;
-echo "<br>";
-echo $dato6;
-echo "<br>";
-echo $dato8;
-echo "<br>";
-echo $dato10;
-echo "<br>";
-echo $idRegistros;
-echo "<br>";
-
-
+// Realizar la conexión a la base de datos una sola vez
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "UPDATE anime set estado='Finalizado',ID_Emision='1' where ID_Emision='" . $idRegistros . "'";
-    $conn->exec($sql);
-    $last_id1 = $conn->lastInsertId();
-    echo $sql;
-    echo 'ultimo anime insertado ' . $last_id1;
-    echo "<br>";
 } catch (PDOException $e) {
-    $conn = null;
-    echo $e;
+    die("Conexión fallida: " . $e->getMessage());
 }
 
+// Obtener datos de emision
+$sql1 = "SELECT * FROM emision WHERE ID_Emision = :idRegistros";
+$stmt1 = $conn->prepare($sql1);
+$stmt1->execute(['idRegistros' => $idRegistros]);
+$emision = $stmt1->fetch(PDO::FETCH_ASSOC);
+
+// Obtener datos de anime
+$sql2 = "SELECT * FROM anime WHERE id_Emision = :idRegistros";
+$stmt2 = $conn->prepare($sql2);
+$stmt2->execute(['idRegistros' => $idRegistros]);
+$anime = $stmt2->fetch(PDO::FETCH_ASSOC);
+
+if ($anime) {
+    $id_anime = $anime['id'];
+}
+
+// Preparar datos para eliminar emision
+$dato1 = $emision['ID_Emision'];
+$dato2 = $emision['Emision'];
+$dato3 = $emision['Nombre'];
+$dato4 = $emision['Capitulos'];
+$dato5 = $emision['Totales'];
+$dato6 = $emision['Dia'];
+$dato8 = $emision['Posicion'];
+$dato10 = $emision['Duracion'];
+
+// Actualizar estado de anime a "Finalizado"
 try {
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "INSERT INTO eliminados_emision (`ID_Emision`,`Estado`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`,`Fecha`)
-    VALUES ( '$dato1','$dato2','$dato3','$dato4','$dato5','$dato6','$dato10','$fecha_actual')";
-    $conn->exec($sql);
-    echo $sql;
-    echo "<br>";
-    $conn = null;
+    $sql = "UPDATE anime SET estado = 'Finalizado', ID_Emision = 1 WHERE ID_Emision = :idRegistros";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(['idRegistros' => $idRegistros]);
 } catch (PDOException $e) {
-    $conn = null;
+    echo "Error actualizando el anime: " . $e->getMessage();
 }
 
-
+// Insertar emision en eliminados_emision
 try {
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "DELETE FROM `emision` 
-    WHERE ID_Emision='" . $idRegistros . "'";
-    $conn->exec($sql);
-    $last_id2 = $conn->lastInsertId();
-    echo $sql;
-    echo 'ultimo anime insertado ' . $last_id2;
-    echo "<br>";
+    $sql = "INSERT INTO eliminados_emision (ID_Emision, Estado, Nombre, Capitulos, Totales, Dia, Duracion, Fecha) 
+            VALUES (:dato1, :dato2, :dato3, :dato4, :dato5, :dato6, :dato10, :fecha_actual)";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([
+        'dato1' => $dato1,
+        'dato2' => $dato2,
+        'dato3' => $dato3,
+        'dato4' => $dato4,
+        'dato5' => $dato5,
+        'dato6' => $dato6,
+        'dato10' => $dato10,
+        'fecha_actual' => $fecha_actual
+    ]);
 } catch (PDOException $e) {
-    $conn = null;
-    echo $e;
+    echo "Error al insertar en eliminados_emision: " . $e->getMessage();
 }
 
+// Eliminar emision
 try {
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "DELETE FROM eliminados_emision WHERE Fecha < DATE_SUB(NOW(), INTERVAL 3 MONTH);";
-    $conn->exec($sql);
-    echo $sql;
-    echo "<br>";
+    $sql = "DELETE FROM emision WHERE ID_Emision = :idRegistros";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute(['idRegistros' => $idRegistros]);
 } catch (PDOException $e) {
-    $conn = null;
-    echo $e;
+    echo "Error eliminando emision: " . $e->getMessage();
 }
 
+// Eliminar registros antiguos de eliminados_emision
+try {
+    $sql = "DELETE FROM eliminados_emision WHERE Fecha < DATE_SUB(NOW(), INTERVAL 5 MONTH)";
+    $conn->exec($sql);
+} catch (PDOException $e) {
+    echo "Error limpiando eliminados_emision: " . $e->getMessage();
+}
 
-
-
-
-
+// Lógica para Calificar
 if (isset($_POST['Calificar_Ahora'])) {
-    echo "Calificar Ahora";
     header("location:../editar_stars.php?id=$id_anime&nombre=$nombre");
 } else if (isset($_POST['Calificar_Luego'])) {
-
     try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO `calificaciones` (`ID_Anime`) VALUES ('$id_anime')";
-        $conn->exec($sql);
-        echo $sql . "<br>";
-        $conn = null;
+        $sql = "INSERT INTO calificaciones (ID_Anime) VALUES (:id_anime)";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['id_anime' => $id_anime]);
     } catch (PDOException $e) {
-        $conn = null;
+        echo "Error al insertar calificación: " . $e->getMessage();
     }
 
     echo '<script>
-    Swal.fire({
-        icon: "success",
-        title: "Actualizando Estado de ' . $nombre . '  a Finalizado y Creando Calificacion en Pendiente",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "' . $link . '";
-    });
+        Swal.fire({
+            icon: "success",
+            title: "Actualizando Estado de ' . $nombre . '  a Finalizado y Creando Calificación en Pendiente",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "' . $link . '";
+        });
     </script>';
 } else {
     echo '<script>
-    Swal.fire({
-        icon: "success",
-        title: "Actualizando Estado de ' . $nombre . '  a Finalizado",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "' . $link . '";
-    });
+        Swal.fire({
+            icon: "success",
+            title: "Actualizando Estado de ' . $nombre . '  a Finalizado",
+            confirmButtonText: "OK"
+        }).then(function() {
+            window.location = "' . $link . '";
+        });
     </script>';
 }
 
-
-
-//
 ?>

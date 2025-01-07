@@ -1,92 +1,66 @@
-<!--!-->
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
 
 <?php
 include '../bd.php';
-$idRegistros    = $_REQUEST['id'];
-$nombre         = $_REQUEST['nombre'];
-$vistos         = $_REQUEST['vistos'];
-$caps           = $_REQUEST['capitulos'];
-$accion         = $_REQUEST['accion'];
-$link           = $_REQUEST['link'];
 
-$sql = ("SELECT * FROM `emision` WHERE Capitulos < Totales and Nombre='$nombre';");
-$sql1 = ("SELECT (Totales-Capitulos) FROM `emision` where Nombre='$nombre';");
+// Obtener los parámetros de la solicitud
+$idRegistros = $_REQUEST['id'];
+$nombre = $_REQUEST['nombre'];
+$vistos = $_REQUEST['vistos'];
+$caps = $_REQUEST['capitulos'];
+$accion = $_REQUEST['accion'];
+$link = $_REQUEST['link'];
 
+// Consultas
+$sql = "SELECT (Totales - Capitulos) as restantes FROM `emision` WHERE Nombre = ?";
+$stmt = $connect->prepare($sql);
+$stmt->execute([$nombre]);
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$emision      = mysqli_query($conexion, $sql);
-$validar      = mysqli_query($conexion, $sql1);
+if ($result) {
+    $capitulosRestantes = $result['restantes'];
 
-
-
-while ($rows = mysqli_fetch_array($validar)) {
-
-
-    //UPDATE `emision` SET `Capitulos` = '1' WHERE `emision`.`ID` = 19;
-    //UPDATE `emision` SET `Capitulos`=Capitulos+1 WHERE Nombre="Dragon Ball";
-    /*
-    echo $idRegistros;
-    echo "<br>";
-    echo $nombre;
-    echo "<br>";
-    echo $vistos;
-    echo "<br>";
-    echo $sql;
-    echo "<br>";
-    echo $sql1;
-    echo "<br>";
-    echo $caps;
-    echo "<br>";
-
-    */
-    if ($vistos <= $rows[0]) {
-        echo "capitulos permitidos: " . $rows[0] . "<br>";
-        echo "Esta bien  ";
-        echo "<br>";
-        echo "" . $rows[0] . "<=" . $vistos . "";
-        echo "<br>";
+    // Validar si los capítulos ingresados son válidos
+    if ($vistos <= $capitulosRestantes) {
         try {
+            // Conexión PDO para la actualización
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "UPDATE emision SET Capitulos ='" . $caps . "'+'" . $vistos . "' WHERE Nombre='" . $nombre . "' AND Capitulos < Totales;";
-            $conn->exec($sql);
-            $last_id1 = $conn->lastInsertId();
-            echo $sql;
-            echo "<br>";
-            echo 'ultimo anime insertado ' . $last_id1;
-            echo "<br>";
+
+            // Actualización de capítulos
+            $sqlUpdate = "UPDATE emision SET Capitulos = Capitulos + :vistos WHERE Nombre = :nombre AND Capitulos < Totales";
+            $stmtUpdate = $conn->prepare($sqlUpdate);
+            $stmtUpdate->bindValue(':vistos', $vistos, PDO::PARAM_INT);  // Ligar el valor de los capítulos vistos
+            $stmtUpdate->bindValue(':nombre', $nombre, PDO::PARAM_STR);  // Ligar el valor del nombre
+            $stmtUpdate->execute();
+
             echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Actualizando Capitulos de ' . $nombre . ' en Emisión",
+                    confirmButtonText: "OK"
+                }).then(function() {
+                    window.location = "' . $link . '";
+                });
+            </script>';
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    } else {
+        echo '<script>
             Swal.fire({
-                icon: "success",
-                title: "Actualizando Capitulos  de ' . $nombre . ' en Emision",
+                icon: "error",
+                title: "Los Capitulos Ingresados de ' . $nombre . ' Superan el Total Permitido",
                 confirmButtonText: "OK"
             }).then(function() {
                 window.location = "' . $link . '";
             });
-            </script>';
-        } catch (PDOException $e) {
-            $conn = null;
-        }
-    } else {
-        echo '<script>
-        Swal.fire({
-            icon: "error",
-            title: "Los Capitulos Ingresados  de ' . $nombre . ' Superan el Total Permitido",
-            confirmButtonText: "OK"
-        }).then(function() {
-            window.location = "' . $link . '";
-        });
         </script>';
-        echo "capitulos permitidos: " . $rows[0] . "<br>";
-        echo "" . $rows[0] . "<=" . $vistos . "";
-        echo "<br>";
+        echo "Capítulos permitidos: " . $capitulosRestantes . "<br>";
     }
+} else {
+    echo "No se encontró la emisión para el nombre proporcionado.";
 }
-
-
-
-//$result_update = mysqli_query($conexion, $update);
-
-//header("location:index.php");
+?>

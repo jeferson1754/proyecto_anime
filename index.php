@@ -6,20 +6,6 @@ setlocale(LC_ALL, "es_ES");
 $año = date("Y");
 $mes = date("F");
 
-// Obtener el día actual en español
-$sqlDiaActual = "SELECT CASE WEEKDAY(DATE_SUB(NOW(), INTERVAL 5 HOUR))
-                    WHEN 0 THEN 'Lunes'
-                    WHEN 1 THEN 'Martes'
-                    WHEN 2 THEN 'Miércoles'
-                    WHEN 3 THEN 'Jueves'
-                    WHEN 4 THEN 'Viernes'
-                    WHEN 5 THEN 'Sábado'
-                    WHEN 6 THEN 'Domingo'
-                END AS DiaActual";
-
-$resultDiaActual = mysqli_query($conexion, $sqlDiaActual);
-$day = ($row = mysqli_fetch_assoc($resultDiaActual)) ? $row['DiaActual'] : null;
-
 // Obtener el primer ID no presente en la tabla `anime`
 $sqlAnimeId = "SELECT ID FROM id_anime WHERE ID NOT IN (SELECT id FROM anime) ORDER BY ID ASC LIMIT 1";
 $resultAnimeId = mysqli_query($conexion, $sqlAnimeId);
