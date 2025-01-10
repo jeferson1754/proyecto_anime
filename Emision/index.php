@@ -551,62 +551,61 @@ include '../update_emision.php';
 
     <div class="main-container">
         <!-- Panel de Acciones -->
-        <div class="actions-panel">
-            <div class="button-group">
-                <form action="" method="GET" class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-custom btn-primary" type="submit" name="enviar">
-                        <i class="fas fa-calendar"></i>
-                        <span>Hoy</span>
-                    </button>
+        <div class="actions-panel button-group">
+            <form action="" method="GET" class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-custom btn-primary" type="submit" name="enviar">
+                    <i class="fas fa-calendar"></i>
+                    <span>Hoy</span>
+                </button>
 
-                    <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
-                        <i class="fas fa-eraser"></i>
-                        <span>Borrar Filtros</span>
-                    </button>
+                <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
+                    <i class="fas fa-eraser"></i>
+                    <span>Borrar Filtros</span>
+                </button>
 
-                    <button class="btn btn-custom btn-warning" type="submit" name="faltantes">
-                        <i class="fas fa-clock"></i>
-                        <span>Pendientes</span>
-                    </button>
+                <button class="btn btn-custom btn-warning" type="submit" name="faltantes">
+                    <i class="fas fa-clock"></i>
+                    <span>Pendientes</span>
+                </button>
 
-                    <button type="button" class="btn btn-custom btn-info" onclick="myFunction()">
-                        <i class="fas fa-filter"></i>
-                        <span>Filtrar</span>
-                    </button>
+                <button type="button" class="btn btn-custom btn-info" onclick="myFunction()">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtrar</span>
+                </button>
 
-                    <button type="button" class="btn btn-custom btn-info ocultar" data-toggle="modal" data-target="#ModalTotal">
-                        <i class="fas fa-sync"></i>
-                        <span>Actualizar Capítulos</span>
-                    </button>
+                <button type="button" class="btn btn-custom btn-info ocultar" data-toggle="modal" data-target="#ModalTotal">
+                    <i class="fas fa-sync"></i>
+                    <span>Actualizar Capítulos</span>
+                </button>
 
-                    <button class="btn btn-custom btn-success" type="button" id="miBoton">
-                        <i class="fas fa-check"></i>
-                        <span>Marcar Todos Vistos</span>
-                    </button>
+                <button class="btn btn-custom btn-success" type="button" id="miBoton">
+                    <i class="fas fa-check"></i>
+                    <span>Marcar Todos Vistos</span>
+                </button>
 
-                    <input type="hidden" name="accion" value="HOY">
-                </form>
-            </div>
-
-            <!-- Sección de Filtros -->
-            <div id="myDIV" class="filter-section" style="display:none;">
-                <form action="" method="GET" class="d-flex gap-3 align-items-center flex-wrap">
-                    <select name="dias" class="form-select">
-                        <option value="">Seleccionar día</option>
-                        <?php
-                        $query = $conexion->query("SELECT DISTINCT(e.Dia) FROM emision e INNER JOIN dias ot ON e.Dia = ot.Dia ORDER BY ot.ID ASC;");
-                        while ($valores = mysqli_fetch_array($query)) {
-                            echo '<option value="' . $valores['Dia'] . '">' . $valores['Dia'] . '</option>';
-                        }
-                        ?>
-                    </select>
-                    <button class="btn btn-custom btn-primary" type="submit" name="enviar2">
-                        <i class="fas fa-search"></i> Buscar
-                    </button>
-                    <input type="hidden" name="accion" value="Filtro">
-                </form>
-            </div>
+                <input type="hidden" name="accion" value="HOY">
+            </form>
         </div>
+
+        <!-- Sección de Filtros -->
+        <div id="myDIV" class="filter-section" style="display:none;">
+            <form action="" method="GET" class="d-flex gap-3 align-items-center flex-wrap">
+                <select name="dias" class="form-select">
+                    <option value="">Seleccionar día</option>
+                    <?php
+                    $query = $conexion->query("SELECT DISTINCT(e.Dia) FROM emision e INNER JOIN dias ot ON e.Dia = ot.Dia ORDER BY ot.ID ASC;");
+                    while ($valores = mysqli_fetch_array($query)) {
+                        echo '<option value="' . $valores['Dia'] . '">' . $valores['Dia'] . '</option>';
+                    }
+                    ?>
+                </select>
+                <button class="btn btn-custom btn-primary" type="submit" name="enviar2">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                <input type="hidden" name="accion" value="Filtro">
+            </form>
+        </div>
+
         <?php
         include('Modal-Caps-Total.php');
 
