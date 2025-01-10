@@ -1,18 +1,26 @@
 <?php
 
-function InfoListasSwal($title, $tipo, $location)
+
+function alerta_swal($alertTitle, $alertText, $alertType, $redireccion)
 {
-    echo '<script>
-    Swal.fire({
-        icon: "' . $title . '",
-        title: "' . $tipo . '",
-        confirmButtonText: "OK"
-    }).then(function() {
-        window.location = "' . $location . '";
-    });
+    echo '
+    <script>
+        Swal.fire({
+            title: "' . $alertTitle . '",
+            text: "' . $alertText . '",
+            html: "' . $alertText . '",
+            icon: "' . $alertType . '",
+            showCancelButton: false,
+            confirmButtonText: "OK",
+            closeOnConfirm: false
+        }).then(function() {
+          ' . $redireccion . '  ; // Redirigir a la página principal
+        });
     </script>';
 }
 
+
+// Consulta para obtener el último Mix OP
 $sql1 = "
     SELECT mix.ID, COUNT(op.Mix) AS MixCount 
     FROM mix
@@ -21,94 +29,132 @@ $sql1 = "
     GROUP BY mix.ID 
     ORDER BY mix.ID DESC;
 ";
-//echo $sql1 . "<br>";
 
 $mixes = $conexion->query($sql1);
 
-// Procesar los resultados
-while ($valores = mysqli_fetch_array($mixes)) {
-    $mix = $valores['ID']; // o el índice correspondiente si necesitas otro valor
+if ($mixes && $valores = $mixes->fetch_assoc()) {
+    $mix = $valores['ID'];
     $mixCount = $valores['MixCount'];
 }
 
+// Consulta para obtener el último Mix ED
 $sql2 = "
-SELECT mix_ed.ID, COUNT(ed.Mix) AS MixCount FROM mix_ed LEFT JOIN ed ON mix_ed.ID = ed.Mix WHERE mix_ed.ID = (SELECT MAX(ID) FROM mix_ed) GROUP BY mix_ed.ID ORDER BY mix_ed.ID DESC;
+    SELECT mix_ed.ID, COUNT(ed.Mix) AS MixCount 
+    FROM mix_ed 
+    LEFT JOIN ed ON mix_ed.ID = ed.Mix 
+    WHERE mix_ed.ID = (SELECT MAX(ID) FROM mix_ed) 
+    GROUP BY mix_ed.ID 
+    ORDER BY mix_ed.ID DESC;
 ";
-
-//echo $sql2 . "<br>";
 
 $mixes_ed = $conexion->query($sql2);
 
-// Procesar los resultados
-while ($valores2 = mysqli_fetch_array($mixes_ed)) {
-    $mix2 = $valores2['ID']; // o el índice correspondiente si necesitas otro valor
+if ($mixes_ed && $valores2 = $mixes_ed->fetch_assoc()) {
+    $mix2 = $valores2['ID'];
     $mixCount2 = $valores2['MixCount'];
 }
 
-echo "<br>OP-";
-echo $op;
-echo "<br>OP1-";
-echo $op1;
-echo "<br>ED-";
-echo $ed;
-echo "<br>ED1-";
-echo $ed1;
-echo "<br> Mix OP-" . $mix;
-echo "<br> Conteo-" . $mixCount;
-echo "<br> Mix ED-" . $mix2;
-echo "<br> Conteo-" . $mixCount2;
-echo "<br>";
+// Función para insertar registros
+function insertarRegistro($tabla, $columna, $datos, $conexion)
+{
+    try {
+        // Crear la consulta SQL
+        $sql = "INSERT INTO $tabla 
+                (`Nombre`, `ID_Anime`, `$columna`, `Ano`, `Temporada`, `Estado`, `Mix`, `Fecha_Ingreso`) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
+        // Depurar la consulta antes de ejecutarla
+        echo "Consulta SQL: " . $sql . "<br>";
+
+        // Preparar la consulta
+        $stmt = $conexion->prepare($sql);
+
+        // Verificar si la preparación fue exitosa
+        if (!$stmt) {
+            throw new Exception("Error al preparar la consulta: " . $conexion->error);
+        }
+
+        // Vincular los parámetros
+        $stmt->bind_param(
+            "sissssi", // tipos de datos
+            $datos['nombre'],
+            $datos['idAnime'],
+            $datos['op_ed'],
+            $datos['ano'],
+            $datos['temporada'],
+            $datos['estado'],
+            $datos['mix']
+        );
+
+        // Ejecutar la consulta
+        $stmt->execute();
+        echo "Registro insertado en $tabla.<br>";
+    } catch (Exception $e) {
+        // Capturar cualquier error
+        echo "Error al insertar en $tabla: " . $e->getMessage() . "<br>";
+    }
+}
+
+
+// Validar Mix OP
 if ($mixCount < 50) {
-    echo "Mix OP /$mixCount esta bien<br>";
+    echo "Mix OP ($mixCount) está dentro del límite.<br>";
+
     if ($op > $op1) {
-        echo "OP Mayor a Resultado<br>";
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "INSERT INTO op (`Nombre`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`)
-    VALUES('" . $nombre . "', '" . $IdAnime . "','" . $op . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix . "',NOW())";
-            //$conn->exec($sql);
-            echo $sql;
-            $conn = null;
-        } catch (PDOException $e) {
-            $conn = null;
-            echo $e;
-        }
+        echo "OP es mayor que el resultado esperado.<br>";
+        insertarRegistro("op", "opening", [
+            'nombre' => $nombre,
+            'idAnime' => $IdAnime,
+            'op_ed' => $op,
+            'ano' => $fecha,
+            'temporada' => $temps,
+            'estado' => 'Faltante',
+            'mix' => $mix
+        ], $conexion);
     } else {
-
-        echo "Iguales";
-        echo "<br>";
+        echo "OP es igual al resultado.<br>";
     }
 } else {
+    // Alerta cuando se supera el límite
+    $alertTitle = "¡Atención!";
+    $alertText = "El límite de Mix OP ha sido superado. Por favor, revisa los registros.";
+    $alertType = 'warning';
+    $redireccion = "window.location='$link'";
 
-    echo "Mix OP supero limite<br>";
+    alerta_swal($alertTitle, $alertText, $alertType, $redireccion);
+
+    exit();
 }
 
+// Validar Mix ED
 if ($mixCount2 < 30) {
-    echo "Mix ED /$mixCount2 esta bien<br>";
-    if ($ed > $ed1) {
-        echo "ED Mayor a Resultado";
-        echo "<br>";
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "INSERT INTO ed (`Nombre`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`,`Fecha_Ingreso`)
-        VALUES('" . $nombre . "', '" . $IdAnime . "','" . $ed . "','" . $fecha . "','" . $temp . "','Faltante','" . $mix2 . "',NOW())";
-            $conn->exec($sql);
-            echo $sql;
-            $conn = null;
-        } catch (PDOException $e) {
-            $conn = null;
-            echo $e;
-        }
-    } else {
+    echo "Mix ED ($mixCount2) está dentro del límite.<br>";
 
-        echo "Iguales";
-        echo "<br>";
+    if ($ed > $ed1) {
+        echo "ED es mayor que el resultado esperado.<br>";
+        insertarRegistro("ed", "ending", [
+            'nombre' => $nombre,
+            'idAnime' => $IdAnime,
+            'op_ed' => $ed,
+            'ano' => $fecha,
+            'temporada' => $temps,
+            'estado' => 'Faltante',
+            'mix' => $mix2
+        ], $conexion);
+    } else {
+        echo "ED es igual al resultado.<br>";
     }
 } else {
-    echo "Mix ED supero limite<br>";
+    // Alerta cuando se supera el límite
+    $alertTitle = "¡Atención!";
+    $alertText = "El límite de Mix ED ha sido superado. Por favor, revisa los registros.";
+    $alertType = 'warning';
+    $redireccion = "window.location='$link'";
+
+    alerta_swal($alertTitle, $alertText, $alertType, $redireccion);
+
+    exit();
 }
 
-echo "<br>";
+
+echo "Proceso finalizado.<br>";
