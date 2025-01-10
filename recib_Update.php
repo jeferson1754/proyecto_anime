@@ -189,9 +189,6 @@ $stmt_ending->execute();
 $result_ending = $stmt_ending->get_result();
 $ed1 = $result_ending->fetch_assoc()['total'];
 
-
-
-/*
 // Obtener el mix más reciente
 $sql_mix = "SELECT * FROM mix ORDER BY ID DESC LIMIT 1";
 $result_mix = $conexion->query($sql_mix);
@@ -257,8 +254,6 @@ try {
 }
 echo "<br>";
 
-*/
-
 function Swal($icon, $title, $location)
 {
     echo '<script>
@@ -290,7 +285,6 @@ function InfoSwal($title, $location)
       });
       </script>';
 }
-
 
 
 if ($estado == "Emision" or $estado == "Pausado") {
@@ -414,14 +408,9 @@ try {
     echo $sql . "<br>";
     echo 'ID anime actualizado: ' . $ID_Anime . "<br>";
     $conn = null;
-
-    InfoSwal('El anime ' . $nombre_temps . ' tiene registros en Eliminados de Emision', './update_eliminados_emision.php?variable=' . urlencode($id_eliminados_emision) . '');
-           
 } catch (PDOException $e) {
     $conn = null;
     echo $e;
 }
 
-include('pruebas.php');
-
-//exit();
+exit();
