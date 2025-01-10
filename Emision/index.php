@@ -119,7 +119,7 @@ include '../update_emision.php';
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 100%;
             padding: 0 1rem;
         }
 

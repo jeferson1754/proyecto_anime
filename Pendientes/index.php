@@ -130,7 +130,7 @@ require '../bd.php';
         }
 
         .main-container {
-            max-width: 1400px;
+            max-width: 100%;
             padding: 0 1rem;
         }
 
@@ -211,7 +211,7 @@ require '../bd.php';
 
         .btn-custom.btn-warning:hover {
             background: linear-gradient(135deg, #F57C00, #EF6C00) !important;
-            color:var(--background-color)
+            color: var(--background-color)
         }
 
         .btn-custom.btn-info:hover {
