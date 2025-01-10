@@ -729,11 +729,6 @@ require '../bd.php';
                     <i class="fas fa-plus"></i> Nuevo Anime
                 </button>
 
-                <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
-                    <i class="fas fa-eraser"></i>
-                    <span>Borrar Filtros</span>
-                </button>
-
                 <button type="button" class="btn btn-info btn-custom" onclick="toggleFilter('typeFilter')">
                     <i class="fas fa-filter"></i> Filtrar
                 </button>
@@ -742,11 +737,14 @@ require '../bd.php';
                     <i class="fas fa-search"></i> Buscar
                 </button>
 
-                <form action="" method="GET" class="d-inline">
-                    <button type="submit" name="link" class="btn btn-warning btn-custom" style="text-decoration: none;">
-                        <i class="fas fa-unlink"></i> Sin Link
-                    </button>
-                </form>
+                <button type="submit" name="link" class="btn btn-warning btn-custom" style="text-decoration: none;">
+                    <i class="fas fa-unlink"></i> Sin Link
+                </button>
+
+                <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
+                    <i class="fas fa-eraser"></i>
+                    <span>Borrar Filtros</span>
+                </button>
 
             </form>
         </div>

@@ -754,16 +754,14 @@ $año = date("Y");
                     <i class="fas fa-plus"></i> Nuevo Pelicula
                 </button>
 
+                <button type="submit" name="pendientes" class="btn btn-warning btn-custom" style="text-decoration: none;">
+                    <i class="fas fa-clock"></i> Pendientes
+                </button>
+
                 <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
                     <i class="fas fa-eraser"></i>
                     <span>Borrar Filtros</span>
                 </button>
-
-                <form action="" method="GET" class="d-inline">
-                    <button type="submit" name="pendientes" class="btn btn-warning btn-custom" style="text-decoration: none;">
-                        <i class="fas fa-clock"></i> Pendientes
-                    </button>
-                </form>
 
             </form>
         </div>

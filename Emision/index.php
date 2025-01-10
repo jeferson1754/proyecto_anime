@@ -558,11 +558,6 @@ include '../update_emision.php';
                     <span>Hoy</span>
                 </button>
 
-                <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
-                    <i class="fas fa-eraser"></i>
-                    <span>Borrar Filtros</span>
-                </button>
-
                 <button class="btn btn-custom btn-warning" type="submit" name="faltantes">
                     <i class="fas fa-clock"></i>
                     <span>Pendientes</span>
@@ -571,6 +566,11 @@ include '../update_emision.php';
                 <button type="button" class="btn btn-custom btn-info" onclick="myFunction()">
                     <i class="fas fa-filter"></i>
                     <span>Filtrar</span>
+                </button>
+
+                <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
+                    <i class="fas fa-eraser"></i>
+                    <span>Borrar Filtros</span>
                 </button>
 
                 <button type="button" class="btn btn-custom btn-info ocultar" data-toggle="modal" data-target="#ModalTotal">
