@@ -1,70 +1,133 @@
-<!--ventana para Update--->
-<div class="modal fade" id="editpeli1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+<!-- Modal para Registrar Película -->
+<div class="modal fade" id="editpeli1" tabindex="-1" aria-labelledby="modalNuevaPelicula" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header" style="background-color: #563d7c !important;">
-        <h6 class="modal-title" style="color: #fff; text-align: center;">
-          Nueva Pelicula
-        </h6>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <!-- Encabezado del Modal -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalNuevaPelicula">
+          <i class="bi bi-film me-2"></i>Nueva Película
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <?php
+      <!-- Formulario -->
+      <form id="form-data" action="recibCliente-Peli.php" method="POST" novalidate>
+        <div class="modal-body">
+          <input type="hidden" name="id" value="<?php echo $peli1; ?>">
 
-      $peli1 = 0;
-
-      // Ejecutar la consulta
-      $peli = "SELECT ID FROM id_peliculas WHERE ID NOT IN (SELECT ID FROM peliculas)ORDER BY `id_peliculas`.`ID` ASC LIMIT 1;";
-      $result = mysqli_query($conexion, $peli);
-
-      // Verificar si hay resultados
-      if ($result->num_rows > 0) {
-        // Obtener el resultado de la primera fila
-        $row = $result->fetch_assoc();
-        // Asignar el valor de la columna ID a la variable $ani
-        $peli1 = $row["ID"];
-      }
-      //echo $peli1;
-      ?>
-
-      <form name="form-data" action="recibCliente-Peli.php" method="POST">
-
-        <div class="modal-body" id="cont_modal">
-
-          <input type="hidden" min="1" value="<?php echo $peli1 ?>" name="id" class="form-control">
-
-
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Nombre de la Pelicula:</label>
-            <input type="text" name="nombre" class="form-control" required="true">
+          <!-- Nombre de la Película -->
+          <div class="mb-3">
+            <label for="nombre" class="form-label">Nombre de la Película</label>
+            <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingresa el nombre de la película" required>
           </div>
 
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Estado:</label>
-            <select name="estado" class="form-control" required>
-              <option value="">Seleccione:</option>
+          <!-- Estado -->
+          <div class="mb-3">
+            <label for="estado" class="form-label">Estado</label>
+            <select name="estado" id="estado" class="form-select" style="max-width: 100% !important;" required>
+              <option value="" selected disabled>Seleccione el estado</option>
               <option value="Finalizado">Finalizado</option>
               <option value="Pendiente">Pendiente</option>
             </select>
           </div>
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Año:</label>
-            <input type="number" name="fecha" min="1900" max="<?php echo $año ?>" class="form-control" value="<?php echo $año ?>" required="true">
+
+          <!-- Año -->
+          <div class="mb-3">
+            <label for="fecha" class="form-label">Año</label>
+            <input type="number" name="fecha" id="fecha" min="1900" max="<?php echo date('Y'); ?>" class="form-control" value="<?php echo date('Y'); ?>" required>
           </div>
         </div>
 
+        <!-- Pie del Modal -->
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary" id="btnEnviar">
-            Registrar Pelicula
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle"></i> Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle"></i> Registrar Película
           </button>
         </div>
+      </form>
     </div>
-    </form>
-
   </div>
 </div>
-</div>
-<!---fin ventana Update --->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('form-data');
+
+    // Validación en tiempo real
+    form.addEventListener('input', function(event) {
+      const input = event.target;
+
+      // Remover clases de validación previas
+      input.classList.remove('is-valid', 'is-invalid');
+
+      // Validar campo actual
+      if (input.checkValidity()) {
+        input.classList.add('is-valid');
+      } else {
+        input.classList.add('is-invalid');
+      }
+    });
+
+    // Validación al enviar
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      let isValid = true;
+
+      // Validar todos los campos
+      form.querySelectorAll('input, select').forEach(input => {
+        if (!input.checkValidity()) {
+          input.classList.add('is-invalid');
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        // Animar el formulario si hay errores
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 820);
+        return;
+      }
+
+      // Si todo está válido, enviar el formulario
+      form.submit();
+    });
+  });
+</script>
+
+<style>
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-5px);
+    }
+
+    50% {
+      transform: translateX(5px);
+    }
+
+    75% {
+      transform: translateX(-5px);
+    }
+  }
+
+  .shake {
+    animation: shake 0.82s cubic-bezier(.36, .07, .19, .97) both;
+  }
+
+  .is-valid {
+    border-color: #198754;
+  }
+
+  .is-invalid {
+    border-color: #dc3545;
+  }
+</style>

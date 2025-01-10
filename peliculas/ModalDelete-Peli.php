@@ -1,46 +1,49 @@
-<!--ventana para Update--->
-<div class="modal fade" id="editpeli2<?php echo $mostrar['ID']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Ventana para eliminar película -->
+<div class="modal fade delete-modal" id="editpeli2<?php echo $mostrar['ID']; ?>" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h6 class="modal-title">
-          ¿Realmente deseas eliminar a ?
-        </h6>
+        <h5 class="modal-title">
+          <i class="lucide-alert-triangle me-2"></i>
+          Confirmar Eliminación
+        </h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <style>
-        .div1 {
-          text-align: center;
-        }
-      </style>
-
 
       <form method="POST" action="recib_Delete-Peli.php">
-
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="estado" value="<?php echo $mostrar['Estado']; ?>">
 
-        <div class="modal-body div1" id="cont_modal">
-
-          <h1 class="modal-title">
-            <?php echo $mostrar['Nombre']; ?> 
-          </h1>
-          <h2 class="modal-title">
+        <div class="modal-body text-center" id="cont_modal">
+          <i class="fas fa-exclamation-triangle warning-icon"></i>
+          <h2 class="anime-title">
+            <?php echo $mostrar['Nombre']; ?>
+          </h2>
+          <div class="anime-details">
             <?php echo $mostrar['Ano']; ?>
-          </h2>
-          <h2 class="modal-title">
+          </div>
+          <div class="anime-details">
             <?php echo $mostrar['Estado']; ?>
-          </h2>
+          </div>
+          <p class="mt-4 text-gray-600">
+            Esta acción no se puede deshacer.
+          </p>
         </div>
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-          <button type="submit" class="btn btn-primary">Borrar</button>
+          <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">
+            <i class="fas fa-times"></i>
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-danger" id="deleteButton">
+            <i class="fas fa-trash"></i>Eliminar
+          </button>
         </div>
       </form>
 
     </div>
   </div>
 </div>
-<!---fin ventana Update --->
+<!-- Fin ventana eliminar película -->

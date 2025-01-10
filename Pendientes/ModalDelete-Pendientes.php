@@ -1,4 +1,4 @@
-<div class="modal fade  delete-modal" id="editChildresn9<?php echo $mostrar['ID_Pendientes']; ?>" tabindex="-1" aria-labelledby="deleteAnimeLabel" aria-hidden="true">
+<div class="modal fade delete-modal" id="editChildresn9<?php echo $mostrar['ID_Pendientes']; ?>" tabindex="-1" aria-labelledby="deleteAnimeLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
