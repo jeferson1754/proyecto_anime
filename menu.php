@@ -50,8 +50,8 @@
                         Calificaciones
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="/Anime/Calificaciones/calificaciones.php">Calificaciones</a>
-                        <a class="dropdown-item" href="/Anime/Calificaciones/">Editar Calif.</a>
+                        <a class="dropdown-item" href="/Anime/Calificaciones/calificaciones.php">Ver Calificaciones</a>
+                        <a class="dropdown-item" href="/Anime/Calificaciones/">Editar Calificaciones</a>
                     </div>
                 </li>
             </ul>
