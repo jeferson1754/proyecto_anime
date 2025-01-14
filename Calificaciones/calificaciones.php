@@ -254,6 +254,24 @@
             font-size: 3rem;
         }
     }
+
+    .seasons-container {
+        padding: 10px;
+        background-color: #f1f1f1;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .season-item {
+        padding: 5px 0;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .season-item:not(:last-child) {
+        border-bottom: 1px solid #ddd;
+    }
+
 </style>
 
 <body>
@@ -272,26 +290,105 @@
         <div class="anime-grid">
             <?php
             require '../bd.php';
-            $sql = "SELECT anime.Anime, calificaciones.* FROM `calificaciones` INNER JOIN anime ON calificaciones.ID_Anime=anime.id WHERE calificaciones.Promedio > 0 ORDER BY `calificaciones`.`Promedio` DESC;";
+
+            $sql = "SELECT 
+            anime.Anime, 
+            AVG(calificaciones.Promedio) AS PromedioGeneral, 
+            calificaciones.* 
+        FROM calificaciones 
+        INNER JOIN anime 
+        ON calificaciones.ID_Anime = anime.id 
+        WHERE calificaciones.Promedio > 0 
+       GROUP BY calificaciones.ID_Anime
+        ORDER BY PromedioGeneral DESC;";
+
             $resultado = $conexion->query($sql);
 
             if ($resultado->num_rows > 0) {
                 while ($fila = $resultado->fetch_assoc()) {
             ?>
                     <div class="rating-box">
-                        <?php if ($fila["Link_Imagen"] && $fila["Link_Imagen"] !== "") { ?>
-                            <img class="imagen" src="<?php echo $fila["Link_Imagen"] ?>" alt="<?php echo $fila["Anime"] ?>">
-                        <?php } else { ?>
-                            <div class="no-image">
-                                <i class="fas fa-film"></i>
-                                ID:<?php echo $fila["ID_Anime"] ?>
-                            </div>
-                        <?php } ?>
+                        <?php
+                        $id_anime = $fila['ID_Anime'];
+
+                        // Consulta SQL para obtener las imágenes relacionadas con el ID_Anime
+                        $imageQuery = "SELECT DISTINCT Link_Imagen 
+                                       FROM calificaciones 
+                                       WHERE ID_Anime = $id_anime";
+
+                        $result = $conexion->query($imageQuery);
+
+                        // Verificar si hay resultados
+                        if ($result->num_rows > 0) {
+                            $images = [];
+                            // Recorrer los resultados y almacenar las imágenes
+                            while ($row = $result->fetch_assoc()) {
+                                if (!empty($row['Link_Imagen'])) {
+                                    $images[] = htmlspecialchars($row['Link_Imagen'], ENT_QUOTES, 'UTF-8'); // Sanitizar el link y agregar al array
+                                }
+                            }
+
+                            // Solo mostrar el carrusel si hay más de una imagen
+                            if (count($images) > 1) {
+                        ?>
+                                <!-- Componente Carrusel de Bootstrap -->
+                                <div id="animeCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <?php
+                                        $isActive = true; // Variable para marcar el primer elemento como activo
+
+                                        // Recorrer las imágenes y agregar cada una al carrusel
+                                        foreach ($images as $imageLink) {
+                                        ?>
+                                            <div class="carousel-item <?php echo $isActive ? 'active' : ''; ?>">
+                                                <img src="<?php echo $imageLink; ?>" alt="Imagen de <?php echo $id_anime; ?>" class="imagen d-block w-100" style="height: 400px; object-fit: cover;">
+                                            </div>
+                                        <?php
+                                            $isActive = false; // Desactivar "active" para los siguientes elementos
+                                        }
+                                        ?>
+                                    </div>
+
+                                    <!-- Controles del Carrusel -->
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#animeCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Anterior</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#animeCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Siguiente</span>
+                                    </button>
+                                </div>
+                        <?php
+                            } else {
+                                // Si hay solo una imagen, mostrar la imagen sin carrusel
+                                if (count($images) == 1) {
+                                    echo "<img class='imagen' src='" . $images[0] . "' alt='Imagen de {$id_anime}'>";
+                                } else {
+                                    echo "     
+                                     <div class='no-image'>
+                                        <i class='fas fa-film'></i>
+                                        ID:{$fila['ID_Anime']}
+                                    </div>";
+                                }
+                            }
+                        } else {
+                            echo "     
+                            <div class='no-image'>
+                               <i class='fas fa-film'></i>
+                               ID:{$fila['ID_Anime']}
+                           </div>";
+                        }
+                        ?>
+
+
+
+
 
                         <header>
                             <?php
-                            if (strlen($fila["Anime"]) > 40) {
-                                echo substr($fila["Anime"], 0, 40) . "...";
+                            if (strlen($fila["Anime"]) > 35) {
+                                echo substr($fila["Anime"], 0, length: 35) . "...";
                             } else {
                                 echo $fila["Anime"];
                             }
@@ -300,7 +397,7 @@
 
                         <div class="stars product-stars">
                             <?php
-                            $calificacion = $fila["Promedio"];
+                            $calificacion = $fila["PromedioGeneral"];
                             for ($i = 1; $i <= 5; $i++) {
                                 if ($i <= $calificacion) {
                                     echo '<i class="fa-solid fa-star active"></i>';
@@ -310,16 +407,59 @@
                             }
                             ?>
                         </div>
+
                         <div class="rating-text product-rating">
-                            Promedio: <span class="product-rating-value"><?php echo $calificacion ?></span>
+                            Promedio General: <span class="product-rating-value"><?php echo number_format($calificacion, 2) ?></span>
                         </div>
+
+
+
+
+
+                        <?php
+                        /// Obtener los promedios por temporada de este anime
+                        $sql_temporada = "SELECT Temporadas, AVG(Promedio) AS promedio_temporada FROM calificaciones WHERE ID_Anime = " . $fila['ID_Anime'] . " GROUP BY Temporadas ORDER BY `calificaciones`.`ID` ASC";
+                        $resultado_temporada = $conexion->query(query: $sql_temporada);
+
+                        if ($resultado_temporada->num_rows > 1) {
+                        ?>
+
+                            <!-- Botón para mostrar promedios por temporada -->
+                            <button class="btn btn-info mt-2" onclick="toggleSeasons(<?php echo $fila['ID_Anime']; ?>)">
+                                Ver Temporadas
+                                <i class="fas fa-chevron-down" id="arrow-<?php echo $fila['ID_Anime']; ?>"></i> <!-- Flecha hacia abajo al principio -->
+                            </button>
+
+                            <!-- Contenedor de temporadas -->
+                            <div id="seasons-<?php echo $fila['ID_Anime']; ?>" class="seasons-container" style="display: none; margin-top: 10px;">
+
+                                <?php
+                                $numero_temporada = 1;  //
+                                while ($temporada = $resultado_temporada->fetch_assoc()) {
+                                    // Verifica si el nombre de la temporada no es nulo ni vacío
+                                    echo "<div class='season-item'>";
+                                    echo "Temporada " . $numero_temporada . ": ";
+                                    echo "<span class='product-rating-value'>  " . number_format($temporada['promedio_temporada'], 1) . "</span>";
+                                    echo "</div>";
+                                    $numero_temporada++;  // Incrementa el número de la temporada
+                                }
+                                ?>
+                            </div>
+                        <?php
+                        }
+
+                        ?>
+
                     </div>
+
+
             <?php
                 }
             } else {
                 echo '<div class="col-12 text-center">No se encontraron resultados.</div>';
             }
             ?>
+
         </div>
     </div>
 
@@ -358,6 +498,22 @@
 
             cards.forEach(card => grid.appendChild(card));
         });
+
+        function toggleSeasons(animeId) {
+            var seasonContent = document.getElementById('seasons-' + animeId);
+            var arrow = document.getElementById('arrow-' + animeId);
+
+            // Si las temporadas están visibles, las ocultamos
+            if (seasonContent.style.display === "block") {
+                seasonContent.style.display = "none";
+                arrow.classList.remove('fa-chevron-up'); // Quitar la flecha hacia arriba
+                arrow.classList.add('fa-chevron-down'); // Mostrar flecha hacia abajo
+            } else {
+                seasonContent.style.display = "block";
+                arrow.classList.remove('fa-chevron-down'); // Quitar la flecha hacia abajo
+                arrow.classList.add('fa-chevron-up'); // Mostrar flecha hacia arriba
+            }
+        }
     </script>
 </body>
 

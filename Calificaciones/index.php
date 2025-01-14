@@ -715,6 +715,11 @@ require '../bd.php';
             .table td {
                 border-top: none !important;
             }
+
+
+            .rating-box .stars {
+                gap: 12px !important;
+            }
         }
 
         .rating-cell {
@@ -801,11 +806,16 @@ require '../bd.php';
     <div class="main-container">
 
         <div class="actions-panel button-group">
-            <form action="" method="GET" class="d-flex gap-2">
-                <button type="submit" name="sin_calificar" class="btn btn-custom btn-primary">
+            <form action="" method="GET" class="d-flex gap-2 flex-wrap">
+                <button type="submit" name="sin_calificar" class="btn btn-primary btn-custom">
                     <i class="fas fa-filter"></i>Sin Calificar
                 </button>
-                <button type="submit" name="borrar" class="btn btn-custom btn-secondary">
+                <button type="submit" name="link" class="btn btn-warning btn-custom">
+                    <i class="fas fa-image" style="font-size: 20px; opacity: 0.5;"></i>
+                    Sin Imagen
+                </button>
+
+                <button type="submit" name="borrar" class="btn btn-secondary btn-custom ">
                     <i class="fas fa-list me-2"></i>Todos
                 </button>
             </form>
@@ -829,6 +839,7 @@ require '../bd.php';
                     <tbody>
                         <?php
                         $where = isset($_GET['sin_calificar']) ? "WHERE calificaciones.Promedio=0.0" : "";
+                        $where = isset($_GET['link']) ? "WHERE Link_Imagen IS NULL OR Link_Imagen = ''" : "";
                         $sql = "SELECT anime.Anime, calificaciones.* FROM calificaciones 
                            INNER JOIN anime ON anime.id = calificaciones.ID_Anime 
                            $where ORDER BY calificaciones.ID DESC";
@@ -839,16 +850,21 @@ require '../bd.php';
                         ?>
                             <tr>
                                 <td><?php echo $mostrar['ID']; ?></td>
-                                <td><?php echo $mostrar['Anime']; ?></td>
+                                <td><?php echo $mostrar['Anime'] . " " . $mostrar['Temporadas']; ?></td>
                                 <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php echo $mostrar['Calificacion_1']; ?></td>
                                 <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php echo $mostrar['Calificacion_2']; ?></td>
                                 <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php echo $mostrar['Calificacion_3']; ?></td>
                                 <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php echo $mostrar['Calificacion_4']; ?></td>
-                                <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php echo $mostrar['Calificacion_5']; ?></td>
+                                <td class="rating-cell progress-cell <?php echo $rating_class; ?>"><?php
+                                                                                                    echo !empty($mostrar['Calificacion_5']) ? $mostrar['Calificacion_5'] : 0;
+                                                                                                    ?>
+                                </td>
                                 <td class="rating-cell <?php echo $rating_class; ?>"><strong><?php echo $mostrar['Promedio']; ?></strong></td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="editar_stars.php?id=<?php echo $mostrar['ID_Anime']; ?>&nombre=<?php echo urlencode($mostrar['Anime']); ?>"
+                                        <?php $variable_nombre = urlencode($mostrar["Anime"]); ?>
+                                        <?php $variable_temporada = urlencode($mostrar['Temporadas']); ?>
+                                        <a href="editar_stars.php?id=<?php echo $mostrar['ID_Anime']; ?>&nombre=<?php echo $variable_nombre; ?>&temporada=<?php echo $variable_temporada; ?>"
                                             class="btn action-button btn-custom btn-warning">
                                             <i class="fas fa-star"></i>
                                         </a>

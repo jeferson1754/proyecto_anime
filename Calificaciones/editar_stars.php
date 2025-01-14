@@ -5,6 +5,7 @@
 if (isset($_GET['id']) && isset($_GET['nombre'])) {
     $id_anime = urldecode($_GET['id']);
     $nombre_anime = urldecode($_GET['nombre']);
+    $temporada = urldecode($_GET['temporada']) ?? null;
 }
 
 require '../bd.php';
@@ -16,7 +17,7 @@ $titulos = array("Historia", "Música", "Animación", "Desarrollo", "Final");
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calificaciones - <?php echo htmlspecialchars($nombre_anime); ?></title>
+    <title>Calificaciones -<?php echo htmlspecialchars($nombre_anime . " " . $temporada); ?></title>
     <link rel="stylesheet" href="../css/style.css?<?php echo time(); ?>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
     <style>
@@ -120,11 +121,17 @@ $titulos = array("Historia", "Música", "Animación", "Desarrollo", "Final");
         .clear-button:hover {
             background-color: #a71d2a;
         }
+
+        @media (max-width: 576px) {
+            .rating-box .stars {
+                gap: 12px !important;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <h2>Califica: <?php echo htmlspecialchars($nombre_anime); ?></h2>
+    <h2>Califica: <?php echo htmlspecialchars($nombre_anime . " " . $temporada); ?></h2>
 
     <div class="container">
         <?php
@@ -133,7 +140,7 @@ $titulos = array("Historia", "Música", "Animación", "Desarrollo", "Final");
 
         // Consulta SQL para obtener las calificaciones desde la base de datos
         $sql = "SELECT Calificacion_1, Calificacion_2, Calificacion_3, Calificacion_4, Calificacion_5, Link_Imagen 
-                FROM `calificaciones` WHERE ID_Anime=$id_anime";
+                FROM `calificaciones` WHERE ID_Anime=$id_anime AND Temporadas='$temporada'";
         $result = $conexion->query($sql);
 
         if ($result->num_rows > 0) {
@@ -165,6 +172,7 @@ $titulos = array("Historia", "Música", "Animación", "Desarrollo", "Final");
             <br>
             <input type="hidden" id="starValuesInput" name="starValues">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_anime); ?>">
+            <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($temporada); ?>">
             <button type="button" class="clear-button" id="clearRatings">Borrar selección</button>
             <button type="submit">Guardar Calificacion</button>
 

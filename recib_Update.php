@@ -155,11 +155,26 @@ if ($estado != "Finalizado") {
     if (mysqli_num_rows($horario) == 0) {
         echo "No existe el anime en el horario, así que lo creo:<br>";
         try {
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // Consulta SQL para insertar datos
             $sql = "INSERT INTO `horario`( `Nombre`, `Dia`, `Duracion`, `num_horario`) VALUES (?, ?, ?, ?)";
-            $stmt = $conexion->prepare($sql);
-            $stmt->execute([$nombre_temps, $dia, $duracion, $num_horario]);
+
+            // Preparar la consulta
+            $stmt = $conn->prepare($sql);
+
+            // Vincular los parámetros de forma individual
+            $stmt->bindValue(1, $nombre_temps);
+            $stmt->bindValue(2, $dia);
+            $stmt->bindValue(3, $duracion);
+            $stmt->bindValue(4, $num_horario);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
             echo $sql . "<br>Demas<br>";
         } catch (PDOException $e) {
+            // Captura cualquier error y lo muestra
             echo "Error: " . $e->getMessage();
         }
     } else {

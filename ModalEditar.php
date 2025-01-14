@@ -177,22 +177,23 @@
               <?php echo $texto ?> <span class="rating-value"><?php echo $calificacion ?></span>
             </div>
             <?php $variable_nombre = urlencode($mostrar["Anime"]); ?>
-            <a href="editar_stars.php?id=<?php echo $iden; ?>&nombre=<?php echo $variable_nombre; ?>"
+            <?php $variable_temporada = urlencode($mostrar['Temporadas']); ?>
+            <a href="./Calificaciones/editar_stars.php?id=<?php echo $iden; ?>&nombre=<?php echo $variable_nombre; ?>&temporada=<?php echo $variable_temporada; ?>"
               class="btn btn-secondary mt-3">
               Cambiar Calificación
             </a>
           </div>
-    </div>
+        </div>
 
-    <div class="modal-footer">
-      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-        <i class="fas fa-times me-2"></i>Cerrar
-      </button>
-      <button type="submit" class="btn btn-primary">
-        <i class="fas fa-save me-2"></i>Guardar Cambios
-      </button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Cerrar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-save me-2"></i>Guardar Cambios
+          </button>
+        </div>
+      </form>
     </div>
-    </form>
   </div>
-</div>
 </div>
