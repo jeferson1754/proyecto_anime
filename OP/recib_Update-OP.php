@@ -21,41 +21,16 @@ $ano = $_REQUEST['ano'];
 $estado_link = $_REQUEST['estado_link'];
 $link = $_REQUEST['link'];
 $autor = $_REQUEST['autor'];
-$ocultar = isset($_REQUEST['ocultar']) ? $_REQUEST['ocultar'] : null;
 
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Actualizar el estado de mostrar/ocultar
-    $mostrar = $ocultar ? 'NO' : 'SI';
-    $sql = "UPDATE `op` SET `mostrar` = :mostrar WHERE `ID` = :idRegistros";
-    $stmt = $conn->prepare($sql);
-    $stmt->bindParam(':mostrar', $mostrar);
-    $stmt->bindParam(':idRegistros', $idRegistros);
-    $stmt->execute();
+    // Invertir el mapeo para buscar por valor
+    $temporadas_invertidas = array_flip($temporadas);
 
-    // Convertir temporada a número
-    switch ($temp) {
-        case 'Invierno':
-            $tempor = 1;
-            break;
-        case 'Primavera':
-            $tempor = 2;
-            break;
-        case 'Verano':
-            $tempor = 3;
-            break;
-        case 'Otoño':
-            $tempor = 4;
-            break;
-        case 'Desconocida':
-            $tempor = 5;
-            break;
-        default:
-            $tempor = $temp;
-            break;
-    }
+    // Obtener el número correspondiente a la temporada
+    $tempor = $temporadas_invertidas[$temp] ?? null;
 
     // Verificar si el autor existe
     $stmt = $conn->prepare("SELECT * FROM `autor` WHERE Autor = :autor");
@@ -105,9 +80,34 @@ try {
     echo $e;
 }
 
-// Actualizar los datos del registro de autor
-$sql2 = "UPDATE autor SET Canciones = (SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor= autor.ID);";
-$result2 = $conexion->query($sql2);
+$sql = "
+    -- Actualizar el conteo de canciones
+    UPDATE autor 
+    SET Canciones = (
+        SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID
+    ) + (
+        SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID
+    );
+
+    -- Actualizar Copia_Autor a 'SI' si cumple con la condición
+    UPDATE autor SET Copia_Autor = 'SI' 
+    WHERE (Canciones + Canciones_Musica) >= 5 AND ID != 1;
+";
+
+$result = $conexion->multi_query($sql);
+
+if ($result) {
+    do {
+        // Verificar si hay más resultados o errores
+        if ($conexion->more_results()) {
+            $conexion->next_result();
+        }
+    } while ($conexion->more_results());
+    echo "Actualización completada con éxito.";
+} else {
+    echo "Error en la actualización: " . $conexion->error;
+}
+
 
 // Mensaje de éxito con SweetAlert
 echo '<script>

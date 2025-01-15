@@ -48,16 +48,6 @@ if (isset($sql_update)) {
     $result_update = mysqli_multi_query($conexion, $sql_update);
 }
 
-// Redireccionar
-if (isset($_POST['accion'])) {
-    if ($_POST['accion'] == "nuevo_mix") {
-        $table = ($_POST['accion'] == "nuevo_mix") ? "mix" : "mix_ed";
-        $sql_insert = "INSERT INTO `$table` (`ID`) VALUES (NULL)";
-        mysqli_query($conexion, $sql_insert);
-        $mensaje = ($_POST['accion'] == "nuevo_mix") ? "Nuevo Mix en Openings" : "Nuevo Mix en Endings";
-    }
-}
-
 if (isset($mensaje)) {
     echo '<script>
         Swal.fire({

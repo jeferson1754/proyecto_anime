@@ -26,6 +26,7 @@ if (!mysqli_set_charset($conexion, "utf8mb4")) {
 if (mysqli_connect_errno()) {
     die("No se pudo conectar a la base de datos: " . mysqli_connect_error());
 }
+/*
 
 $max_queries_per_hour = 700;
 
@@ -58,6 +59,8 @@ $result = mysqli_query($conexion, $query);
 if (!$result) {
     die("La consulta falló: " . mysqli_error($conexion));
 }
+
+*/
 
 // Establecer la zona horaria para Santiago de Chile.
 date_default_timezone_set('America/Santiago');
