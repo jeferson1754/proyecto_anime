@@ -1,14 +1,11 @@
 <?php
-
 require '../bd.php';
 if (isset($_GET['id'])) {
-    // Obtener el valor de id_deudor
     $id = $_GET['id'];
-    // Aquí puedes usar $id_deudor como necesites en tu código
 } else {
-    echo "No se ha proporcionado el ID del ED.";
+    echo "No se ha proporcionado el ID del ed.";
+    exit;
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -18,102 +15,139 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/8846655159.js" crossorigin="anonymous"></script>
     <title>Copia al Portapapeles</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .buttons-container button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .buttons-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .buttons-container button i {
+            font-size: 20px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 
-<style>
-    .div1 {
-        text-align: center;
-    }
-
-    .buttons-container {
-        display: flex;
-        justify-content: center;
-        /* Centrar horizontalmente */
-    }
-
-    .buttons-container button {
-        width: auto;
-        height: auto;
-        margin: 0 5px;
-        margin-bottom: 20px;
-        /* Espacio entre los botones */
-    }
-
-    i {
-        font-size: 40px;
-    }
-</style>
-
 <body>
-    <!-- Contenido HTML -->
     <?php
-    // Consulta SQL para obtener los últimos 5 registros desde la base de datos
-    $consulta = "SELECT * FROM `ed` WHERE ID='$id' ORDER BY `ID` DESC LIMIT 5";
+    $consulta = "SELECT * FROM `ed`INNER JOIN autor ON ed.ID_Autor=autor.ID WHERE ed.ID='$id'";
     $resultados = $conexion->query($consulta);
 
     if ($resultados->num_rows > 0) {
-        // Iterar sobre los resultados
         while ($row = $resultados->fetch_assoc()) {
-            // Obtener el título y los dos textos de la base de datos
-            $cancion = $row["Cancion"] ?? ""; // Asegúrate de que el nombre de la columna sea "Cancion"
-            $texto1 = $row["Nombre"] ?? ""; // Asegúrate de que el nombre de la columna sea "Nombre"
-            $texto2 = $row["Ending"] ?? ""; // Asegúrate de que el nombre de la columna sea "Opening"
+            $cancion = $row["Cancion"] ?? "";
+            $texto1 = $row["Nombre"] ?? "";
+            $texto2 = $row["Ending"] ?? "";
+            /*
+            echo $cancion . "<br>";
+            echo $texto1 . "<br>";
+            echo $texto2 . "<br>";
+            */
 
-            // Imprimir el título y los botones para copiar los textos al portapapeles
+
+
             echo "<div class='buttons-container'>";
-            echo '<button title="Copiar Titulo" onclick="copyToClipboard(\'' . $cancion . '\')"><i class="fa-solid fa-music"></i></button>';
+            echo '<button title="Copiar Título" onclick="copyToClipboard(\'' . $cancion . '\')"><i class="fa-solid fa-music"></i> Título</button>';
 
-            // Consultar el autor y las repeticiones
-            $sql1 = "SELECT autor.Autor, ed.ID, ((SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID)) AS Repeticiones 
-                FROM autor JOIN ed ON autor.ID = ed.ID_Autor 
-                WHERE ed.ID = '$id' AND autor.Autor != '' HAVING Repeticiones > 5";
-            $result1 = $conexion->query($sql1);
 
-            if ($result1->num_rows > 0) {
-                $fila = $result1->fetch_assoc();
-                $autor = $fila["Autor"];
-                echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $autor . '\')"><i class="fa-solid fa-user"></i></button>';
+            if ($row["Copia_Autor"] == "SI") {
+                $autor = $row["Autor"];
+                echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $autor . '\')"><i class="fa-solid fa-user"></i> Artista</button>';
             } else {
-                echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $texto1 . ' ED ' . $texto2 . '\')"><i class="fa-solid fa-user"></i></button>';
+                echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $texto1 . ' ED ' . $texto2 . '\')"><i class="fa-solid fa-user"></i> Artista</button>';
             }
 
-            // Consultar el anime
-            $sql2 = "SELECT anime.Anime 
-                FROM `ed` INNER JOIN anime ON ed.ID_Anime = anime.id 
-                WHERE ed.ID = '$id'";
+
+            $sql2 = "SELECT anime.Anime FROM `ed` INNER JOIN anime ON ed.ID_Anime = anime.id WHERE ed.ID = '$id'";
             $result2 = $conexion->query($sql2);
 
             if ($result2->num_rows > 0) {
                 $fila = $result2->fetch_assoc();
                 $anime = $fila["Anime"];
-                echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
+                echo '<button title="Copiar Álbum" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i> Álbum</button>';
             } else {
-                echo '<button title="Copiar Album" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i></button>';
+                echo '<button title="Copiar Álbum" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i> Álbum</button>';
             }
 
-            echo "</div>"; // Cierre del div 'buttons-container'
+            echo "</div>";
         }
     } else {
-        echo "No se encontraron resultados en la base de datos.";
+        echo "<p>No se encontraron resultados en la base de datos.</p>";
     }
     ?>
 
 
-    <!-- Definir la función para copiar texto al portapapeles en JavaScript -->
+
     <script>
         function copyToClipboard(text) {
-            var textarea = document.createElement("textarea");
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textarea);
-            alert("Texto copiado al portapapeles: " + text);
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Texto copiado al portapapeles: " + text);
+            }).catch(err => {
+                console.error('Error al copiar al portapapeles:', err);
+            });
         }
     </script>
-
-
-
 </body>
 
 </html>

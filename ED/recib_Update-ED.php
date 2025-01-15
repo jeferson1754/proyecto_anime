@@ -22,67 +22,94 @@ $estado_link = $_REQUEST['estado_link'];
 $link = $_REQUEST['link'];
 $autor = $_REQUEST['autor'];
 
-// Determinar si se debe ocultar el registro
-$mostrar = isset($_REQUEST["ocultar"]) ? 'NO' : 'SI';
 
-try {
-    // Actualizar el estado de visualización del registro
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "UPDATE ed SET mostrar = ? WHERE ID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$mostrar, $idRegistros]);
-    $conn = null;
-} catch (PDOException $e) {
-    echo $e;
-}
-
-// Determinar el valor numérico de la temporada
-$tempor = ($temp == "Invierno") ? "1" : (($temp == "Primavera") ? "2" : (($temp == "Verano") ? "3" : (($temp == "Otoño") ? "4" : (($temp == "Desconocida") ? "5" : $temp))));
-
-// Obtener el ID del autor
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $stmt = $conn->prepare("SELECT ID FROM autor WHERE Autor = ?");
-    $stmt->execute([$autor]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    $autores = $result ? $result['ID'] : null;
-    $conn = null;
-} catch (PDOException $e) {
-    echo $e;
-}
 
-// Si no se encontró el ID del autor, insertarlo en la tabla de autores y obtener su ID
-if (!$autores) {
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO autor (Autor) VALUES (?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute([$autor]);
+    // Invertir el mapeo para buscar por valor
+    $temporadas_invertidas = array_flip($temporadas);
+
+    // Obtener el número correspondiente a la temporada
+    $tempor = $temporadas_invertidas[$temp] ?? null;
+
+    // Verificar si el autor existe
+    $stmt = $conn->prepare("SELECT * FROM `autor` WHERE Autor = :autor");
+    $stmt->bindParam(':autor', $autor);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row) {
+        $autores = $row['ID'];
+    } else {
+        // Insertar nuevo autor si no existe
+        $stmt = $conn->prepare("INSERT INTO `autor` (`Autor`) VALUES (:autor)");
+        $stmt->bindParam(':autor', $autor);
+        $stmt->execute();
         $autores = $conn->lastInsertId();
-        $conn = null;
-    } catch (PDOException $e) {
-        echo $e;
     }
-}
 
-try {
-    // Actualizar los datos del registro de ending
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $sql = "UPDATE ed SET Cancion = ?, Link = ?, Link_Iframe = ?, Estado = ?, ID_Anime = ?, Temporada = ?, Ending = ?, Estado_Link = ?, Ano = ?, ID_Autor = ?, Mix = ? WHERE ID = ?";
+    // Actualizar la OP en la base de datos
+    $sql = "UPDATE `ed` SET
+            `Cancion` = :cancion,
+            `Link` = :enlace,
+            `Link_Iframe` = :iframe,
+            `Estado` = :estado,
+            `ID_Anime` = :idAnime,
+            `Temporada` = :tempor,
+            `Estado_Link` = :estado_link,
+            `Ano` = :ano,
+            `ID_Autor` = :autores,
+            `Ending` = :ending,
+            `Mix` = :mix
+            WHERE `ID` = :idRegistros";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$cancion, $enlace, $iframe, $estado, $idAnime, $tempor, $ed, $estado_link, $ano, $autores, $mix, $idRegistros]);
+    $stmt->bindParam(':cancion', $cancion);
+    $stmt->bindParam(':enlace', $enlace);
+    $stmt->bindParam(':iframe', $iframe);
+    $stmt->bindParam(':estado', $estado);
+    $stmt->bindParam(':idAnime', $idAnime);
+    $stmt->bindParam(':tempor', $tempor);
+    $stmt->bindParam(':estado_link', $estado_link);
+    $stmt->bindParam(':ano', $ano);
+    $stmt->bindParam(':autores', $autores);
+    $stmt->bindParam(':ending', $ed);
+    $stmt->bindParam(':mix', $mix);
+    $stmt->bindParam(':idRegistros', $idRegistros);
+    $stmt->execute();
+
     $conn = null;
 } catch (PDOException $e) {
+    $conn = null;
     echo $e;
 }
+$sql = "
+    -- Actualizar el conteo de canciones
+    UPDATE autor 
+    SET Canciones = (
+        SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID
+    ) + (
+        SELECT COUNT(*) FROM ed WHERE ed.ID_Autor = autor.ID
+    );
 
-// Actualizar los datos del registro de autor
-$sql2 = "UPDATE autor SET Canciones = (SELECT COUNT(*) FROM op WHERE op.ID_Autor = autor.ID) + (SELECT COUNT(*) FROM ed WHERE ed.ID_Autor= autor.ID);";
-$result2 = $conexion->query($sql2);
+    -- Actualizar Copia_Autor a 'SI' si cumple con la condición
+    UPDATE autor SET Copia_Autor = 'SI' 
+    WHERE (Canciones + Canciones_Musica) >= 5 AND ID != 1;
+";
+
+$result = $conexion->multi_query($sql);
+
+if ($result) {
+    do {
+        // Verificar si hay más resultados o errores
+        if ($conexion->more_results()) {
+            $conexion->next_result();
+        }
+    } while ($conexion->more_results());
+    echo "Actualización completada con éxito.";
+} else {
+    echo "Error en la actualización: " . $conexion->error;
+}
+
 
 
 // Mensaje de éxito con SweetAlert

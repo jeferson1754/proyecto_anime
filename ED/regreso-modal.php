@@ -2,7 +2,7 @@
 if (isset($_GET['borrar'])) {
    $link = "./?busqueda_ed=&borrar=";
    echo "<input type='hidden' name='link' value='$link'>";
-} else if (isset($_GET['buscar'])) {
+} else if (isset($_GET['busqueda_ed'])) {
    $link = "./?busqueda_ed=$busqueda&buscar=";
    echo "<input type='hidden' name='link' value='$link'>";
 } else if (isset($_GET['filtrar'])) {
