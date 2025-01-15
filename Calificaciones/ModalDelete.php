@@ -18,7 +18,7 @@
         <div class="modal-body text-center">
           <i class="fas fa-exclamation-triangle warning-icon"></i>
           <h2 class="anime-title">
-            <?php echo $mostrar['Anime']; ?>
+            <?php echo $mostrar['Anime'] . " " . $mostrar['Temporadas']; ?>
           </h2>
           <div class="anime-details">
             <div class="rating-value">

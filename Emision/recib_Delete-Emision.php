@@ -8,7 +8,7 @@ include '../bd.php';
 $fecha_actual = date('Y-m-d');
 
 $idRegistros    = $_REQUEST['id'];
-$nombre         = $_REQUEST['nombre'];
+
 $accion         = $_REQUEST['accion'];
 $link           = $_REQUEST['link'];
 
@@ -34,6 +34,8 @@ $anime = $stmt2->fetch(PDO::FETCH_ASSOC);
 
 if ($anime) {
     $id_anime = $anime['id'];
+    $temporadas = $anime['Temporadas'];
+    $nombre         = $anime['Anime'];
 }
 
 // Preparar datos para eliminar emision
@@ -93,15 +95,20 @@ try {
 
 // Lógica para Calificar
 if (isset($_POST['Calificar_Ahora'])) {
-    header("location:../editar_stars.php?id=$id_anime&nombre=$nombre");
+    header("location:../Calificaciones/editar_stars.php?id=$id_anime&nombre=$nombre&temporada=$temporadas");
 } else if (isset($_POST['Calificar_Luego'])) {
     try {
-        $sql = "INSERT INTO calificaciones (ID_Anime) VALUES (:id_anime)";
+        $sql = "INSERT INTO calificaciones (ID_Anime, Temporadas) VALUES (:id_anime, :temporadas)";
         $stmt = $conn->prepare($sql);
-        $stmt->execute(['id_anime' => $id_anime]);
+        $stmt->execute([
+            'id_anime' => $id_anime,
+            'temporadas' => $temporadas
+        ]);
+        echo "Calificación insertada correctamente.";
     } catch (PDOException $e) {
         echo "Error al insertar calificación: " . $e->getMessage();
     }
+
 
     echo '<script>
         Swal.fire({

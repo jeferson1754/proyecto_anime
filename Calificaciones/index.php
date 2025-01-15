@@ -838,11 +838,31 @@ require '../bd.php';
                     </thead>
                     <tbody>
                         <?php
-                        $where = isset($_GET['sin_calificar']) ? "WHERE calificaciones.Promedio=0.0" : "";
-                        $where = isset($_GET['link']) ? "WHERE Link_Imagen IS NULL OR Link_Imagen = ''" : "";
-                        $sql = "SELECT anime.Anime, calificaciones.* FROM calificaciones 
-                           INNER JOIN anime ON anime.id = calificaciones.ID_Anime 
-                           $where ORDER BY calificaciones.ID DESC";
+                        // Inicializar la variable $where
+                        $where = [];
+
+                        // Construir las condiciones basadas en los parámetros GET
+                        if (isset($_GET['sin_calificar'])) {
+                            $where[] = "calificaciones.Promedio = 0.0";
+                        }
+
+                        if (isset($_GET['link'])) {
+                            $where[] = "Link_Imagen IS NULL OR Link_Imagen = ''";
+                        }
+
+                        // Combinar las condiciones con AND o dejar vacío si no hay condiciones
+                        $where_clause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+
+                        // Construir la consulta final
+                        $sql = "SELECT anime.Anime, calificaciones.* 
+                            FROM calificaciones 
+                            INNER JOIN anime ON anime.id = calificaciones.ID_Anime 
+                            $where_clause 
+                            ORDER BY calificaciones.ID DESC";
+
+                        // Mostrar la consulta para depuración
+                        //echo $sql;
+
                         $result = mysqli_query($conexion, $sql);
 
                         while ($mostrar = mysqli_fetch_array($result)) {
