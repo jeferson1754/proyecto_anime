@@ -91,7 +91,7 @@ if (isset($_GET['id'])) {
 
 <body>
     <?php
-    $consulta = "SELECT * FROM `op` WHERE ID='$id' ORDER BY `ID` DESC LIMIT 5";
+    $consulta = "SELECT * FROM `op`INNER JOIN autor ON op.ID_Autor=autor.ID WHERE op.ID='$id'";
     $resultados = $conexion->query($consulta);
 
     if ($resultados->num_rows > 0) {
@@ -99,22 +99,25 @@ if (isset($_GET['id'])) {
             $cancion = $row["Cancion"] ?? "";
             $texto1 = $row["Nombre"] ?? "";
             $texto2 = $row["Opening"] ?? "";
+            /*
+            echo $cancion . "<br>";
+            echo $texto1 . "<br>";
+            echo $texto2 . "<br>";
+            */
+
+
 
             echo "<div class='buttons-container'>";
             echo '<button title="Copiar Título" onclick="copyToClipboard(\'' . $cancion . '\')"><i class="fa-solid fa-music"></i> Título</button>';
 
-            $sql1 = "SELECT autor.Autor, op.ID, (autor.Canciones + autor.Canciones_Musica) as Repeticiones 
-                    FROM autor JOIN op ON autor.ID = op.ID_Autor 
-                    WHERE op.ID='$id' HAVING Repeticiones > 5";
-            $result1 = $conexion->query($sql1);
 
-            if ($result1->num_rows > 0) {
-                $fila = $result1->fetch_assoc();
-                $autor = $fila["Autor"];
+            if ($row["Copia_Autor"] == "SI") {
+                $autor = $row["Autor"];
                 echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $autor . '\')"><i class="fa-solid fa-user"></i> Artista</button>';
             } else {
                 echo '<button title="Copiar Artista" onclick="copyToClipboard(\'' . $texto1 . ' OP ' . $texto2 . '\')"><i class="fa-solid fa-user"></i> Artista</button>';
             }
+
 
             $sql2 = "SELECT anime.Anime FROM `op` INNER JOIN anime ON op.ID_Anime = anime.id WHERE op.ID = '$id'";
             $result2 = $conexion->query($sql2);

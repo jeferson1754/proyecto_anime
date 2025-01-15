@@ -854,6 +854,33 @@ $año = date("Y");
                 width: 100%;
             }
         }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+
+        .status-finalizado {
+            background-color: #f1f5f9;
+            color: rgb(11, 162, 69);
+        }
+
+        .status-faltante {
+            background-color: #fffbeb;
+            /* Un fondo amarillo claro */
+            color: #9a6b00;
+            /* Un color de texto marrón oscuro */
+        }
+
+        .status-opening {
+            background-color: #e1e7ff;
+            /* Un fondo azul claro */
+            color: rgb(8, 72, 137);
+            /* Un color de texto gris azulado */
+        }
     </style>
 </head>
 
@@ -872,7 +899,7 @@ $año = date("Y");
                     <i class="fas fa-search mr-2"></i> Busqueda por Anime
                 </button>
                 <button type="button" onclick="toggleFilter('song')" class="btn btn-info btn-custom">
-                    <i class="fas fa-music mr-2"></i> Busqueda por Cancion
+                    <i class="fas fa-user mr-2"></i> Búsqueda por Autor
                 </button>
 
                 <button type="submit" name="nombre" class="btn btn-warning btn-custom">
@@ -976,7 +1003,7 @@ $año = date("Y");
 
                 $busqueda   = $_REQUEST['busqueda_cancion'];
 
-                $where = "WHERE op.Cancion LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
+                $where = "WHERE autor.Autor LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
             }
         }
         ?>
@@ -994,7 +1021,7 @@ $año = date("Y");
                             <th>Autor</th>
                             <th>Año</th>
                             <th>Temporada</th>
-                            <th>Estado</th>
+                            <th style="width:80px !important">Estado</th>
                             <th>N° Mix</th>
                             <th>Acciones</th>
                         </tr>
@@ -1002,7 +1029,7 @@ $año = date("Y");
                     <tbody>
                         <?php
 
-                        $sql = "SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,autor.Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link,op.mostrar FROM `op` JOIN temporada ON op.Temporada=temporada.ID JOIN autor ON op.ID_Autor=autor.ID $where";
+                        $sql = "SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,autor.Autor,autor.Copia_Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link,op.mostrar FROM `op` JOIN temporada ON op.Temporada=temporada.ID JOIN autor ON op.ID_Autor=autor.ID $where";
                         //echo $sql;
 
                         $result = mysqli_query($conexion, $sql);
@@ -1012,6 +1039,8 @@ $año = date("Y");
                             $id_Registros = $mostrar['ID'];
                             $iden = $mostrar['ID_Anime'];
                             $name = $mostrar['Nombre'];
+
+                            $copia_autor = $mostrar['Copia_Autor'];
                             $name2 = substr($name, 0, 8);
                             //echo $name2;
                             //echo "<br>";
@@ -1026,7 +1055,21 @@ $año = date("Y");
                                 <td><?php echo $mostrar['Autor'] ?></td>
                                 <td><?php echo $mostrar['Ano'] ?></td>
                                 <td><?php echo $mostrar['Temporada'] ?></td>
-                                <td><?php echo $mostrar['Estado'] ?></td>
+                                <td>
+                                    <span class="status-badge 
+                                <?php
+                                if ($mostrar['Estado'] == 'Faltante') {
+                                    echo 'status-faltante';
+                                } elseif ($mostrar['Estado'] == 'OP Listo') {
+                                    echo 'status-opening';
+                                } elseif ($mostrar['Estado'] == 'Mix Listo') {
+                                    echo 'status-finalizado';
+                                }
+                                ?>">
+                                        <?php echo $mostrar['Estado']; ?>
+                                    </span>
+
+                                </td>
                                 <td><?php echo $mostrar['Mix'] ?></td>
                                 <td class="action-buttons">
                                     <button type="button" class="action-button bg-info"
