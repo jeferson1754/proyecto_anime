@@ -912,6 +912,12 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                         </svg>
                         Filtros
                     </button>
+                    <button class="btn btn-custom btn-success" type="button" id="miBoton" style="display:none;">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Actualizar Animes en Emision</span>
+                    </button>
+
+
                 </div>
             </div>
             <form action="" method="GET">
@@ -1057,7 +1063,7 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
 
-
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function() {
@@ -1078,6 +1084,85 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
             const filtersContainer = document.getElementById('filtersContainer');
             filtersContainer.style.display = filtersContainer.style.display === 'none' ? 'flex' : 'none';
         }
+
+        // Tu código existente para el botón de marcar todos como vistos
+        document.getElementById('miBoton').addEventListener('click', function() {
+            Swal.fire({
+                icon: 'info',
+                title: 'Aviso',
+                text: '¿Desea actualizar los animes en emision a la temporada <?php echo $tempo . " " . $año ?>?',
+                showCancelButton: true,
+                cancelButtonColor: '#d33',
+                confirmButtonText: "SI",
+                cancelButtonText: "NO"
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    Swal.fire({
+                        title: 'Mensaje importante',
+                        text: 'Serás redirigido en 3 segundos...',
+                        icon: 'warning',
+                        showConfirmButton: false, // Oculta los botones
+                        timer: 3000, // Tiempo en milisegundos (5 segundos en este caso)
+                        timerProgressBar: true,
+                        allowOutsideClick: false,
+                        onBeforeOpen: () => {
+                            Swal.showLoading();
+                        },
+                        onClose: () => {
+                            // Redirige a otra página después de que termine el temporizador
+                            window.location.href = 'update_animes.php';
+                        }
+                    });
+
+                    // Redirige a otra página después de 5 segundos incluso si el usuario no cierra la alerta
+                    setTimeout(() => {
+                        window.location.href = 'update_animes.php';
+                    }, 3000);
+                }
+            })
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener el mes y el año actual
+            const fechaActual = new Date(2025, 0, 15);
+            //const fechaActual = new Date();
+            const mesActual = fechaActual.getMonth(); // 0 = enero, 1 = febrero, ..., 11 = diciembre
+            const añoActual = fechaActual.getFullYear();
+
+            // Determinar el mes del último cambio de temporada (enero, abril, julio, octubre)
+            let mesCambioTemporada;
+
+            if (mesActual >= 0 && mesActual < 3) { // Enero, Febrero, Marzo
+                mesCambioTemporada = 0; // Invierno (Enero)
+            } else if (mesActual >= 3 && mesActual < 6) { // Abril, Mayo, Junio
+                mesCambioTemporada = 3; // Primavera (Abril)
+            } else if (mesActual >= 6 && mesActual < 9) { // Julio, Agosto, Septiembre
+                mesCambioTemporada = 6; // Verano (Julio)
+            } else { // Octubre, Noviembre, Diciembre
+                mesCambioTemporada = 9; // Otoño (Octubre)
+            }
+
+
+            // Fecha del último cambio de temporada (el primer día del mes correspondiente)
+            const fechaCambioTemporada = new Date(añoActual, mesCambioTemporada, 1);
+
+            // Calculamos la diferencia en milisegundos entre la fecha actual y la de cambio de temporada
+            const diferencia = fechaActual.getTime() - fechaCambioTemporada.getTime();
+
+            // Convertimos la diferencia a días (milisegundos / 1000 / 3600 / 24)
+            const diasDiferencia = diferencia / (1000 * 3600 * 24);
+
+
+
+
+            // Verificamos si la diferencia está dentro de los 15 días
+            if (diasDiferencia >= 0 && diasDiferencia <= 15) {
+                document.getElementById('miBoton').style.display = 'block'; // Mostrar el botón
+            } else {
+                document.getElementById('miBoton').style.display = 'none'; // Ocultar el botón
+            }
+        });
     </script>
 </body>
 

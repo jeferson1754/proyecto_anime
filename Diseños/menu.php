@@ -52,7 +52,7 @@
             }
         }
 
-        .main-container{
+        .main-container {
             margin-top: 80px;
         }
     </style>
@@ -199,6 +199,7 @@
                 content.classList.toggle('hidden');
             });
         });
+
     </script>
 </body>
 
