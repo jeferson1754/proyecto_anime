@@ -3,8 +3,30 @@
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
 
+
+
 <?php
 include '../bd.php';
+
+function alerta($alertTitle, $alertText, $alertType, $redireccion)
+{
+
+    echo '
+ <script>
+        Swal.fire({
+            title: "' . $alertTitle . '",
+            text: "' . $alertText . '",
+            html: "' . $alertText . '",
+            icon: "' . $alertType . '",
+            showCancelButton: false,
+            confirmButtonText: "OK",
+            closeOnConfirm: false
+        }).then(function() {
+          ' . $redireccion . '  ; // Redirigir a la página principal
+        });
+    </script>';
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idRegistros    = $_POST['id'] ?? null;
     $caps           = $_POST['caps'] ?? null;
@@ -20,10 +42,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ed             = $_POST['ed'] ?? null;
     $posicion       = $_POST['posicion'] ?? null;
 
+    $nombreEscapado = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
+
+    echo $nombre;
+
     // Preparar las consultas usando Prepared Statements
     $sql = "SELECT * FROM anime WHERE id_Emision = ?";
     $sql2 = "SELECT * FROM horario WHERE Nombre = ?";
     $sql3 = "SELECT * FROM emision WHERE Dia = ? AND Posicion = ?";
+
 
     // Preparar las sentencias
     $stmt_anime = $conexion->prepare($sql);
@@ -32,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Enlazar los parámetros
     $stmt_anime->bind_param('s', $idRegistros);
-    $stmt_horario->bind_param('s', $nombre);
+    $stmt_horario->bind_param('s', $nombreEscapado);
     $stmt_conteo->bind_param('ss', $dias, $posicion);
 
     // Ejecutar las consultas
@@ -59,6 +86,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Obtener el nombre de la temporada
     $tempo = isset($temporadas[$temps]) ? $temporadas[$temps] : "Desconocida";
 
+    $sql4 = "SELECT * FROM `num_horario` WHERE Temporada= ? AND Ano= ?";
+    $stmt_num = $conexion->prepare($sql4);
+    $stmt_num->bind_param('ss', $tempo, $fecha);
+    $stmt_num->execute();
+    $result_num = $stmt_num->get_result();
+
+    while ($fila = $result_num->fetch_assoc()) {
+        $num = $fila["Num"];
+    }
 
     $sql = "
     SELECT 'opening' AS tipo, COUNT(*) AS total FROM `op` WHERE ID_Anime = ?
@@ -87,7 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     include('../pruebas.php');
 
 
-
     try {
         // Crear la conexión PDO
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
@@ -96,21 +131,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Comprobar si existe el horario
         if (mysqli_num_rows($result_horario) == 0) {
             // Insertar nuevo horario
-            $sql = "INSERT INTO horario (Nombre, Dia, Duracion, Temporada, Ano) 
-                VALUES (:nombre, :dias, :duracion, :tempo, :fecha)";
+            $sql = "INSERT INTO horario (Nombre, Dia, Duracion, num_horario) 
+                VALUES (:nombre, :dias, :duracion, :num)";
             $stmt = $conn->prepare($sql);
             $stmt->execute([
-                ':nombre'   => $nombre,
+                ':nombre'   => $nombreEscapado,
                 ':dias'     => $dias,
                 ':duracion' => $duracion,
-                ':tempo'    => $tempo,
-                ':fecha'    => $fecha,
+                ':num'    => $num
             ]);
-            echo "Nuevo horario insertado: $nombre<br>";
+            echo "Nuevo horario insertado: $nombreEscapado<br>";
         } else {
             // Actualizar horario existente
             $sql = "UPDATE horario 
-                SET Dia = :dias, Duracion = :duracion 
+                SET Dia = :dias, 
+                Duracion = :duracion 
                 WHERE Nombre = :nombre 
                 ORDER BY ID DESC 
                 LIMIT 1";
@@ -118,9 +153,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->execute([
                 ':dias'     => $dias,
                 ':duracion' => $duracion,
-                ':nombre'   => $nombre,
+                ':nombre'   => $nombreEscapado,
             ]);
-            echo "Horario actualizado: $nombre<br>";
+            echo "Horario actualizado: $nombreEscapado<br>";
         }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
@@ -145,6 +180,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $alertText = 'Posición N° ' . $posicion . ' Repetida o Errónea';
             $alertType = 'error';
             $redireccion = "window.location='javascript:history.back()'";
+
+            alerta($alertTitle, $alertText, $alertType, $redireccion);
+            die();
         }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage() . "<br>";
@@ -167,9 +205,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_num_rows($result_anime) == 0) {
         $alertTitle = '¡Error!';
-        $alertText = 'No se puede editar ' . $nombre . ' porque no existe en anime';
+        $alertText = 'No se puede editar ' . $nombreEscapado . ' porque no existe en anime';
         $alertType = 'error';
         $redireccion = "window.location='javascript:history.back()'";
+
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
+        die();
     } else {
         echo "Existe en Anime<br>";
 
@@ -197,9 +238,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     executeQuery($conn, $sqlAnime);
 
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Actualizando registro en Emisión de ' . $nombre . '';
+                    $alertText = 'Actualizando registro en Emisión de ' . $nombreEscapado . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
+                    alerta($alertTitle, $alertText, $alertType, $redireccion);
                     break;
 
                 case "Pausado":
@@ -211,7 +253,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     Totales = '$total',
                     Dia = '$dias',
                     Emision = '$estado',
-                    Duracion = '$duracion'
+                    Duracion = '$duracion',
+                    Posicion ='$posicion'
                     WHERE ID_Emision = '$idRegistros'";
                     executeQuery($conn, $sqlPausado);
 
@@ -221,16 +264,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     executeQuery($conn, $sqlAnimePausado);
 
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Actualizando registro en Emisión de ' . $nombre . '';
+                    $alertText = 'Actualizando registro en Emisión de ' . $nombreEscapado . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
+                    alerta($alertTitle, $alertText, $alertType, $redireccion);
                     break;
 
                 case "Pendiente":
                     echo "Anime Pendiente<br>";
 
                     $sqlPendientes = "INSERT INTO pendientes (Nombre, Tipo, Vistos, Total, Estado_Link) 
-                    VALUES ('$nombre', 'Anime', '$caps', '$total', 'Faltante')";
+                    VALUES ('$nombreEscapado', 'Anime', '$caps', '$total', 'Faltante')";
                     executeQuery($conn, $sqlPendientes);
 
                     $last_id1 = $conn->lastInsertId();
@@ -253,9 +297,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     executeQuery($conn, $sqlUpdateAnime);
 
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Creando registro en Pendientes, Eliminando en Emisión y Actualizando en Anime de ' . $nombre . '';
+                    $alertText = 'Creando registro en Pendientes, Eliminando en Emisión y Actualizando en Anime de ' . $nombreEscapado . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
+                    alerta($alertTitle, $alertText, $alertType, $redireccion);
                     break;
 
                 default:
@@ -268,22 +313,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $conn = null;
         }
     }
-
-    echo '
-    <script>
-        Swal.fire({
-            title: "' . $alertTitle . '",
-            text: "' . $alertText . '",
-            html: "' . $alertText . '",
-            icon: "' . $alertType . '",
-            showCancelButton: false,
-            confirmButtonText: "OK",
-            closeOnConfirm: false
-        }).then(function() {
-          ' . $redireccion . '  ; // Redirigir a la página principal
-        });
-    </script>';
-
-    echo $redireccion;
 }
 ?>
