@@ -69,11 +69,11 @@
                 <i class="fas fa-clock me-2"></i>Temporada
               </label>
               <select name="temp" class="form-select" required>
-                <option value="<?php echo $id_tempo ?>"><?php echo $tempo ?></option>
+                <option value="<?php echo $tempo ?>"><?php echo $tempo ?></option>
                 <?php
                 $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `ID` ASC");
                 while ($valores = mysqli_fetch_array($query)) {
-                  echo '<option value="' . htmlspecialchars($valores['ID']) . '">'
+                  echo '<option value="' . htmlspecialchars($valores['Temporada']) . '">'
                     . htmlspecialchars($valores['Meses']) . '</option>';
                 }
                 ?>

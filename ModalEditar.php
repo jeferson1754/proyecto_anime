@@ -12,8 +12,6 @@
 
       <form method="POST" action="recib_Update.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['id']; ?>">
-        <input type="hidden" name="emision" value="<?php echo $mostrar['id_Emision']; ?>">
-        <input type="hidden" name="pendientes" value="<?php echo $mostrar['id_Pendientes']; ?>">
 
         <?php
         include('regreso-modal.php');
@@ -39,6 +37,8 @@
         $stmtEd->close();
         ?>
 
+        <input type="hidden" name="op_total" value="<?php echo $ed1; ?>">
+        <input type="hidden" name="ed_total" value="<?php echo $op1; ?>">
 
         <div class="modal-body">
           <div class="row">
@@ -46,7 +46,7 @@
             <div class="col-md-12">
               <div class="form-group">
                 <label class="form-label">Anime</label>
-                <input type="text" name="anime" class="form-control" value="<?php echo $mostrar['Anime']; ?>" required>
+                <input type="text" name="anime" class="form-control" value="<?php echo $mostrar['Nombre']; ?>" required>
               </div>
             </div>
 
@@ -135,11 +135,11 @@
               <div class="form-group">
                 <label class="form-label">Temporada</label>
                 <select name="temp" class="form-control">
-                  <option value="<?php echo $mostrar['Id_Temporada']; ?>"><?php echo $mostrar['Temporada']; ?></option>
+                  <option value="<?php echo $mostrar['Temporada']; ?>"><?php echo $mostrar['Temporada']; ?></option>
                   <?php
                   $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `temporada`.`ID` ASC;");
                   while ($valores = mysqli_fetch_array($query)) {
-                    echo '<option value="' . $valores['ID'] . '">' . $valores['Meses'] . '</option>';
+                    echo '<option value="' . $valores['Temporada'] . '">' . $valores['Meses'] . '</option>';
                   }
                   ?>
                 </select>
@@ -176,7 +176,7 @@
             <div class="rating-text">
               <?php echo $texto ?> <span class="rating-value"><?php echo $calificacion ?></span>
             </div>
-            <?php $variable_nombre = urlencode($mostrar["Anime"]); ?>
+            <?php $variable_nombre = urlencode($mostrar["Nombre"]); ?>
             <?php $variable_temporada = urlencode($mostrar['Temporadas']); ?>
             <a href="./Calificaciones/editar_stars.php?id=<?php echo $iden; ?>&nombre=<?php echo $variable_nombre; ?>&temporada=<?php echo $variable_temporada; ?>"
               class="btn btn-secondary mt-3">

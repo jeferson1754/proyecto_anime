@@ -24,9 +24,8 @@ if (isset($_GET['variable'])) {
     echo "ELIMINADOS_EMISION<BR>";
 
     foreach ($datos_emision as $dato) {
-        echo $dato['ID_Emision'] . "<br>";
-        echo $dato['Estado'] . "<br>";
-        echo $dato['Nombre'] . "<br>";
+        echo $dato['ID_Anime'] . "<br>";
+        echo $dato['Temporada'] . "<br>";
         echo $dato['Capitulos'] . "<br>";
         echo $dato['Totales'] . "<br>";
         echo $dato['Dia'] . "<br>";
@@ -35,12 +34,9 @@ if (isset($_GET['variable'])) {
         try {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "INSERT INTO emision (`ID_Emision`, `Emision`, `Nombre`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-        VALUES ('{$dato['ID_Emision']}', '{$dato['Estado']}', '{$dato['Nombre']}', '{$dato['Capitulos']}', '{$dato['Totales']}', '{$dato['Dia']}', '{$dato['Duracion']}')";
+            $sql = "INSERT INTO emision (`ID_Anime`, `Temporada`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
+        VALUES ('{$dato['ID_Anime']}', '{$dato['Temporada']}', '{$dato['Capitulos']}', '{$dato['Totales']}', '{$dato['Dia']}', '{$dato['Duracion']}')";
             $conn->exec($sql);
-            $last_id1 = $dato['ID_Emision'];
-            echo $sql;
-            echo 'ultimo anime insertado ' . $last_id1;
             echo "<br>";
             $conn = null;
         } catch (PDOException $e) {
@@ -50,7 +46,7 @@ if (isset($_GET['variable'])) {
         try {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "DELETE FROM `eliminados_emision` where ID_Emision='{$dato['ID_Emision']}'";
+            $sql = "DELETE FROM `eliminados_emision` where ID_Anime='{$dato['ID_Anime']}'";
             $conn->exec($sql);
             echo $sql;
             echo "<br>";
@@ -58,10 +54,18 @@ if (isset($_GET['variable'])) {
         } catch (PDOException $e) {
             $conn = null;
         }
+
+        $sql2 = "SELECT * FROM `anime` WHERE id='{$dato['ID_Anime']}' LIMIT 1";
+        $anime = mysqli_query($conexion, $sql2);
+
+        while ($mostrar = mysqli_fetch_array($anime)) {
+            $nombre_anime = $mostrar['Nombre'];
+        }
+
         echo '<script>
         Swal.fire({
             icon: "success",
-            title: "Creando registro de ' . $dato['Nombre'] . '  en Emision",
+            title: "Creando registro de ' . $nombre_anime . '  en Emision",
             confirmButtonText: "OK"
         }).then(function() {
             window.location = "./";

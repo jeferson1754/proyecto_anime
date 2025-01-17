@@ -939,11 +939,11 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                     </select>
                     <select class="form-select" style="max-width: 200px;" name="temporada">
                         <option value="">Temporada</option>
-                        <option value="1" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "1") ? 'selected' : '' ?>>Invierno</option>
-                        <option value="2" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "2") ? 'selected' : '' ?>>Primavera</option>
-                        <option value="3" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "3") ? 'selected' : '' ?>>Verano</option>
-                        <option value="4" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "4") ? 'selected' : '' ?>>Otoño</option>
-                        <option value="5" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "5") ? 'selected' : '' ?>>Desconocida</option>
+                        <option value="Invierno" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "Invierno") ? 'selected' : '' ?>>Invierno</option>
+                        <option value="Primavera" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "Primavera") ? 'selected' : '' ?>>Primavera</option>
+                        <option value="Verano" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "Verano") ? 'selected' : '' ?>>Verano</option>
+                        <option value="Otoño" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "Otoño") ? 'selected' : '' ?>>Otoño</option>
+                        <option value="Desconocida" <?= (isset($_GET['temporada']) && $_GET['temporada'] === "Desconocida") ? 'selected' : '' ?>>Desconocida</option>
                     </select>
                     <button class="btn btn-custom btn-outline-secondary" type="submit" name="buscar">
                         <b>Buscar</b>
@@ -966,13 +966,13 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
             $conditions = [];
 
             if (!empty($busqueda)) {
-                $conditions[] = "anime.Anime LIKE '%$busqueda%'";
+                $conditions[] = "anime.Nombre LIKE '%$busqueda%'";
             }
             if (!empty($estado)) {
                 $conditions[] = "anime.Estado = '$estado'";
             }
             if (!empty($temporada)) {
-                $conditions[] = "anime.ID_Temporada = '$temporada'";
+                $conditions[] = "anime.Temporada = '$temporada'";
             }
 
             if (!empty($conditions)) {
@@ -1002,7 +1002,7 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                 </thead>
                 <tbody>
                     <?php
-                    $sql = "SELECT anime.id,anime.Anime,anime.Temporadas,anime.Peliculas,anime.Spin_Off,anime.Estado,anime.id_Emision,anime.id_Pendientes,anime.Ano,anime.Id_Temporada,temporada.Temporada FROM `anime` JOIN temporada ON anime.Id_Temporada=temporada.ID $where";
+                    $sql = "SELECT * FROM `anime` $where";
 
                     //echo $sql;
 
@@ -1011,7 +1011,7 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
                         $iden = $mostrar['id']; ?>
                         <tr>
                             <td><?php echo $mostrar['id'] ?></td>
-                            <td><?php echo $mostrar['Anime'] ?></td>
+                            <td><?php echo $mostrar['Nombre'] ?></td>
                             <td><?php echo $mostrar['Temporadas'] ?></td>
                             <td>
                                 <span class="status-badge 

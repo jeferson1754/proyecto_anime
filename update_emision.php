@@ -54,7 +54,7 @@ $dayIndex = date("w"); // Obtiene el índice del día (0 para domingo, 6 para s�
 $day = ucfirst($days[$dayIndex]); // Obtiene el nombre del día en español con la primera letra en mayúscula
 
 // Consultamos el número de webtoons en emisión para el día actual
-$consulta = "SELECT COUNT(*) AS count FROM `emision` WHERE `Dia`= '$day' AND Emision='Emision'";
+$consulta = "SELECT COUNT(*) AS count FROM `emision`INNER join anime ON emision.ID_Anime = anime.id WHERE emision.`Dia`= '$day' AND anime.Estado='Emision'";
 $result = mysqli_query($conexion, $consulta);
 $count = mysqli_fetch_assoc($result)['count'];
 mysqli_free_result($result);
@@ -64,7 +64,7 @@ if ($count >= 1 && $num_queries_last_day < $max_queries_per_day) {
     $query = "INSERT INTO actualizaciones_anime (Fecha) VALUES ('$current_time')";
     mysqli_query($conexion, $query);
 
-    $sql = "UPDATE `emision` SET `Faltantes` = `Faltantes` + 1 WHERE `Dia`= '$day' AND Emision='Emision' AND Faltantes != Totales";
+    $sql = "UPDATE `emision` JOIN `anime` ON emision.ID_Anime = anime.id SET `emision`.`Faltantes` = `emision`.`Faltantes` + 1 WHERE `emision`.`Dia` = '$day' AND `anime`.`Estado` = 'Emision' AND `emision`.`Faltantes` < `emision`.`Totales`;";
     mysqli_query($conexion, $sql);
 }
 

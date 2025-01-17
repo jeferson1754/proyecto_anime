@@ -5,10 +5,10 @@
 <?php
 include 'bd.php';
 
-function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $usuario, $password, $id_tempo, $tempo, $fecha)
+function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $fecha)
 {
     // Obtener el estado del anime
-    $query_estado = "SELECT Estado, Anime, Temporadas FROM `anime` WHERE id = ?";
+    $query_estado = "SELECT Nombre, Temporadas, Estado FROM `anime` WHERE id = ?";
     $stmt_estado = mysqli_prepare($conexion, $query_estado);
 
     // Verificar si la preparación de la consulta ha fallado
@@ -27,7 +27,7 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
 
     // Concatenar con un espacio entre el nombre y la temporada
 
-    $query_emision = "UPDATE `anime` SET Ano = ?, Id_Temporada = ? WHERE id = ?";
+    $query_emision = "UPDATE `anime` SET Ano = ?, Temporada = ? WHERE id = ?";
     $stmt_emision = mysqli_prepare($conexion, $query_emision);
 
     // Verificar si la preparación de la consulta ha fallado
@@ -38,13 +38,13 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
     }
 
     // Vincular los parámetros a la consulta
-    mysqli_stmt_bind_param($stmt_emision, "iii", $fecha, $id_tempo, $id_anime);
+    mysqli_stmt_bind_param($stmt_emision, "iii", $fecha, $tempo, $id_anime);
 
     // Ejecutar la consulta
     if (mysqli_stmt_execute($stmt_emision)) {
         echo "Actualización exitosa.<br>";
     } else {
-        echo "Actualizando el anime con los siguientes datos: Año = '.$fecha.', Temporada = $id_tempo, Anime ID = $id_anime";
+        echo "Actualizando el anime con los siguientes datos: Año = '.$fecha.', Temporada = $tempo, Anime ID = $id_anime";
         echo "Error al ejecutar la consulta: " . mysqli_error($conexion);
     }
 
@@ -92,24 +92,12 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
             }
         }
 
-        // Consultar el horario del anime
-        $sql3 = "SELECT * FROM `horario` WHERE Nombre = ? AND num_horario = ?";
-        $stmt = mysqli_prepare($conexion, $sql3);
-        mysqli_stmt_bind_param($stmt, "si", $nombre_temps, $num_horario);
-        mysqli_stmt_execute($stmt);
-        $horario = mysqli_stmt_get_result($stmt);
-
-        // Obtener día y duración
-        $dia = "";
-        $duracion = "";
 
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $sql6 = "SELECT * FROM `horario` WHERE Nombre LIKE ? ORDER BY `num_horario` DESC LIMIT 1";
+            $sql6 = "SELECT * FROM `horario` WHERE ID_Anime LIKE :id_anime ORDER BY `num_horario` DESC LIMIT 1";
             $stmt = $conn->prepare($sql6);
-            $stmt->execute(["%$nombre_temps%"]);
+            $stmt->execute([':id_anime' => $id_anime]);
 
             $info = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -117,50 +105,48 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
                 $dia = $info['Dia'];
                 $duracion = $info['Duracion'];
             } else {
-                echo "No se encontraron resultados";
+                $dia = "Indefinido";
+                $duracion = "00:24:00";
             }
+
+            if (empty($horario)) {
+
+                echo "No existe el anime en el horario, así que lo creo:<br>";
+                // Consulta 2: Buscar horario por nombre si no hay resultados previos
+
+
+                try {
+                    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    // Consulta SQL para insertar datos
+                    $sql = "INSERT INTO `horario`( `ID_Anime`,`Temporada`, `Dia`, `Duracion`, `num_horario`) VALUES (?, ?, ?, ?, ?)";
+
+                    // Preparar la consulta
+                    $stmt = $conn->prepare($sql);
+
+                    // Vincular los parámetros de forma individual
+                    $stmt->bindValue(1, $id_anime);
+                    $stmt->bindValue(2, $temporada);
+                    $stmt->bindValue(3, $dia);
+                    $stmt->bindValue(4, $duracion);
+                    $stmt->bindValue(5, $num_horario);
+
+                    // Ejecutar la consulta
+                    $stmt->execute();
+
+                    echo $sql . "<br>Demas<br>";
+                } catch (PDOException $e) {
+                    // Captura cualquier error y lo muestra
+                    echo "Error: " . $e->getMessage();
+                }
+            }
+            // Puedes usar $dia y $duracion aquí si es necesario
+            echo "Día: $dia, Duración: $duracion";
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
-        } finally {
-            $conn = null;
         }
 
-        echo $sql6 . "<br>";
-
-        // Si no tiene día o duración definidos, asignar valores predeterminados
-        if ($dia == NULL || $duracion == NULL) {
-            $dia = "Indefinido";
-            $duracion = "00:24:00";
-        }
-
-        // Si no existe el anime en el horario, se crea
-        if (mysqli_num_rows($horario) == 0) {
-            echo "No existe el anime en el horario, así que lo creo:<br>";
-            try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-                $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                $sql = "INSERT INTO `horario`( `Nombre`, `Dia`, `Duracion`, `num_horario`) VALUES (?, ?, ?, ?)";
-
-                $stmt = $conn->prepare($sql);
-                $stmt->bindValue(1, $nombre_temps);
-                $stmt->bindValue(2, $dia);
-                $stmt->bindValue(3, $duracion);
-                $stmt->bindValue(4, $num_horario);
-
-                $stmt->execute();
-                echo $sql . "<br>Demas<br>";
-            } catch (PDOException $e) {
-                echo "Error: " . $e->getMessage();
-            }
-        } else {
-            echo $sql3 . "<br>";
-            echo "Si existe el anime en el horario, así que nada:<br>Demas <br>";
-        }
-
-        echo $sql3;
-        echo "<br>";
-    } else {
-        echo "No hacer nada, está finalizado:<br>Demas <br>";
+        echo "Si existe el anime en el horario, así que nada:<br>Demas <br>";
     }
 }
 
@@ -204,9 +190,7 @@ $temporada = [
 ];
 
 $tempo = $temporada[$mes][0] ?? 'Desconocido';
-$id_tempo = $temporada[$mes][1] ?? 0;
 
-echo $id_tempo . "<br><br><br><br><br>";
 
 
 $query = "
@@ -240,7 +224,7 @@ if (!$result) {
         $ids_animes = $row['id']; // Agregar el ID del anime al arreglo
         echo "IDs de los animes en emisión: " . $row['id'] . " " . $row['Estado'] . "<br>";
         $conteo++; // Incrementar el conteo
-        verificarEstadoAnime($ids_animes, $conexion, $servidor, $basededatos, $usuario, $password, $id_tempo, $tempo, $año);
+        verificarEstadoAnime($ids_animes, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $año);
 
         echo "<br><br><br><br><br>";
     }

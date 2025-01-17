@@ -16,14 +16,14 @@
 
       <form method="POST" action="recib_Delete.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['id']; ?>">
-        <input type="hidden" name="nombre" value="<?php echo $mostrar['Anime']; ?>">
+        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
         <input type="hidden" name="estado" value="<?php echo $mostrar['Estado']; ?>">
         <?php include('regreso-modal.php'); ?>
 
         <div class="modal-body">
           <i class="fas fa-exclamation-triangle warning-icon"></i>
           <div class="anime-title">
-            <?php echo $mostrar['Anime']; ?>
+            <?php echo $mostrar['Nombre']; ?>
           </div>
           <div class="anime-details">
             Temporada: <?php echo $mostrar['Temporadas']; ?>

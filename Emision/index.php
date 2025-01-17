@@ -607,11 +607,11 @@ include '../update_emision.php';
         </div>
 
         <?php
-        include('Modal-Caps-Total.php');
+        //include('Modal-Caps-Total.php');
 
         $busqueda = "";
 
-        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
+        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'  and anime.Estado='Emision' and emision.ID>1 ORDER BY `anime`.`Nombre` ASC;";
 
         if (isset($_GET['enviar'])) {
 
@@ -619,21 +619,21 @@ include '../update_emision.php';
 
             $busqueda = $day;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
         } elseif (isset($_GET['borrar'])) {
             $busqueda = "";
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and emision.ID>1 ORDER BY `anime`.`Nombre` ASC";
         } else if (isset($_GET['enviar2'])) {
             $dia   = $_REQUEST['dias'];
             $accion2 = $_REQUEST['accion'];
 
             $busqueda = $dia;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
         } else if (isset($_GET['faltantes'])) {
 
-            $where = "WHERE Faltantes > Capitulos AND Emision='Emision' AND ID_Emision > 1 ORDER BY (Faltantes - Capitulos) ASC;";
+            $where = "WHERE emision.Faltantes > emision.Capitulos AND anime.Estado='Emision' AND emision.ID > 1 ORDER BY (emision.Faltantes - emision.Capitulos) ASC;";
         }
 
 
@@ -657,9 +657,9 @@ include '../update_emision.php';
                     </thead>
                     <tbody>
                         <?php
-                        $sql1 = "SELECT * FROM `emision` $where";
+                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id $where";
                         $result = mysqli_query($conexion, $sql1);
-                        //echo $sql1;
+                        echo $sql1;
                         while ($mostrar = mysqli_fetch_array($result)) {
                             if ($mostrar['Totales'] > 0) {
                                 $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos'];
@@ -703,7 +703,7 @@ include '../update_emision.php';
                                         <button type="button"
                                             class="action-button bg-success"
                                             data-toggle="modal"
-                                            data-target="#editChildresn7<?php echo $mostrar['ID_Emision']; ?>"
+                                            data-target="#editChildresn7<?php echo $mostrar['ID']; ?>"
                                             aria-label="Aprobar">
                                             <i class="fas fa-eye"></i>
                                         </button>
@@ -711,7 +711,7 @@ include '../update_emision.php';
                                             class="action-button bg-primary"
                                             data-tooltip="Editar"
                                             data-toggle="modal"
-                                            data-target="#editChildresn5<?php echo $mostrar['ID_Emision']; ?>"
+                                            data-target="#editChildresn5<?php echo $mostrar['ID']; ?>"
                                             aria-label="Editar">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -719,7 +719,7 @@ include '../update_emision.php';
                                             class="action-button bg-danger"
                                             data-tooltip="Eliminar"
                                             data-toggle="modal"
-                                            data-target="#editChildresn6<?php echo $mostrar['ID_Emision']; ?>"
+                                            data-target="#editChildresn6<?php echo $mostrar['ID']; ?>"
                                             aria-label="Eliminar">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -727,9 +727,9 @@ include '../update_emision.php';
                                 </td>
                             </tr>
                         <?php
-                            include('ModalEditar-Emision.php');
-                            include('Modal-Caps.php');
-                            include('ModalDelete-Emision.php');
+                            //include('ModalEditar-Emision.php');
+                            //include('Modal-Caps.php');
+                            //include('ModalDelete-Emision.php');
                         } ?>
                     </tbody>
                 </table>
