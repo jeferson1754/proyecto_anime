@@ -1,4 +1,4 @@
-<div class="modal fade" id="editChildresn10<?php echo $mostrar['ID_Pendientes']; ?>" tabindex="-1" aria-labelledby="updateAnimeLabel" aria-hidden="true">
+<div class="modal fade" id="editChildresn10<?php echo $mostrar['ID']; ?>" tabindex="-1" aria-labelledby="updateAnimeLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -8,10 +8,11 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form method="POST" action="recib_Update-Pendientes.php" id="updateAnimeForm<?php echo $mostrar['ID_Pendientes']; ?>" class="needs-validation" novalidate>
+      <form method="POST" action="recib_Update-Pendientes.php" id="updateAnimeForm<?php echo $mostrar['ID']; ?>" class="needs-validation" novalidate>
         <?php include('regreso-modal.php'); ?>
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
-        <input type="hidden" name="name" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="name" value="<?php echo $mostrar['Temporada']; ?>">
+        <input type="hidden" name="nombre_aviso" value="<?php echo $mostrar['Nombre_Anime']; ?>">
 
         <div class="modal-body">
           <div class="form-group">
@@ -19,7 +20,7 @@
               <i class="lucide-tv-2 me-1"></i>Nombre del Anime
             </label>
             <input type="text" name="nombre" class="form-control"
-              value="<?php echo $mostrar['Nombre']; ?>" disabled>
+              value="<?php echo $mostrar['Nombre_Anime']; ?>" disabled>
             <i class="lucide-lock input-icon"></i>
           </div>
 
@@ -46,7 +47,7 @@
                   <label class="form-label">
                     <i class="lucide-eye me-1"></i>Capítulos Vistos
                   </label>
-                  <input type="number" id="caps<?php echo $mostrar['ID_Pendientes']; ?>" name="caps" min="0" class="form-control"
+                  <input type="number" id="caps<?php echo $mostrar['ID']; ?>" name="caps" min="0" class="form-control"
                     value="<?php echo $mostrar['Vistos']; ?>" required>
                 </div>
               </div>
@@ -55,12 +56,12 @@
                   <label class="form-label">
                     <i class="lucide-layers me-1"></i>Total Capítulos
                   </label>
-                  <input type="number" id="total<?php echo $mostrar['ID_Pendientes']; ?>" name="total" min="1" class="form-control"
+                  <input type="number" id="total<?php echo $mostrar['ID']; ?>" name="total" min="1" class="form-control"
                     value="<?php echo $mostrar['Total']; ?>" required>
                 </div>
               </div>
             </div>
-            <div id="capsError<?php echo $mostrar['ID_Pendientes']; ?>" class="text-center invalid-feedback">
+            <div id="capsError<?php echo $mostrar['ID']; ?>" class="text-center invalid-feedback">
               Por favor ingrese un número válido de episodios (entre 1 y <?php echo $mostrar['Pendientes']; ?>).
             </div>
           </div>

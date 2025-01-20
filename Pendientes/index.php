@@ -755,7 +755,7 @@ require '../bd.php';
                     <select name="tipo" class="form-select" style="max-width: 100% !important;">
                         <option value="">Seleccione tipo...</option>
                         <?php
-                        $query = $conexion->query("SELECT DISTINCT Tipo FROM `pendientes` WHERE ID_Pendientes>1;");
+                        $query = $conexion->query("SELECT DISTINCT Tipo FROM `pendientes` WHERE ID>1;");
                         while ($valores = mysqli_fetch_array($query)) {
                             echo '<option value="' . $valores['Tipo'] . '">' . $valores['Tipo'] . '</option>';
                         }
@@ -792,18 +792,18 @@ require '../bd.php';
         <?php
         include('ModalCrear.php');
 
-        $where = "AND ID_Pendientes>1 ORDER BY rn, Tipo, Pendientes ASC;";
+        $where = "AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
 
         if (isset($_GET['borrar'])) {
-            $where = "AND ID_Pendientes>1 ORDER BY rn, Tipo, Pendientes ASC;";
+            $where = "AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
         } else if (isset($_GET['filtrar']) && isset($_GET['tipo'])) {
             $tipo = $_REQUEST['tipo'];
-            $where = "AND Tipo='$tipo' AND ID_Pendientes>1 ORDER BY rn, Tipo, Pendientes ASC;";
+            $where = "AND pendientes.Tipo='$tipo' AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
         } else if (isset($_GET['link'])) {
-            $where = "AND Link='' AND Estado_link='Faltante' OR Estado_link='Erroneo/Inexistente' ORDER BY rn, Tipo, Pendientes ASC;";
+            $where = "AND pendientes.Link='' AND pendientes.Estado_link='Faltante' OR pendientes.Estado_link='Erroneo/Inexistente' ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
         } else if (isset($_GET['buscar']) && isset($_GET['busqueda_pendientes'])) {
             $busqueda = $_REQUEST['busqueda_pendientes'];
-            $where = "AND Nombre LIKE '%$busqueda%' ORDER BY rn, Tipo, Pendientes ASC;";
+            $where = "AND anime.Nombre LIKE '%$busqueda%' ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
         }
 
         ?>
@@ -824,9 +824,18 @@ require '../bd.php';
                     <tbody>
                         <?php
 
-                        $sql = "SELECT *, ROW_NUMBER() OVER (PARTITION BY Tipo ORDER BY Pendientes ASC, ID_Pendientes ASC) AS rn 
-                           FROM `pendientes` 
-                           WHERE Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') $where";
+                        $sql = "SELECT 
+                            pendientes.*, 
+                            CONCAT(anime.Nombre, ' ', pendientes.Temporada) AS Nombre_Anime, 
+                            anime.Estado AS Estado,
+                            anime.Nombre AS Nombre,
+                            ROW_NUMBER() OVER (PARTITION BY pendientes.Tipo ORDER BY pendientes.Pendientes ASC, pendientes.ID ASC) AS rn
+                        FROM 
+                            pendientes
+                        INNER JOIN 
+                            anime ON pendientes.ID_Anime = anime.id
+                        WHERE 
+                            pendientes.Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') $where";
 
                         //echo $sql;
                         $result = mysqli_query($conexion, $sql);
@@ -848,15 +857,12 @@ require '../bd.php';
                                         target="_blank"
                                         title="<?php echo $mostrar['Estado_Link']; ?>"
                                         style="text-decoration: none; color: inherit;">
-                                        <?php echo $mostrar['Nombre']; ?>
+                                        <?php echo $mostrar['Nombre_Anime']; ?>
                                     </a>
                                 </td>
                                 <td>
                                     <?php
                                     echo $mostrar['Tipo'];
-                                    if ($mostrar['Viendo'] == "SI") {
-                                        echo ' <span class="badge badge-watching"><i class="fas fa-star"></i> En progreso</span>';
-                                    }
                                     ?>
                                 </td>
                                 <td>
@@ -886,24 +892,24 @@ require '../bd.php';
                                 <td class="action-buttons">
                                     <button type="button" class="action-button bg-success"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editChildresn11<?php echo $mostrar['ID_Pendientes']; ?>">
+                                        data-bs-target="#editChildresn11<?php echo $mostrar['ID']; ?>">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                     <button type="button" class="action-button bg-primary"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editChildresn10<?php echo $mostrar['ID_Pendientes']; ?>">
+                                        data-bs-target="#editChildresn10<?php echo $mostrar['ID']; ?>">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     <button type="button" class="action-button bg-danger"
                                         data-bs-toggle="modal"
-                                        data-bs-target="#editChildresn9<?php echo $mostrar['ID_Pendientes']; ?>">
+                                        data-bs-target="#editChildresn9<?php echo $mostrar['ID']; ?>">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
                             </tr>
                         <?php
-                            include('ModalEditar-Pendientes.php');
                             include('Modal-Caps.php');
+                            include('ModalEditar-Pendientes.php');
                             include('ModalDelete-Pendientes.php');
                         }
                         ?>

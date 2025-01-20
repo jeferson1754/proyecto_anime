@@ -1,4 +1,4 @@
-<div class="modal fade" id="editChildresn11<?php echo $mostrar['ID_Pendientes']; ?>" tabindex="-1" aria-labelledby="updateEpisodesLabel" aria-hidden="true">
+<div class="modal fade" id="editChildresn11<?php echo $mostrar['ID']; ?>" tabindex="-1" aria-labelledby="updateEpisodesLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -9,16 +9,19 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form method="POST" action="recib_Update-Cap.php" id="Edicion_Pendientes<?php echo $mostrar['ID_Pendientes']; ?>" class="needs-validation" novalidate>
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
-        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+      <form method="POST" action="recib_Update-Cap.php" id="Edicion_Pendientes<?php echo $mostrar['ID']; ?>" class="needs-validation" novalidate>
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="nombre" value="<?php echo $mostrar['Temporada']; ?>">
+        <input type="hidden" name="nombre_aviso" value="<?php echo $mostrar['Nombre_Anime']; ?>">
         <input type="hidden" name="capitulos" value="<?php echo $mostrar['Vistos']; ?>">
+
+        <?php include('regreso-modal.php'); ?>
 
         <div class="modal-body text-center">
           <div class="text-center mb-4">
             <h2 class="anime-title">
               <i class="lucide-tv-2 me-2"></i>
-              <?php echo $mostrar['Nombre']; ?>
+              <?php echo $mostrar['Nombre_Anime']; ?>
             </h2>
 
             <div class="row mt-3">
@@ -45,11 +48,11 @@
                 <i class="lucide-plus-circle me-1"></i>
                 Agregar Capítulos Vistos
               </label>
-              <input type="number" id="episodesInput<?php echo $mostrar['ID_Pendientes']; ?>" name="vistos" class="form-control" min="1" value="1" max="<?php echo $mostrar['Pendientes']; ?>" required>
+              <input type="number" id="episodesInput<?php echo $mostrar['ID']; ?>" name="vistos" class="form-control" min="1" value="1" max="<?php echo $mostrar['Pendientes']; ?>" required>
               <small class="text-muted mt-2 d-block">
                 Máximo <?php echo $mostrar['Pendientes']; ?> capítulos pendientes
               </small>
-              <div id="episodiosError<?php echo $mostrar['ID_Pendientes']; ?>" class="invalid-feedback">
+              <div id="episodiosError<?php echo $mostrar['ID']; ?>" class="invalid-feedback">
                 Por favor ingrese un número válido de episodios (entre 1 y <?php echo $mostrar['Pendientes']; ?>).
               </div>
             </div>

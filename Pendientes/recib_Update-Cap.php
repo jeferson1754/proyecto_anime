@@ -7,13 +7,14 @@
 include '../bd.php';
 $idRegistros    = $_REQUEST['id'];
 $nombre         = $_REQUEST['nombre'];
+$nombre_aviso         = $_REQUEST['nombre_aviso'];
 $vistos         = $_REQUEST['vistos'];
 $caps         = $_REQUEST['capitulos'];
-$link    = $_REQUEST['link'];
+$link           = $_REQUEST['link'];
 
 
-$sql = ("SELECT * FROM `pendientes` WHERE Vistos < Total and Nombre='$nombre';");
-$sql1 = ("SELECT (Total-Vistos) FROM `pendientes` where Nombre='$nombre';");
+$sql = ("SELECT * FROM `pendientes` WHERE Vistos < Total AND ID='$idRegistros';");
+$sql1 = ("SELECT (Total-Vistos) FROM `pendientes` where ID='$idRegistros';");
 
 $emision      = mysqli_query($conexion, $sql);
 $validar      = mysqli_query($conexion, $sql1);
@@ -51,7 +52,7 @@ while ($rows = mysqli_fetch_array($validar)) {
         try {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "UPDATE pendientes SET Vistos ='" . $caps . "'+'" . $vistos . "' WHERE Nombre='" . $nombre . "' AND Vistos < Total;";
+            $sql = "UPDATE pendientes SET Vistos ='" . $caps . "'+'" . $vistos . "' WHERE ID='" . $idRegistros . "' AND Vistos < Total;";
             $conn->exec($sql);
             $last_id1 = $conn->lastInsertId();
             echo $sql;
@@ -61,7 +62,7 @@ while ($rows = mysqli_fetch_array($validar)) {
             echo '<script>
             Swal.fire({
                 icon: "success",
-                title: "Actualizando Capitulos de ' . $nombre . ' en Pendientes",
+                title: "Actualizando Capitulos de ' . $nombre_aviso . ' en Pendientes",
                 confirmButtonText: "OK"
             }).then(function() {
                 window.location = "' . $link . '";
@@ -86,7 +87,7 @@ while ($rows = mysqli_fetch_array($validar)) {
         echo '<script>
         Swal.fire({
             icon: "error",
-            title: "Los Capitulos Ingresados  de ' . $nombre . ' Superan el Total Permitido",
+            title: "Los Capitulos Ingresados  de ' . $nombre_aviso . ' Superan el Total Permitido",
             confirmButtonText: "OK"
         }).then(function() {
             window.location = "' . $link . '";

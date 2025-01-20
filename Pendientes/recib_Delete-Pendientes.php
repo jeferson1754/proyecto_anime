@@ -6,11 +6,12 @@
 <?php
 include '../bd.php';
 $idRegistros = $_REQUEST['id'];
+$id_anime = $_REQUEST['id_anime'];
 $nombre = $_REQUEST['nombre'];
 $link    = $_REQUEST['link'];
 $tipo   = $_REQUEST['tipo'];
 
-$sql = ("SELECT * FROM `anime` where id_Pendientes='$idRegistros';");
+$sql = ("SELECT * FROM `anime` where ID='$id_anime';");
 
 $anime = mysqli_query($conexion, $sql);
 
@@ -32,7 +33,7 @@ if (mysqli_num_rows($anime) == 0) {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "DELETE FROM `pendientes` 
-            WHERE ID_Pendientes='" . $idRegistros . "'";
+            WHERE ID='" . $idRegistros . "'";
             $conn->exec($sql);
             $last_id2 = $conn->lastInsertId();
             echo $sql;
@@ -72,7 +73,7 @@ if (mysqli_num_rows($anime) == 0) {
             $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "DELETE FROM `pendientes` 
-            WHERE ID_Pendientes='" . $idRegistros . "'";
+            WHERE ID='" . $idRegistros . "'";
             $conn->exec($sql);
             $last_id2 = $conn->lastInsertId();
             echo $sql;
@@ -98,7 +99,7 @@ if (mysqli_num_rows($anime) == 0) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE anime set estado='Finalizado',ID_Pendientes='1' where ID_Pendientes='" . $idRegistros . "'";
+        $sql = "UPDATE anime set Estado='Finalizado' where id='" . $id_anime . "'";
         $conn->exec($sql);
         $last_id1 = $conn->lastInsertId();
         echo $sql;
@@ -113,7 +114,7 @@ if (mysqli_num_rows($anime) == 0) {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "DELETE FROM `pendientes` 
-        WHERE ID_Pendientes='" . $idRegistros . "'";
+        WHERE ID='" . $idRegistros . "'";
         $conn->exec($sql);
         $last_id2 = $conn->lastInsertId();
         echo $sql;
@@ -150,7 +151,7 @@ switch ($tipo) {
 }
 
 // Preparar la consulta
-$sql2 = "SELECT COUNT(*) as cantidad, ID_Pendientes 
+$sql2 = "SELECT COUNT(*) as cantidad, ID 
          FROM pendientes 
          WHERE tipo = ? 
          GROUP BY Pendientes 
@@ -169,7 +170,7 @@ $id_Pendiente = null;
 
 if ($mostrar = $result->fetch_assoc()) {
     $cantidad = $mostrar['cantidad'];
-    $id_Pendiente = $mostrar['ID_Pendientes'];
+    $id_Pendiente = $mostrar['ID'];
 }
 
 echo $cantidad . "<br>" . $id_Pendiente;
@@ -194,7 +195,7 @@ if ($cantidad == 0) {
     $result = $stmt->get_result();
 
     if ($mostrar = $result->fetch_assoc()) {
-        $id_Pendiente = $mostrar['ID_Pendientes'];
+        $id_Pendiente = $mostrar['ID'];
     }
 }
 
@@ -206,7 +207,7 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Preparar consulta de actualización
-    $sql = "UPDATE pendientes SET Viendo = 'SI' WHERE ID_Pendientes = ?";
+    $sql = "UPDATE pendientes SET Viendo = 'SI' WHERE ID = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$id_Pendiente]);
 

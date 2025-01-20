@@ -1,4 +1,4 @@
-<div class="modal fade delete-modal" id="editChildresn9<?php echo $mostrar['ID_Pendientes']; ?>" tabindex="-1" aria-labelledby="deleteAnimeLabel" aria-hidden="true">
+<div class="modal fade delete-modal" id="editChildresn9<?php echo $mostrar['ID']; ?>" tabindex="-1" aria-labelledby="deleteAnimeLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
@@ -11,14 +11,16 @@
 
       <form id="deleteAnimeForm" method="POST" action="recib_Delete-Pendientes.php">
         <?php include('regreso-modal.php'); ?>
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Pendientes']; ?>">
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="id_anime" value="<?php echo $mostrar['ID_Anime']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="nombre_aviso" value="<?php echo $mostrar['Nombre_Anime']; ?>">
         <input type="hidden" name="tipo" value="<?php echo $mostrar['Tipo']; ?>">
 
         <div class="modal-body text-center">
           <i class="fas fa-exclamation-triangle warning-icon"></i>
           <h2 class="anime-title">
-            <?php echo $mostrar['Nombre']; ?>
+            <?php echo $mostrar['Nombre_Anime']; ?>
           </h2>
           <div class="anime-details">
             Capitulos Vistos: <?php echo $mostrar['Vistos']; ?>
