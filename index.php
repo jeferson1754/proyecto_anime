@@ -30,6 +30,9 @@ $temporadas = [
 $tempo = $temporadas[$mes][0] ?? 'Desconocido';
 $id_tempo = $temporadas[$mes][1] ?? 0;
 
+$diaPhp = date('j'); // Día actual (1-31)
+$mesPhp = date('n') - 1; // Mes actual (0-11, restamos 1 porque JavaScript usa este formato)
+$añoPhp = date('Y'); // Año actual
 ?>
 
 <!DOCTYPE html>
@@ -1125,8 +1128,8 @@ $id_tempo = $temporadas[$mes][1] ?? 0;
 
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener el mes y el año actual
-            const fechaActual = new Date(2025, 0, 15);
-            //const fechaActual = new Date();
+            const fechaActual = new Date(<?php echo $añoPhp; ?>, <?php echo $mesPhp; ?>, <?php echo $diaPhp; ?>);
+            // const fechaActual = new Date(); // Alternativa para usar la fecha del sistema directamente
             const mesActual = fechaActual.getMonth(); // 0 = enero, 1 = febrero, ..., 11 = diciembre
             const añoActual = fechaActual.getFullYear();
 
