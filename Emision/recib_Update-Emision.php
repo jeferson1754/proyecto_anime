@@ -41,6 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $op             = $_POST['op'] ?? null;
     $ed             = $_POST['ed'] ?? null;
     $posicion       = $_POST['posicion'] ?? null;
+    $posicion_old   = $_POST['posicion_old'] ?? null;
 
     $nombreEscapado = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
 
@@ -166,23 +167,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Verificar si el conteo existe o la posición es igual a 0
-        if (mysqli_num_rows($result_conteo) == 0 || $posicion == 0) {
-            // Actualizar la posición
-            $sql = "UPDATE emision SET Posicion = :posicion WHERE ID_Emision = :idEmision";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([
-                ':posicion'  => $posicion,
-                ':idEmision' => $idRegistros,
-            ]);
-        } else {
-            $alertTitle = '¡Error!';
-            $alertText = 'Posición N° ' . $posicion . ' Repetida o Errónea';
-            $alertType = 'error';
-            $redireccion = "window.location='javascript:history.back()'";
+        if ($posicion != $posicion_old) {
 
-            alerta($alertTitle, $alertText, $alertType, $redireccion);
-            die();
+            // Verificar si el conteo existe o la posición es igual a 0
+            if (mysqli_num_rows($result_conteo) == 0 || $posicion == 0) {
+                // Actualizar la posición
+                $sql = "UPDATE emision SET Posicion = :posicion WHERE ID_Emision = :idEmision";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([
+                    ':posicion'  => $posicion,
+                    ':idEmision' => $idRegistros,
+                ]);
+            } else {
+                $alertTitle = '¡Error!';
+                $alertText = 'Posición N° ' . $posicion . ' Repetida o Errónea';
+                $alertType = 'error';
+                $redireccion = "window.location='javascript:history.back()'";
+
+                alerta($alertTitle, $alertText, $alertType, $redireccion);
+                die();
+            }
         }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage() . "<br>";

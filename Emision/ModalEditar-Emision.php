@@ -19,6 +19,7 @@
         <!-- Hidden Fields -->
         <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="posicion_old" value="<?php echo $mostrar['Posicion']; ?>">
 
         <?php
         include('regreso-modal.php');
