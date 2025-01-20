@@ -13,10 +13,11 @@ $caps = $_REQUEST['capitulos'];
 $accion = $_REQUEST['accion'];
 $link = $_REQUEST['link'];
 
+
 // Consultas
-$sql = "SELECT (Totales - Capitulos) as restantes FROM `emision` WHERE Nombre = ?";
+$sql = "SELECT (Totales - Capitulos) as restantes FROM `emision` WHERE ID = ?";
 $stmt = $connect->prepare($sql);
-$stmt->execute([$nombre]);
+$stmt->execute([$idRegistros]);
 $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if ($result) {
@@ -30,10 +31,10 @@ if ($result) {
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             // Actualización de capítulos
-            $sqlUpdate = "UPDATE emision SET Capitulos = Capitulos + :vistos WHERE Nombre = :nombre AND Capitulos < Totales";
+            $sqlUpdate = "UPDATE emision SET Capitulos = Capitulos + :vistos WHERE ID = :id AND Capitulos < Totales";
             $stmtUpdate = $conn->prepare($sqlUpdate);
             $stmtUpdate->bindValue(':vistos', $vistos, PDO::PARAM_INT);  // Ligar el valor de los capítulos vistos
-            $stmtUpdate->bindValue(':nombre', $nombre, PDO::PARAM_STR);  // Ligar el valor del nombre
+            $stmtUpdate->bindValue(':id', $idRegistros, PDO::PARAM_STR);  // Ligar el valor del nombre
             $stmtUpdate->execute();
 
             echo '<script>

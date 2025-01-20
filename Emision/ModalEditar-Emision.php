@@ -1,5 +1,5 @@
 <!-- Modal for Anime Information Update -->
-<div class="modal fade" id="editChildresn5<?php echo $mostrar['ID_Emision']; ?>"
+<div class="modal fade" id="editChildresn5<?php echo $mostrar['ID']; ?>"
   tabindex="-1"
   role="dialog"
   aria-labelledby="animeUpdateModal"
@@ -15,20 +15,23 @@
         <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
       </div>
 
-      <form method="POST" action="recib_Update-Emision.php" class="needs-validation" id="Edicion_Emision<?php echo $mostrar['ID_Emision']; ?>" novalidate>
+      <form method="POST" action="recib_Update-Emision.php" class="needs-validation" id="Edicion_Emision<?php echo $mostrar['ID']; ?>" novalidate>
         <!-- Hidden Fields -->
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
-        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="nombre" value="<?php echo $mostrar['Temporada']; ?>">
+
+        <input type="hidden" name="nombre_alerta" value="<?php echo $mostrar['Nombre_Anime']; ?>">
 
         <?php
         include('regreso-modal.php');
-        $idRegistros = $mostrar['ID_Emision'];
-        $estado = $mostrar['Emision'];
-        $sql2 = $conexion->query("SELECT * FROM `anime` where id_Emision='$idRegistros';");
-        while ($valores = mysqli_fetch_array($sql2)) {
-          $IdAnime = $valores["id"];
-        }
+        $idRegistros = $mostrar['ID'];
+        $estado = $mostrar['Estado'];
+        $IdAnime = $mostrar["ID_Anime"];
+
         ?>
+
+        <input type="hidden" name="id_anime" value="<?php echo $mostrar['ID_Anime']; ?>">
+        <input type="hidden" name="posicion_antigua" value="<?php echo $mostrar['Posicion']; ?>">
 
         <div class="modal-body">
           <div class="container-fluid">
@@ -37,7 +40,7 @@
               <div class="col-12">
                 <div class="card bg-light">
                   <div class="card-body">
-                    <h4 class="text-primary text-center mb-0"><?php echo $mostrar['Nombre']; ?></h4>
+                    <h4 class="text-primary text-center mb-0"><?php echo $mostrar['Nombre_Anime']; ?></h4>
                   </div>
                 </div>
               </div>
@@ -48,7 +51,7 @@
               <div class="col-md-3">
                 <div class="form-floating mb-3">
                   <select name="estado" class="form-select" id="estadoSelect" required>
-                    <option value="<?php echo $mostrar['Emision']; ?>"><?php echo $mostrar['Emision']; ?></option>
+                    <option value="<?php echo $mostrar['Estado']; ?>"><?php echo $mostrar['Estado']; ?></option>
                     <?php
                     $query = $conexion->query("SELECT Estado FROM `estado` where Estado !='$estado' AND Estado !='Finalizado';");
                     while ($valores = mysqli_fetch_array($query)) {
@@ -62,7 +65,9 @@
               <div class="col-md-3">
                 <div class="form-floating">
                   <?php
-                  $query = $conexion->query("SELECT COUNT(Posicion) as conteo FROM `emision` WHERE Dia='$mostrar[Dia]' and Emision='Emision';");
+                  $query = $conexion->query("SELECT COUNT(Posicion) as conteo 
+                  FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id
+                  WHERE emision.Dia='$mostrar[Dia]' and anime.Estado='Emision';");
                   while ($valores = mysqli_fetch_array($query)) {
                     $conteo = $valores['conteo'];
                   }
@@ -70,7 +75,7 @@
                   <input type="number"
                     name="posicion"
                     class="form-control mb-3"
-                    id="posicionInput<?php echo $mostrar['ID_Emision']; ?>"
+                    id="posicionInput<?php echo $mostrar['ID']; ?>"
                     min="0"
                     max="<?php echo $conteo; ?>"
                     value="<?php echo $mostrar['Posicion']; ?>"
@@ -78,7 +83,7 @@
                   <label for="posicionInput">Posición</label>
 
                   <!-- Mensaje de error -->
-                  <div id="posicionError<?php echo $mostrar['ID_Emision']; ?>" class="invalid-feedback">
+                  <div id="posicionError<?php echo $mostrar['ID']; ?>" class="invalid-feedback">
                     Por favor ingrese una posición válida (entre 0 y <?php echo $conteo; ?>)
                   </div>
                 </div>
@@ -151,12 +156,12 @@
                   <input type="number"
                     name="faltantes"
                     class="form-control"
-                    id="faltantesInput<?php echo $mostrar['ID_Emision']; ?>"
+                    id="faltantesInput<?php echo $mostrar['ID']; ?>"
                     min="0"
                     value="<?php echo $faltantes ?>"
                     required>
                   <label for="faltantesInput">Capítulos Faltantes</label>
-                  <div id="faltantesError<?php echo $mostrar['ID_Emision']; ?>" class="invalid-feedback">
+                  <div id="faltantesError<?php echo $mostrar['ID']; ?>" class="invalid-feedback">
                     Por favor ingrese una numero válido (mayor o igual a 0)
                   </div>
                 </div>

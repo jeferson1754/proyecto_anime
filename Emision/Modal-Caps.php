@@ -1,5 +1,5 @@
 <!-- Modal for Episode Update -->
-<div class="modal fade" id="editChildresn7<?php echo $mostrar['ID_Emision']; ?>"
+<div class="modal fade" id="editChildresn7<?php echo $mostrar['ID']; ?>"
   tabindex="-1"
   role="dialog"
   aria-labelledby="episodeUpdateModal"
@@ -26,17 +26,17 @@
         novalidate>
 
         <!-- Hidden Fields -->
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
-        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre_Anime']; ?>">
         <input type="hidden" name="capitulos" value="<?php echo $mostrar['Capitulos']; ?>">
 
         <?php include('regreso-modal.php'); ?>
 
         <div class="modal-body">
           <div class="text-center mb-4">
-            <h4 class="text-primary mb-3"><?php echo $mostrar['Nombre']; ?></h4>
+            <h4 class="text-primary mb-3"><?php echo $mostrar['Nombre_Anime']; ?></h4>
             <div class="badge bg-info mb-2">
-              <?php echo $mostrar['Emision']; ?>
+              <?php echo $mostrar['Estado']; ?>
             </div>
 
             <div class="row mt-3">

@@ -1,3 +1,4 @@
+<!---->
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
@@ -8,9 +9,11 @@ include '../bd.php';
 $fecha_actual = date('Y-m-d');
 
 $idRegistros    = $_REQUEST['id'];
-
+$id_anime       = $_REQUEST['id_anime'];
 $accion         = $_REQUEST['accion'];
 $link           = $_REQUEST['link'];
+$nombre         = $_REQUEST['nombre'];
+
 
 // Realizar la conexión a la base de datos una sola vez
 try {
@@ -21,50 +24,35 @@ try {
 }
 
 // Obtener datos de emision
-$sql1 = "SELECT * FROM emision WHERE ID_Emision = :idRegistros";
+$sql1 = "SELECT * FROM emision WHERE ID = :idRegistros";
 $stmt1 = $conn->prepare($sql1);
 $stmt1->execute(['idRegistros' => $idRegistros]);
 $emision = $stmt1->fetch(PDO::FETCH_ASSOC);
 
-// Obtener datos de anime
-$sql2 = "SELECT * FROM anime WHERE id_Emision = :idRegistros";
-$stmt2 = $conn->prepare($sql2);
-$stmt2->execute(['idRegistros' => $idRegistros]);
-$anime = $stmt2->fetch(PDO::FETCH_ASSOC);
-
-if ($anime) {
-    $id_anime = $anime['id'];
-    $temporadas = $anime['Temporadas'];
-    $nombre         = $anime['Anime'];
-}
-
 // Preparar datos para eliminar emision
-$dato1 = $emision['ID_Emision'];
-$dato2 = $emision['Emision'];
-$dato3 = $emision['Nombre'];
+$dato1 = $emision['ID_Anime'];
+$dato3 = $emision['Temporada'];
 $dato4 = $emision['Capitulos'];
 $dato5 = $emision['Totales'];
 $dato6 = $emision['Dia'];
-$dato8 = $emision['Posicion'];
 $dato10 = $emision['Duracion'];
 
 // Actualizar estado de anime a "Finalizado"
 try {
-    $sql = "UPDATE anime SET estado = 'Finalizado', ID_Emision = 1 WHERE ID_Emision = :idRegistros";
+    $sql = "UPDATE anime SET Estado = 'Finalizado'WHERE ID = :id_anime";
     $stmt = $conn->prepare($sql);
-    $stmt->execute(['idRegistros' => $idRegistros]);
+    $stmt->execute(['id_anime' => $id_anime]);
 } catch (PDOException $e) {
     echo "Error actualizando el anime: " . $e->getMessage();
 }
 
 // Insertar emision en eliminados_emision
 try {
-    $sql = "INSERT INTO eliminados_emision (ID_Emision, Estado, Nombre, Capitulos, Totales, Dia, Duracion, Fecha) 
-            VALUES (:dato1, :dato2, :dato3, :dato4, :dato5, :dato6, :dato10, :fecha_actual)";
+    $sql = "INSERT INTO eliminados_emision (ID_Anime, Temporada, Capitulos, Totales, Dia, Duracion, Fecha) 
+            VALUES (:dato1, :dato3, :dato4, :dato5, :dato6, :dato10, :fecha_actual)";
     $stmt = $conn->prepare($sql);
     $stmt->execute([
         'dato1' => $dato1,
-        'dato2' => $dato2,
         'dato3' => $dato3,
         'dato4' => $dato4,
         'dato5' => $dato5,
@@ -78,7 +66,7 @@ try {
 
 // Eliminar emision
 try {
-    $sql = "DELETE FROM emision WHERE ID_Emision = :idRegistros";
+    $sql = "DELETE FROM emision WHERE ID = :idRegistros";
     $stmt = $conn->prepare($sql);
     $stmt->execute(['idRegistros' => $idRegistros]);
 } catch (PDOException $e) {
@@ -95,14 +83,14 @@ try {
 
 // Lógica para Calificar
 if (isset($_POST['Calificar_Ahora'])) {
-    header("location:../Calificaciones/editar_stars.php?id=$id_anime&nombre=$nombre&temporada=$temporadas");
+    header("location:../Calificaciones/editar_stars.php?id=$id_anime&nombre=$nombre&temporada=$dato3");
 } else if (isset($_POST['Calificar_Luego'])) {
     try {
         $sql = "INSERT INTO calificaciones (ID_Anime, Temporadas) VALUES (:id_anime, :temporadas)";
         $stmt = $conn->prepare($sql);
         $stmt->execute([
             'id_anime' => $id_anime,
-            'temporadas' => $temporadas
+            'temporadas' => $dato3
         ]);
         echo "Calificación insertada correctamente.";
     } catch (PDOException $e) {

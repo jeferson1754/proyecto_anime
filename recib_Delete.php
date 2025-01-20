@@ -15,7 +15,7 @@ switch ($estado) {
     case "Pausado":
         $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE anime.*,emision.*
-                       FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
+                       FROM anime JOIN emision ON anime.id = emision.ID_Anime
                        WHERE anime.id='$idRegistros'";
         break;
 
@@ -27,16 +27,15 @@ switch ($estado) {
     case "Pendiente":
         $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE anime.*,pendientes.*
-                       FROM anime JOIN pendientes ON anime.id_Pendientes=pendientes.ID_Pendientes
+                       FROM anime JOIN pendientes ON anime.id = pendientes.ID_Anime
                        WHERE anime.id='$idRegistros'";
 
         break;
 
     default:
-        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros')";
-        $sql_update .= "; UPDATE anime SET id_Emision=NULL,id_Pendientes=NULL,Id_Temporada=NULL WHERE id='$idRegistros'";
+        $sql_update = "INSERT INTO id_anime (`ID`) VALUES ('$idRegistros');";
         $sql_delete = "DELETE anime.*,emision.*
-                       FROM anime JOIN emision ON anime.id_Emision=emision.ID_Emision
+                       FROM anime JOIN emision ON anime.id = emision.ID_Anime
                        WHERE anime.id='$idRegistros'";
 }
 

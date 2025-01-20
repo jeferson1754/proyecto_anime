@@ -1,5 +1,5 @@
 <!-- Modal para confirmación de eliminación -->
-<div class="modal fade" id="editChildresn6<?php echo $mostrar['ID_Emision']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="editChildresn6<?php echo $mostrar['ID']; ?>" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content rounded-4 border-0">
       <!-- Header con imagen de fondo -->
@@ -13,14 +13,15 @@
       </div>
 
       <form method="POST" action="recib_Delete-Emision.php">
-        <input type="hidden" name="id" value="<?php echo $mostrar['ID_Emision']; ?>">
+        <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="id_anime" value="<?php echo $mostrar['ID_Anime']; ?>">
         <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre']; ?>">
         <?php include('regreso-modal.php'); ?>
 
         <div class="modal-body px-4 py-4">
           <!-- Información del Anime -->
           <div class="anime-info mb-4">
-            <h3 class="text-center fw-bold text-primary mb-4"><?php echo $mostrar['Nombre']; ?></h3>
+            <h3 class="text-center fw-bold text-primary mb-4"><?php echo $mostrar['Nombre_Anime']; ?></h3>
 
             <div class="row g-3 mb-4">
               <div class="col-12">
@@ -28,7 +29,7 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <p class="small text-muted mb-1">Emisión</p>
-                      <p class="mb-0 fw-medium"><?php echo $mostrar['Emision']; ?></p>
+                      <p class="mb-0 fw-medium"><?php echo $mostrar['Estado']; ?></p>
                     </div>
                     <div class="text-end">
                       <div class="d-flex gap-3">

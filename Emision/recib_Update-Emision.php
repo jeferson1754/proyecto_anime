@@ -1,8 +1,8 @@
 <!---->
+
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
-
 
 
 <?php
@@ -29,6 +29,7 @@ function alerta($alertTitle, $alertText, $alertType, $redireccion)
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $idRegistros    = $_POST['id'] ?? null;
+    $ID_Anime    = $_POST['id_anime'] ?? null;
     $caps           = $_POST['caps'] ?? null;
     $faltantes      = $_POST['faltantes'] ?? null;
     $total          = $_POST['total'] ?? null;
@@ -41,15 +42,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $op             = $_POST['op'] ?? null;
     $ed             = $_POST['ed'] ?? null;
     $posicion       = $_POST['posicion'] ?? null;
+    $posicion_antigua       = $_POST['posicion_antigua'] ?? null;
+    $nombre_alerta       = $_POST['nombre_alerta'] ?? null;
 
     $nombreEscapado = htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8');
 
     echo $nombre;
 
     // Preparar las consultas usando Prepared Statements
-    $sql = "SELECT * FROM anime WHERE id_Emision = ?";
-    $sql2 = "SELECT * FROM horario WHERE Nombre = ?";
-    $sql3 = "SELECT * FROM emision WHERE Dia = ? AND Posicion = ?";
+    $sql = "SELECT * FROM anime WHERE ID = ?";
+    $sql2 = "SELECT * FROM horario WHERE ID_Anime = ?";
+    $sql3 = "SELECT * FROM emision WHERE ID = ? AND Dia = ?";
 
 
     // Preparar las sentencias
@@ -58,9 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_conteo = $conexion->prepare($sql3);
 
     // Enlazar los parámetros
-    $stmt_anime->bind_param('s', $idRegistros);
-    $stmt_horario->bind_param('s', $nombreEscapado);
-    $stmt_conteo->bind_param('ss', $dias, $posicion);
+    $stmt_anime->bind_param('i', $ID_Anime);
+    $stmt_horario->bind_param('i', $ID_Anime);
+    $stmt_conteo->bind_param('is', $idRegistros, $dia);
 
     // Ejecutar las consultas
     $stmt_anime->execute();
@@ -78,13 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Procesar resultados
     while ($fila = $result_anime->fetch_assoc()) {
-        $temps = $fila["Id_Temporada"];
+        $tempo = $fila["Temporada"];
         $fecha = $fila["Ano"];
-        $IdAnime = $fila["id"];
     }
 
-    // Obtener el nombre de la temporada
-    $tempo = isset($temporadas[$temps]) ? $temporadas[$temps] : "Desconocida";
 
     $sql4 = "SELECT * FROM `num_horario` WHERE Temporada= ? AND Ano= ?";
     $stmt_num = $conexion->prepare($sql4);
@@ -95,6 +95,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     while ($fila = $result_num->fetch_assoc()) {
         $num = $fila["Num"];
     }
+    echo $num;
+
 
     $sql = "
     SELECT 'opening' AS tipo, COUNT(*) AS total FROM `op` WHERE ID_Anime = ?
@@ -103,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ";
 
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param('ss', $IdAnime, $IdAnime);
+    $stmt->bind_param('ss', $ID_Anime, $ID_Anime);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -131,29 +133,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Comprobar si existe el horario
         if (mysqli_num_rows($result_horario) == 0) {
             // Insertar nuevo horario
-            $sql = "INSERT INTO horario (Nombre, Dia, Duracion, num_horario) 
-                VALUES (:nombre, :dias, :duracion, :num)";
+            $sql = "INSERT INTO horario (ID_Anime, Temporada, Dia, Duracion, num_horario) 
+                VALUES (:id_anime, :temporada, :dias, :duracion, :num)";
             $stmt = $conn->prepare($sql);
             $stmt->execute([
-                ':nombre'   => $nombreEscapado,
-                ':dias'     => $dias,
-                ':duracion' => $duracion,
-                ':num'    => $num
+                ':id_anime'   => $ID_Anime,
+                ':temporada'  => $nombre,
+                ':dias'       => $dias,
+                ':duracion'   => $duracion,
+                ':num'        => $num
             ]);
             echo "Nuevo horario insertado: $nombreEscapado<br>";
         } else {
             // Actualizar horario existente
             $sql = "UPDATE horario 
                 SET Dia = :dias, 
-                Duracion = :duracion 
-                WHERE Nombre = :nombre 
+                    Duracion = :duracion,
+                    Temporada = :temporada
+                WHERE ID_Anime = :id_anime 
                 ORDER BY ID DESC 
                 LIMIT 1";
             $stmt = $conn->prepare($sql);
             $stmt->execute([
-                ':dias'     => $dias,
-                ':duracion' => $duracion,
-                ':nombre'   => $nombreEscapado,
+                ':dias'       => $dias,
+                ':duracion'   => $duracion,
+                ':temporada'  => $nombre,
+                ':id_anime'   => $ID_Anime
             ]);
             echo "Horario actualizado: $nombreEscapado<br>";
         }
@@ -166,23 +171,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Verificar si el conteo existe o la posición es igual a 0
-        if (mysqli_num_rows($result_conteo) == 0 || $posicion == 0) {
-            // Actualizar la posición
-            $sql = "UPDATE emision SET Posicion = :posicion WHERE ID_Emision = :idEmision";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute([
-                ':posicion'  => $posicion,
-                ':idEmision' => $idRegistros,
-            ]);
-        } else {
-            $alertTitle = '¡Error!';
-            $alertText = 'Posición N° ' . $posicion . ' Repetida o Errónea';
-            $alertType = 'error';
-            $redireccion = "window.location='javascript:history.back()'";
+        if ($posicion != $posicion_antigua) {
+            // Verificar si el conteo existe o la posición es igual a 0
+            if (mysqli_num_rows($result_conteo) == 0) {
+                // Actualizar la posición
+                $sql = "UPDATE emision SET Posicion = :posicion WHERE ID = :id";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([
+                    ':posicion'  => $posicion,
+                    ':id' => $idRegistros,
+                ]);
+            } else {
+                $alertTitle = '¡Error!';
+                $alertText = 'Posición N° ' . $posicion . ' Repetida o Errónea';
+                $alertType = 'error';
+                $redireccion = "window.location='javascript:history.back()'";
 
-            alerta($alertTitle, $alertText, $alertType, $redireccion);
-            die();
+                alerta($alertTitle, $alertText, $alertType, $redireccion);
+                die();
+            }
+        } else {
+            echo "Misma Posicion<br>";
         }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage() . "<br>";
@@ -205,7 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (mysqli_num_rows($result_anime) == 0) {
         $alertTitle = '¡Error!';
-        $alertText = 'No se puede editar ' . $nombreEscapado . ' porque no existe en anime';
+        $alertText = 'No se puede editar ' . $nombre_alerta . ' porque no existe en anime';
         $alertType = 'error';
         $redireccion = "window.location='javascript:history.back()'";
 
@@ -226,19 +235,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     Capitulos = '$caps',
                     Faltantes = $caps + $faltantes,
                     Totales = '$total',
-                    Emision = '$estado',
                     Dia = '$dias',
                     Duracion = '$duracion'
-                    WHERE ID_Emision = '$idRegistros'";
+                    WHERE ID = '$idRegistros'";
                     executeQuery($conn, $sqlEmision);
 
-                    $sqlAnime = "UPDATE anime SET 
-                    Estado = '$estado'
-                    WHERE id_Emision = '$idRegistros'";
-                    executeQuery($conn, $sqlAnime);
-
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Actualizando registro en Emisión de ' . $nombreEscapado . '';
+                    $alertText = 'Actualizando registro en Emisión de ' . $nombre_alerta . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
                     alerta($alertTitle, $alertText, $alertType, $redireccion);
@@ -252,19 +255,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     Faltantes = $caps + $faltantes,
                     Totales = '$total',
                     Dia = '$dias',
-                    Emision = '$estado',
                     Duracion = '$duracion',
-                    Posicion ='$posicion'
-                    WHERE ID_Emision = '$idRegistros'";
+                    Posicion ='0'
+                    WHERE ID = '$idRegistros'";
                     executeQuery($conn, $sqlPausado);
 
                     $sqlAnimePausado = "UPDATE anime SET 
                     Estado = '$estado'
-                    WHERE id_Emision = '$idRegistros'";
+                    WHERE id = '$ID_Anime'";
                     executeQuery($conn, $sqlAnimePausado);
 
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Actualizando registro en Emisión de ' . $nombreEscapado . '';
+                    $alertText = 'Actualizando registro en Emisión de ' . $nombre_alerta . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
                     alerta($alertTitle, $alertText, $alertType, $redireccion);
@@ -273,12 +275,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 case "Pendiente":
                     echo "Anime Pendiente<br>";
 
-                    $sqlPendientes = "INSERT INTO pendientes (Nombre, Tipo, Vistos, Total, Estado_Link) 
-                    VALUES ('$nombreEscapado', 'Anime', '$caps', '$total', 'Faltante')";
+                    $sqlPendientes = "INSERT INTO pendientes (ID_Anime, Temporada, Tipo, Vistos, Total, Estado_Link) 
+                    VALUES ('$ID_Anime','$nombre', 'Anime', '$caps', '$total', 'Faltante')";
                     executeQuery($conn, $sqlPendientes);
-
-                    $last_id1 = $conn->lastInsertId();
-                    echo 'Último anime insertado: ' . $last_id1 . "<br>";
 
                     $sqlUpdatePendientes = "UPDATE pendientes SET 
                     Pendientes = (Total - Vistos) 
@@ -286,18 +285,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     executeQuery($conn, $sqlUpdatePendientes);
 
                     $sqlDeleteEmision = "DELETE FROM emision 
-                    WHERE ID_Emision = '$idRegistros'";
+                    WHERE ID = '$idRegistros'";
                     executeQuery($conn, $sqlDeleteEmision);
 
                     $sqlUpdateAnime = "UPDATE anime SET 
-                    Estado = 'Pendiente',
-                    id_Emision = 1,
-                    id_Pendientes = '$last_id1'
-                    WHERE id = '$IdAnime'";
+                    Estado = 'Pendiente'
+                    WHERE id = '$ID_Anime'";
                     executeQuery($conn, $sqlUpdateAnime);
 
                     $alertTitle = 'Edicion Exitosa!';
-                    $alertText = 'Creando registro en Pendientes, Eliminando en Emisión y Actualizando en Anime de ' . $nombreEscapado . '';
+                    $alertText = 'Creando registro en Pendientes, Eliminando en Emisión y Actualizando en Anime de ' . $nombre_alerta . '';
                     $alertType = 'success';
                     $redireccion = "window.location='$link'";
                     alerta($alertTitle, $alertText, $alertType, $redireccion);

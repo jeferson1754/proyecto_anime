@@ -17,8 +17,7 @@
 
           $busqueda = "";
 
-          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and Emision='Emision' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
-
+          $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'  and anime.Estado='Emision' and emision.ID>1 ORDER BY `anime`.`Nombre` ASC;";
           if (isset($_GET['enviar'])) {
 
 
@@ -29,7 +28,7 @@
 
             $busqueda = $day;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
           } else
 if (isset($_GET['enviar2'])) {
 
@@ -37,30 +36,38 @@ if (isset($_GET['enviar2'])) {
             $dia   = $_REQUEST['dias'];
 
             echo "<input type='hidden' name='accion' value='  $accion2 '>";
-            $link = "/Anime/Emision/?dias=$dia&enviar2=&accion=Filtro";
+            $link = "./?dias=$dia&enviar2=&accion=Filtro";
             echo "<input type='hidden' name='link' value='  $link  '>";
 
             $busqueda = $dia;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and Emision='Emision' and ID_Emision>1 ORDER BY CASE WHEN Posicion = 0 THEN 2 ELSE 1 END, Posicion;";
-          } else {
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
+          } elseif (isset($_GET['borrar'])) {
             $busqueda = "";
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and ID_Emision>1 ORDER BY `emision`.`Nombre` ASC";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and emision.ID>1 ORDER BY `anime`.`Nombre` ASC";
 
             $accion2 = "nose";
             echo "<input type='hidden' name='accion' value='  $accion2  '>";
-            $link = "/Anime/Emision/?borrar=&accion=HOY";
+            $link = "./?borrar=&accion=HOY";
+            echo "<input type='hidden' name='link' value='  $link  '>";
+          } else if (isset($_GET['faltantes'])) {
+
+            $where = "WHERE emision.Faltantes > emision.Capitulos AND anime.Estado='Emision' AND emision.ID > 1 ORDER BY (emision.Faltantes - emision.Capitulos) ASC;";
+            $busqueda = "";
+            $accion2 = $_REQUEST['accion'];
+            echo "<input type='hidden' name='accion' value='  $accion2  '>";
+            $link = "./?accion=HOY&faltantes=";
             echo "<input type='hidden' name='link' value='  $link  '>";
           }
 
-          $alumnos = "SELECT * FROM emision $where";
+          $alumnos = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id $where";
 
           $resAlumnos = $conexion->query($alumnos);
           while ($registroAlumnos = $resAlumnos->fetch_array(MYSQLI_BOTH)) {
             echo '
-            <input type="hidden" name="idalu[]" value="' . $registroAlumnos['ID_Emision'] . '">   
-            <input type="hidden" name="nombre[' . $registroAlumnos['ID_Emision'] . ']" value="' . $registroAlumnos['Nombre'] . '">
-            <input type="hidden" name="capitulos[' . $registroAlumnos['ID_Emision'] . ']" value="' . $registroAlumnos['Capitulos'] . '">
+            <input type="hidden" name="idalu[]" value="' . $registroAlumnos['ID'] . '">   
+            <input type="hidden" name="nombre[' . $registroAlumnos['ID'] . ']" value="' . $registroAlumnos['Nombre'] . '">
+            <input type="hidden" name="capitulos[' . $registroAlumnos['ID'] . ']" value="' . $registroAlumnos['Capitulos'] . '">
            
             <div class="anime-item">
               <h3 class="anime-title">' . $registroAlumnos['Nombre'] . '</h3>
@@ -76,13 +83,13 @@ if (isset($_GET['enviar2'])) {
               </div>
               
               <div class="form-group text-center">
-                <label for="visto-' . $registroAlumnos['ID_Emision'] . '" class="form-label">
+                <label for="visto-' . $registroAlumnos['ID'] . '" class="form-label">
                   Agregar capítulos vistos
                 </label>
                 <input 
                   type="number" 
-                  id="visto-' . $registroAlumnos['ID_Emision'] . '" 
-                  name="vistos[' . $registroAlumnos['ID_Emision'] . ']" 
+                  id="visto-' . $registroAlumnos['ID'] . '" 
+                  name="vistos[' . $registroAlumnos['ID'] . ']" 
                   class="form-control-number" 
                   min="0" 
                   value="0" 
@@ -116,7 +123,7 @@ if (isset($_GET['enviar2'])) {
           $editCaps = mysqli_real_escape_string($conexion, $_POST['capitulos'][$ids]);
           $editVis = mysqli_real_escape_string($conexion, $_POST['vistos'][$ids]);
 
-          $actualizar = $conexion->query("UPDATE emision SET Capitulos ='" . $editCaps . "'+'" . $editVis . "' WHERE Nombre='$editNom' AND Capitulos < Totales;");
+          $actualizar = $conexion->query("UPDATE emision SET Capitulos ='" . $editCaps . "'+'" . $editVis . "' WHERE ID='$ids' AND Capitulos < Totales;");
         }
 
         if ($actualizar == true) {

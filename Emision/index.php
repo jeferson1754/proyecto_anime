@@ -607,7 +607,7 @@ include '../update_emision.php';
         </div>
 
         <?php
-        //include('Modal-Caps-Total.php');
+        include('Modal-Caps-Total.php');
 
         $busqueda = "";
 
@@ -657,9 +657,9 @@ include '../update_emision.php';
                     </thead>
                     <tbody>
                         <?php
-                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id $where";
+                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado,anime.Nombre as Nombre FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id $where";
                         $result = mysqli_query($conexion, $sql1);
-                        echo $sql1;
+                        //echo $sql1;
                         while ($mostrar = mysqli_fetch_array($result)) {
                             if ($mostrar['Totales'] > 0) {
                                 $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos'];
@@ -670,7 +670,7 @@ include '../update_emision.php';
                             }
                         ?>
                             <tr>
-                                <td class="fw-500"><?php echo $mostrar['Nombre'] ?>
+                                <td class="fw-500"><?php echo $mostrar['Nombre_Anime'] ?>
                                 </td>
                                 <td>
                                     <div class="progress-cell">
@@ -727,9 +727,9 @@ include '../update_emision.php';
                                 </td>
                             </tr>
                         <?php
-                            //include('ModalEditar-Emision.php');
-                            //include('Modal-Caps.php');
-                            //include('ModalDelete-Emision.php');
+                            include('Modal-Caps.php');
+                            include('ModalEditar-Emision.php');
+                            include('ModalDelete-Emision.php');
                         } ?>
                     </tbody>
                 </table>
