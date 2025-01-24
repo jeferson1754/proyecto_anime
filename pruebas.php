@@ -60,7 +60,7 @@ function insertarRegistro($tabla, $columna, $datos, $conexion)
     try {
         // Crear la consulta SQL
         $sql = "INSERT INTO $tabla 
-                (`Nombre`, `ID_Anime`, `$columna`, `Ano`, `Temporada`, `Estado`, `Mix`, `Fecha_Ingreso`) 
+                (`Temporada`, `ID_Anime`, `$columna`, `Ano`, `Temporada_Emision`, `Estado`, `Mix`, `Fecha_Ingreso`) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
         // Depurar la consulta antes de ejecutarla
@@ -104,10 +104,10 @@ if ($mixCount < 50) {
         echo "OP es mayor que el resultado esperado.<br>";
         insertarRegistro("op", "opening", [
             'nombre' => $nombre,
-            'idAnime' => $IdAnime,
+            'idAnime' => $ID_Anime,
             'op_ed' => $op,
             'ano' => $fecha,
-            'temporada' => $temps,
+            'temporada' => $tempo,
             'estado' => 'Faltante',
             'mix' => $mix
         ], $conexion);
@@ -134,10 +134,10 @@ if ($mixCount2 < 30) {
         echo "ED es mayor que el resultado esperado.<br>";
         insertarRegistro("ed", "ending", [
             'nombre' => $nombre,
-            'idAnime' => $IdAnime,
+            'idAnime' => $ID_Anime,
             'op_ed' => $ed,
             'ano' => $fecha,
-            'temporada' => $temps,
+            'temporada' => $tempo,
             'estado' => 'Faltante',
             'mix' => $mix2
         ], $conexion);

@@ -1029,7 +1029,7 @@ $año = date("Y");
                     <tbody>
                         <?php
 
-                        $sql = "SELECT op.ID,CONCAT(anime.Nombre, ' ',op.Temporada) as Nombre, anime.Nombre as album, op.ID_Anime,op.Opening,op.Cancion,autor.Autor,autor.Copia_Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link FROM `op` JOIN temporada ON op.Temporada_Emision=temporada.ID JOIN autor ON op.ID_Autor=autor.ID JOIN anime ON op.ID_Anime=anime.id $where";
+                        $sql = "SELECT op.ID,CONCAT(anime.Nombre, ' ',op.Temporada) as Nombre, anime.Nombre as album, op.ID_Anime,op.Opening,op.Cancion,autor.Autor,autor.Copia_Autor,op.Ano,op.Temporada_Emision as Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link FROM `op` JOIN autor ON op.ID_Autor=autor.ID JOIN anime ON op.ID_Anime=anime.id $where";
                         //echo $sql;
 
                         $result = mysqli_query($conexion, $sql);

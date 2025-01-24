@@ -1,8 +1,8 @@
-<!--comment-->
+<!--comment
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
-
+-->
 <?php
 include 'bd.php';
 
@@ -234,14 +234,14 @@ try {
 
     if ($op > $op1) {
         echo "OP Mayor a Resultado<br>";
-        $sql_op = "INSERT INTO op (`Temporada`, `ID_Anime`, `Opening`, `Ano`, `Temporada`, `Estado`, `Mix`, `Fecha_Ingreso`) 
+        $sql_op = "INSERT INTO op (`Temporada`, `ID_Anime`, `Opening`, `Ano`, `Temporada_Emision`, `Estado`, `Mix`, `Fecha_Ingreso`) 
         VALUES(:nombre, :idRegistros, :op, :fecha, :temp, 'Faltante', :mix, NOW())";
-        $stmt_op = $conn->prepare($sql_op);
+        $stmt_op = $conn->prepare(query: $sql_op);
         $stmt_op->bindParam(':nombre', $temps, PDO::PARAM_STR);
         $stmt_op->bindParam(':idRegistros', $idRegistros, PDO::PARAM_INT);
         $stmt_op->bindParam(':op', $op, PDO::PARAM_INT);
         $stmt_op->bindParam(':fecha', $fecha, PDO::PARAM_STR);
-        $stmt_op->bindParam(':temp', $temp, PDO::PARAM_STR);
+        $stmt_op->bindParam(':temp', $tempo, PDO::PARAM_STR);
         $stmt_op->bindParam(':mix', $mix, PDO::PARAM_STR);
         $stmt_op->execute();
     } else {
@@ -250,14 +250,14 @@ try {
 
     if ($ed > $ed1) {
         echo "ED Mayor a Resultado<br>";
-        $sql_ed = "INSERT INTO ed (`Temporada`, `ID_Anime`, `Ending`, `Ano`, `Temporada`, `Estado`, `Mix`, `Fecha_Ingreso`) 
+        $sql_ed = "INSERT INTO ed (`Temporada`, `ID_Anime`, `Ending`, `Ano`, `Temporada_Emision`, `Estado`, `Mix`, `Fecha_Ingreso`) 
         VALUES(:nombre, :idRegistros, :ed, :fecha, :temp, 'Faltante', :mix, NOW())";
         $stmt_ed = $conn->prepare($sql_ed);
         $stmt_ed->bindParam(':nombre', $temps, PDO::PARAM_STR);
         $stmt_ed->bindParam(':idRegistros', $idRegistros, PDO::PARAM_INT);
         $stmt_ed->bindParam(':ed', $ed, PDO::PARAM_INT);
         $stmt_ed->bindParam(':fecha', $fecha, PDO::PARAM_STR);
-        $stmt_ed->bindParam(':temp', $temp, PDO::PARAM_STR);
+        $stmt_ed->bindParam(':temp', $tempo, PDO::PARAM_STR);
         $stmt_ed->bindParam(':mix', $mix2, PDO::PARAM_STR);
         $stmt_ed->execute();
     } else {
