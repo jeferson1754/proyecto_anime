@@ -21,6 +21,24 @@
             <input type="text" name="nombre" id="nombre" class="form-control" placeholder="Ingresa el nombre de la película" required>
           </div>
 
+          <!-- ID Anime -->
+          <div class="form-group mb-3">
+            <label for="anime" class="col-form-label">Anime:</label>
+            <select class="js-example-matcher-start form-control" name="anime" id="anime">
+              <option value="" disabled selected>Selecciona un Anime</option>
+              <?php
+              // Consulta para obtener los datos
+              $animes = $conexion->query("SELECT id, Nombre FROM `anime` ORDER BY `anime`.`Nombre` ASC");
+
+              // Generar opciones
+              foreach ($animes as $anime) {
+                echo "<option value='" . htmlspecialchars($anime['id'], ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($anime['Nombre'], ENT_QUOTES, 'UTF-8') . "</option>";
+              }
+              ?>
+            </select>
+
+
+          </div>
           <!-- Estado -->
           <div class="mb-3">
             <label for="estado" class="form-label">Estado</label>

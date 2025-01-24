@@ -7,9 +7,31 @@
 include '../bd.php';
 
 $idRegistros = $_REQUEST['id'];
+$id_anime = $_REQUEST['id_anime'];
 $estado = $_REQUEST['estado'];
+$nombre = $_REQUEST['nombre'];
 
-echo $estado;
+echo $estado . "<br>";
+echo $idRegistros;
+
+function alerta($alertTitle, $alertText, $alertType, $redireccion)
+{
+
+    echo '
+ <script>
+        Swal.fire({
+            title: "' . $alertTitle . '",
+            text: "' . $alertText . '",
+            html: "' . $alertText . '",
+            icon: "' . $alertType . '",
+            showCancelButton: false,
+            confirmButtonText: "OK",
+            closeOnConfirm: false
+        }).then(function() {
+          ' . $redireccion . '  ; // Redirigir a la página principal
+        });
+    </script>';
+}
 
 // Establecer la conexión a la base de datos
 $conexion = mysqli_connect($servidor, $usuario, $password, $basededatos);
@@ -20,7 +42,7 @@ if (!$conexion) {
 // Preparar las consultas
 $deleteQueryPendientes = "DELETE peliculas.*, pendientes.*
                           FROM peliculas
-                          JOIN pendientes ON peliculas.ID_Pendientes = pendientes.ID_Pendientes
+                          JOIN pendientes ON peliculas.ID_Pendientes = pendientes.ID
                           WHERE peliculas.ID = '$idRegistros'";
 
 $deleteQueryPeliculas = "DELETE FROM peliculas WHERE ID = '$idRegistros'";
@@ -32,46 +54,102 @@ $insertQuery = "INSERT INTO id_peliculas (`ID`) VALUES ('$idRegistros')";
 if ($estado == "Finalizado") {
     // Ejecutar las consultas para "Finalizado"
     if (mysqli_query($conexion, $insertQuery) && mysqli_query($conexion, $deleteQueryPeliculas)) {
-        mostrarExito("Eliminado de Película");
+
+        $alertTitle = '¡Pelicula Eliminada!';
+        $alertText = 'Pelicula Eliminada ' . $nombre;
+        $alertType = 'success';
+        $redireccion = "window.location='./'";
+
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
     } else {
-        mostrarError("Error al eliminar de Película");
+        $alertTitle = '¡Error al Eliminar!';
+        $alertText = 'Error al eliminar de Película ' . $nombre;
+        $alertType = 'error';
+        $redireccion = "window.location='javascript:history.back()'";
+
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
+        die();
     }
 } elseif ($estado == "Pendiente") {
     // Ejecutar las consultas para "Pendiente"
     if (mysqli_query($conexion, $insertQuery) && mysqli_query($conexion, $deleteQueryPendientes)) {
-        mostrarExito("Eliminado de Película y Pendiente");
+        $alertTitle = '¡Pelicula y Pendientes Eliminado!';
+        $alertText = 'Pelicula Eliminada ' . $nombre;
+        $alertType = 'success';
+        $redireccion = "window.location='./'";
+
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
     } else {
-        mostrarError("Error al eliminar de Película y Pendiente");
+        $alertTitle = '¡Error al Eliminar!';
+        $alertText = 'Error al eliminar de Película y Pendiente ' . $nombre;
+        $alertType = 'error';
+        $redireccion = "window.location='javascript:history.back()'";
+
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
+        die();
     }
+} else {
+    $alertTitle = '¡Estado Invalido!';
+    $alertText = 'La pelicula ' . $nombre . ' tiene un Estado Invalido, revisarlo';
+    $alertType = 'error';
+    $redireccion = "window.location='javascript:history.back()'";
+
+    alerta($alertTitle, $alertText, $alertType, $redireccion);
+    die();
 }
 
-// Función para mostrar mensajes de éxito
-function mostrarExito($mensaje)
-{
-    echo '<script>
-            Swal.fire({
-                icon: "success",
-                title: "' . $mensaje . '",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "./";
-            });
-        </script>';
+
+try {
+    // Conexión PDO
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Iniciar una transacción
+    $conn->beginTransaction();
+
+    // Consulta para obtener el total de películas por cada id_anime
+    $sqlCount = "SELECT ID_Anime, COUNT(*) AS total_peliculas FROM peliculas where ID_Anime=:id_anime";
+    $stmtCount = $conn->prepare($sqlCount);
+
+    $stmtCount->execute([
+        ':id_anime' => $id_anime
+    ]);
+
+    $stmtCount->execute();
+
+    // Recuperar el resultado de la consulta
+    $resultado = $stmtCount->fetch(PDO::FETCH_ASSOC);
+
+    if ($resultado) {
+        // Obtener el total de películas
+        $totalPeliculas = $resultado['total_peliculas'];
+        $idAnime = $resultado['ID_Anime'];
+
+        // Actualizar el campo 'peliculas' en la tabla anime con el total de películas
+        $sqlUpdate = "UPDATE anime SET peliculas = :totalPeliculas WHERE id = :idAnime";
+        $stmtUpdate = $conn->prepare($sqlUpdate);
+        $stmtUpdate->execute([
+            ':totalPeliculas' => $totalPeliculas,
+            ':idAnime' => $idAnime
+        ]);
+    } 
+
+    // Confirmar la transacción
+    $conn->commit();
+} catch (PDOException $e) {
+    // Si ocurre un error, revertir la transacción
+    $conn->rollBack();
+
+    // Manejar el error
+    $alertTitle = '¡Error!';
+    $alertText = 'Error al actualizar anime: ' . $e->getMessage();
+    $alertType = 'error';
+    $redireccion = "window.location='javascript:history.back()'";
+
+    alerta($alertTitle, $alertText, $alertType, $redireccion);
+    exit(); // Detener la ejecución si hay error
 }
 
-// Función para mostrar mensajes de error
-function mostrarError($mensaje)
-{
-    echo '<script>
-            Swal.fire({
-                icon: "error",
-                title: "' . $mensaje . '",
-                confirmButtonText: "OK"
-            }).then(function() {
-                window.location = "./";
-            });
-        </script>';
-}
+
 
 mysqli_close($conexion);
 ?>

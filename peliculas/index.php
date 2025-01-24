@@ -772,7 +772,7 @@ $año = date("Y");
 
         if (isset($_GET['pendientes'])) {
 
-            $where = "WHERE Estado='Pendiente'";
+            $where = "WHERE peliculas.Estado='Pendiente'";
         } elseif (isset($_GET['borrar'])) {
             $where = "";
         } else {
@@ -795,7 +795,12 @@ $año = date("Y");
                     <tbody>
                         <?php
 
-                        $sql = "SELECT * FROM `peliculas` $where ORDER BY `peliculas`.`ID` DESC";
+                        $sql = "SELECT peliculas.*,
+                        CONCAT(anime.Nombre, ' ', peliculas.Nombre) AS Nombre_Anime,
+                        anime.Nombre as anime_name
+                        FROM `peliculas` 
+                        left join anime on peliculas.ID_Anime = anime.id
+                        $where ORDER BY `peliculas`.`ID` DESC";
 
                         //echo $sql;
                         $result = mysqli_query($conexion, $sql);
@@ -804,7 +809,8 @@ $año = date("Y");
                         ?>
                             <tr>
                                 <td class="fw-500">
-                                    <?php echo $mostrar['Nombre'] ?>
+
+                                    <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Nombre'] ?>
                                 </td>
                                 <td>
                                     <?php echo $mostrar['Ano'] ?>

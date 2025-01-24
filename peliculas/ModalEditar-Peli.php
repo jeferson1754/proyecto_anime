@@ -13,6 +13,7 @@
       <form id="updateForm<?php echo $mostrar['ID']; ?>" method="POST" action="recib_Update-Peli.php" novalidate>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
         <input type="hidden" name="pendi" value="<?php echo $mostrar['ID_Pendientes']; ?>">
+        <input type="hidden" name="nombre_aviso" value="<?php echo $mostrar['Nombre_Anime']; ?>">
 
         <div class="modal-body" id="cont_modal">
           <!-- Nombre -->
@@ -22,6 +23,34 @@
             <div class="invalid-feedback">
               El nombre de la película no puede estar vacío.
             </div>
+          </div>
+
+          <!-- ID Anime -->
+          <div class="form-group mb-3">
+            <label for="anime" class="col-form-label">Anime:</label>
+            <select class="form-control" name="anime" id="anime">
+              <option value="" disabled <?= ($mostrar['ID_Anime'] === 0 || empty($mostrar['ID_Anime'])) ? 'selected' : ''; ?>>
+                Selecciona un Anime
+              </option>
+              <?php
+              // Consulta para obtener los datos
+              $animes = $conexion->query("SELECT id, Nombre FROM `anime` ORDER BY `anime`.`Nombre` ASC");
+
+              // Obtener el ID seleccionado actualmente
+              $idSeleccionado = $mostrar['ID_Anime'];
+
+              // Generar opciones
+              foreach ($animes as $anime) {
+                // Verificar si este es el anime actualmente seleccionado
+                $selected = ($anime['id'] == $idSeleccionado) ? 'selected' : '';
+                echo "<option value='" . htmlspecialchars($anime['id'], ENT_QUOTES, 'UTF-8') . "' $selected>" . htmlspecialchars($anime['Nombre'], ENT_QUOTES, 'UTF-8') . "</option>";
+              }
+              ?>
+            </select>
+
+
+
+
           </div>
 
           <!-- Año -->

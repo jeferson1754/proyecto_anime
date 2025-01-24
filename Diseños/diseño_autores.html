@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            :root {
+                --primary: #11101d;
+                --secondary: #1d1b31;
+                --accent: #4070f4;
+                --text: #fff;
+            }
+    
+            body {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f5f5f5;
+            }
+    
+            /* Navbar Styles */
+            .navbar-mainbg {
+                background: var(--primary);
+                padding: 0px;
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 100;
+            }
+    
+            .navbar-brand {
+                color: var(--text) !important;
+                font-size: 1.5rem;
+                padding: 15px 30px;
+            }
+    
+            .navbar-nav .nav-link {
+                color: var(--text) !important;
+                padding: 15px 25px;
+                transition: 0.3s;
+            }
+    
+            .navbar-nav .nav-link:hover {
+                background: var(--accent);
+            }
+    
+            /* Search Form */
+            .search-form {
+                margin: 100px auto 30px;
+                max-width: 600px;
+                padding: 20px;
+                position: relative;
+            }
+    
+            .search-form input {
+                width: 100%;
+                padding: 15px 50px 15px 20px;
+                border: none;
+                border-radius: 25px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                font-size: 1rem;
+            }
+    
+            .search-form button {
+                position: absolute;
+                right: 30px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: none;
+                background: none;
+                color: var(--accent);
+                cursor: pointer;
+            }
+    
+            /* Menu Options */
+            .menu-container {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin: 20px auto;
+                max-width: 1200px;
+                padding: 20px;
+            }
+    
+            .menu-options {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+                border-bottom: 2px solid #eee;
+                padding-bottom: 10px;
+            }
+    
+            .menu-option {
+                cursor: pointer;
+                padding: 10px 30px;
+                font-weight: 500;
+                color: #666;
+                position: relative;
+                transition: 0.3s;
+            }
+    
+            .menu-option:hover {
+                color: var(--accent);
+            }
+    
+            .menu-line {
+                position: absolute;
+                bottom: -12px;
+                left: 0;
+                width: 100%;
+                height: 3px;
+                background: var(--accent);
+                transition: 0.3s;
+            }
+    
+            /* Tables Container */
+            .info-container {
+                display: none;
+                padding: 20px;
+                margin: 20px auto;
+                max-width: 100%;
+            }
+    
+            .info-container.active {
+                display: flex;
+                justify-content: center;
+                gap: 20px;
+            }
+    
+            /* Column Layout */
+            .column {
+                flex: 1;
+                max-width: 800px;
+                min-width: 0; /* Permite que las columnas se reduzcan si es necesario */
+            }
+    
+            /* Tables */
+            table {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                margin-bottom: 30px;
+                width: 100%;
+            }
+    
+            th {
+                background: var(--secondary);
+                color: var(--text);
+                padding: 15px !important;
+                white-space: nowrap;
+            }
+    
+            td {
+                padding: 12px !important;
+                vertical-align: middle !important;
+            }
+    
+            /* Responsive adjustments */
+            @media (max-width: 1200px) {
+                .info-container.active {
+                    flex-direction: column;
+                    align-items: center;
+                }
+    
+                .column {
+                    width: 95%;
+                    max-width: none;
+                }
+            }
+    
+            /* Modal Styles */
+            .modal-content {
+                border-radius: 15px;
+            }
+    
+            .modal-header {
+                background: var(--secondary);
+                color: var(--text);
+                border-radius: 15px 15px 0 0;
+            }
+    
+            .button-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+                margin: 20px 0;
+            }
+    
+            .button-container button {
+                background: var(--accent);
+                color: white;
+                border: none;
+                padding: 5px 15px;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+    
+            .button-container button:hover {
+                opacity: 0.9;
+            }
+    
+            .button-container input {
+                width: 60px;
+                text-align: center;
+                padding: 5px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+    
+            /* Scroll para las tablas */
+            .table-responsive {
+                overflow-x: auto;
+                margin-bottom: 20px;
+            }
+        </style>
+        <title>Buscador de Canciones</title>
+    </head>
+<body>
+
+    <!-- partial:index.partial.html -->
+    <nav class="navbar navbar-expand-custom navbar-mainbg">
+        <a class="navbar-brand navbar-logo" href="#">Buscador General</a>
+        <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="fas fa-bars text-white"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <div class="hori-selector">
+                    <div class="left"></div>
+                    <div class="right"></div>
+                </div>
+                <li class="nav-item">
+                    <a class="nav-link" href="../Anime/"><i class="fa-solid fa-arrow-left"></i>Volver a Directorio de Anime</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="anime.php"><i class="fa-solid fa-magnifying-glass"></i>Anime</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="autor.php"><i class="far fa-address-book"></i>Autores</a>
+                </li>
+                <!--
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);"><i class="far fa-clone"></i>Components</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);"><i class="far fa-calendar-alt"></i>Calendar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);"><i class="far fa-chart-bar"></i>Charts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="javascript:void(0);"><i class="far fa-copy"></i>Documents</a>
+                </li>
+-->
+            </ul>
+        </div>
+    </nav>
+    <!-- partial -->
+    <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.min.js'></script>
+    <script src="./script.js"></script>
+
+</body>
+
+</html>    <form action="#" method="GET" class="search-form">
+        <input type="search" name="key" placeholder="Buscar...">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+    <div class="deudores">
+                <div class="menu-container">
+            <div class="menu-options">
+                <div class="menu-option" onclick="showOption(1)">Autores<div class="menu-line"></div>
+                </div>
+                <div class="menu-option" onclick="showOption(2)">Animes</div>
+                <div class="menu-option" onclick="showOption(3)">Canciones</div>
+            </div>
+        </div>
+        <div class="info-container active" id="info-option-1">
+            <div class="column">
+                                <h2>Openings-658</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Opening</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                                            <tr>
+                            <td>Sentai Red Isekai de Boukensha ni Naru</td>
+                            <td>OP 1</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal662">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=662" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                    <div class="modal fade" id="newModal662" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('662', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_662" min="0" value="0" />
+                        <button class="plus" onclick="increment('662', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                        <tr>
+                            <td>Trillion Game </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal661">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=661" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                    <div class="modal fade" id="newModal661" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('661', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_661" min="0" value="0" />
+                        <button class="plus" onclick="increment('661', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                        <tr>
+                            <td>Ishura </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal660">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=660" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                    <div class="modal fade" id="newModal660" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('660', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_660" min="0" value="0" />
+                        <button class="plus" onclick="increment('660', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                        <tr>
+                            <td>Amagami-san Chi no Enmusubi</td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal659">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=659" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                    <div class="modal fade" id="newModal659" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('659', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_659" min="0" value="0" />
+                        <button class="plus" onclick="increment('659', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                        <tr>
+                            <td>Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal658">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=658" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                    <div class="modal fade" id="newModal658" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('658', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_658" min="0" value="0" />
+                        <button class="plus" onclick="increment('658', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                </table>
+                        </div>
+            <div class="column">
+                <h2>Endings-119</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ending</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td>Ore dake Level Up na Ken Season 2: Arise from the Shadow</td>
+                            <td>ED 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal122">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=122" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    <div class="modal fade" id="newModal122" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('122', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_122" min="0" value="0" />
+                        <button class="plus" onclick="increment('122', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+                        <tr>
+                            <td>Dandadan</td>
+                            <td>ED 1</td>
+                            <td>Taidada</td>
+                            <td>Zutomayo</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal121">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=121" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    <div class="modal fade" id="newModal121" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center">Zutomayo</h1>
+                    <h3 class="text-center"> Canciones Animes:<br>2</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="159">
+                        <button class="minus" onclick="decrement('121', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_121" min="0" value="5" />
+                        <button class="plus" onclick="increment('121', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+                        <tr>
+                            <td>Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season</td>
+                            <td>ED 3</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal120">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=120" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    <div class="modal fade" id="newModal120" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('120', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_120" min="0" value="0" />
+                        <button class="plus" onclick="increment('120', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+                        <tr>
+                            <td>Puniru wa Kawaii Slime</td>
+                            <td>ED 1</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal119">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=119" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    <div class="modal fade" id="newModal119" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center"></h1>
+                    <h3 class="text-center"> Canciones Animes:<br>32</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="1">
+                        <button class="minus" onclick="decrement('119', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_119" min="0" value="0" />
+                        <button class="plus" onclick="increment('119', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+                        <tr>
+                            <td>Nige Jouzu no Wakagimi </td>
+                            <td>ED 1</td>
+                            <td>Karakuma Style</td>
+                            <td>Botchiboromaru</td>
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newModal118">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=118" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    <div class="modal fade" id="newModal118" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Canciones</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <style>
+           
+            </style>
+            <form action="actualizar_autor.php" method="POST">
+                <div class="modal-body">
+                    <h1 class="text-center">Botchiboromaru</h1>
+                    <h3 class="text-center"> Canciones Animes:<br>1</h3>
+                    <h3 class="text-center"> Canciones Musica:</h3>
+                    <div class="contenedor text-center button-container">
+                        <input type="hidden" name="id_autor" value="480">
+                        <button class="minus" onclick="decrement('118', event)">-</button>
+                        <input type="number" style="text-align: center;" name="cantidad" id="quantity_118" min="0" value="0" />
+                        <button class="plus" onclick="increment('118', event)">+</button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>                </table>
+                        </div>
+        </div>
+        <div class="info-container" id="info-option-2">
+            <div class="column">
+                                <h2>Openings-658</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Opening</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                                            <tr>
+                            <td>Sentai Red Isekai de Boukensha ni Naru</td>
+                            <td>OP 1</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=662" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Trillion Game </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=661" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Ishura </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=660" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Amagami-san Chi no Enmusubi</td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=659" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=658" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                    </table>
+                        </div>
+            <div class="column">
+                <h2>Endings-119</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ending</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td>Ore dake Level Up na Ken Season 2: Arise from the Shadow</td>
+                            <td>ED 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=122" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Dandadan</td>
+                            <td>ED 1</td>
+                            <td>Taidada</td>
+                            <td>Zutomayo</td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=121" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season</td>
+                            <td>ED 3</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=120" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Puniru wa Kawaii Slime</td>
+                            <td>ED 1</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=119" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Nige Jouzu no Wakagimi </td>
+                            <td>ED 1</td>
+                            <td>Karakuma Style</td>
+                            <td>Botchiboromaru</td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=118" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                                    </table>
+                    </div>
+        </div>
+        <div class="info-container" id="info-option-3">
+            <div class="column">
+                                <h2>Openings-658</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Opening</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                                            <tr>
+                            <td>Sentai Red Isekai de Boukensha ni Naru</td>
+                            <td>OP 1</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=662" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Trillion Game </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=661" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Ishura </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=660" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Amagami-san Chi no Enmusubi</td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=659" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                            <tr>
+                            <td>Kimi no Koto ga Daidaidaidaidaisuki na 100-nin no Kanojo </td>
+                            <td>OP 2</td>
+                            <td></td>
+                            <td></td>
+
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/OP/ejemplo.php?id=658" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+
+                                    </table>
+                        </div>
+            <div class="column">
+                <h2>Endings-119</h2>
+
+                                <table id="example" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Ending</th>
+                            <th>Cancion</th>
+                            <th>Autor</th>
+                        </tr>
+                    </thead>
+                    
+                        <tr>
+                            <td>Ore dake Level Up na Ken Season 2: Arise from the Shadow</td>
+                            <td>ED 2</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=122" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Dandadan</td>
+                            <td>ED 1</td>
+                            <td>Taidada</td>
+                            <td>Zutomayo</td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=121" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Re:Zero kara Hajimeru Isekai Seikatsu 3rd Season</td>
+                            <td>ED 3</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=120" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Puniru wa Kawaii Slime</td>
+                            <td>ED 1</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=119" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                    
+                        <tr>
+                            <td>Nige Jouzu no Wakagimi </td>
+                            <td>ED 1</td>
+                            <td>Karakuma Style</td>
+                            <td>Botchiboromaru</td>
+                            <td>
+                                <div class="container" style="width: 100%; height: 100px;">
+                                    <iframe src="/Anime/ED/ejemplo.php?id=118" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+                                </div>
+                            </td>
+                        </tr>
+                                    </table>
+                    </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let selectedOption = 1;
+
+        function showOption(option) {
+            if (option !== selectedOption) {
+                const menuLine = document.querySelector('.menu-line');
+                menuLine.style.transform = `translateX(${(option - 1) * 128}%)`;
+
+                const prevInfoContainer = document.querySelector(`#info-option-${selectedOption}`);
+                prevInfoContainer.classList.remove('active');
+
+                const currentInfoContainer = document.querySelector(`#info-option-${option}`);
+                currentInfoContainer.classList.add('active');
+
+                selectedOption = option;
+            }
+        }
+
+        showOption(selectedOption);
+
+
+        function increment(inputId, event) {
+            event.preventDefault();
+            var input = document.getElementById('quantity_' + inputId);
+            var value = parseInt(input.value);
+            input.value = value + 1;
+        }
+
+        function decrement(inputId, event) {
+            event.preventDefault();
+            var input = document.getElementById('quantity_' + inputId);
+            var value = parseInt(input.value);
+            if (value > 0) {
+                input.value = value - 1;
+            }
+        }
+    </script>
+</body>
+
+</html>

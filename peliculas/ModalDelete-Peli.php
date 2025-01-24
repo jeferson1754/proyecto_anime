@@ -14,12 +14,15 @@
 
       <form method="POST" action="recib_Delete-Peli.php">
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
+        <input type="hidden" name="id_anime" value="<?php echo $mostrar['ID_Anime']; ?>">
         <input type="hidden" name="estado" value="<?php echo $mostrar['Estado']; ?>">
+        <input type="hidden" name="nombre" value="<?php echo $mostrar['Nombre_Anime']; ?>">
+
 
         <div class="modal-body text-center" id="cont_modal">
           <i class="fas fa-exclamation-triangle warning-icon"></i>
           <h2 class="anime-title">
-            <?php echo $mostrar['Nombre']; ?>
+            <?php echo $mostrar['Nombre_Anime']; ?>
           </h2>
           <div class="anime-details">
             <?php echo $mostrar['Ano']; ?>

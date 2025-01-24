@@ -832,7 +832,7 @@ require '../bd.php';
                             ROW_NUMBER() OVER (PARTITION BY pendientes.Tipo ORDER BY pendientes.Pendientes ASC, pendientes.ID ASC) AS rn
                         FROM 
                             pendientes
-                        INNER JOIN 
+                        LEFT JOIN 
                             anime ON pendientes.ID_Anime = anime.id
                         WHERE 
                             pendientes.Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') $where";
@@ -857,7 +857,7 @@ require '../bd.php';
                                         target="_blank"
                                         title="<?php echo $mostrar['Estado_Link']; ?>"
                                         style="text-decoration: none; color: inherit;">
-                                        <?php echo $mostrar['Nombre_Anime']; ?>
+                                        <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
                                     </a>
                                 </td>
                                 <td>

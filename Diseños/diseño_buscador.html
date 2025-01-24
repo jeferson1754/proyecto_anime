@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador General de Anime</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --background: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: var(--primary);
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-logo {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            background: var(--card-bg);
+            padding: 1rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .search-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .search-button:hover {
+            background: #4f46e5;
+        }
+
+        .results-grid {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .category-header {
+            padding: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .category-content {
+            padding: 1rem;
+        }
+
+        .category-link {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 0;
+            transition: color 0.3s;
+        }
+
+        .category-link:hover {
+            color: var(--primary);
+        }
+
+        .manga { background: #ef4444; }
+        .anime { background: #22c55e; }
+        .pending { background: #92400e; }
+        .openings { background: #3b82f6; }
+        .endings { background: #f97316; }
+        .movies { background: #64748b; }
+        .schedule { background: #eab308; }
+
+        /* Mobile menu */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block;
+            }
+
+            .navbar-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: var(--primary);
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .navbar-menu.active {
+                display: flex;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-button {
+                padding: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-logo">Buscador General</a>
+            <button class="menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="navbar-menu">
+                <a href="../Anime/" class="nav-link">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                <a href="anime.php" class="nav-link">
+                    <i class="fas fa-search"></i> Anime
+                </a>
+                <a href="autor.php" class="nav-link">
+                    <i class="fas fa-user"></i> Autores
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="search-container">
+        <form action="#" method="GET" class="search-form">
+            <input type="search" name="query" placeholder="Buscar anime, manga, autores..." class="search-input">
+            <button type="submit" class="search-button">
+                <i class="fas fa-search"></i> Buscar
+            </button>
+        </form>
+    </div>
+
+    <div class="results-grid">
+        <div class="category-card">
+            <div class="category-header manga">Mangas</div>
+            <div class="category-content">
+                No se encontraron resultados.
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header anime">Anime</div>
+            <div class="category-content">
+                <a href="/Anime/?busqueda_anime=Yowai 5000-nen no Soushoku Dragon, Iwarenaki Jaryuu Nintei&buscar=" class="category-link">
+                    Yowai 5000-nen no Soushoku Dragon, Iwarenaki Jaryuu Nintei
+                </a>
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header pending">Pendientes Mangas</div>
+            <div class="category-content">
+                No se encontraron resultados.
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header openings">Openings</div>
+            <div class="category-content">
+                No se encontraron resultados.
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header endings">Endings</div>
+            <div class="category-content">
+                No se encontraron resultados.
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header movies">Películas</div>
+            <div class="category-content">
+                No se encontraron resultados.
+            </div>
+        </div>
+
+        <div class="category-card">
+            <div class="category-header schedule">Horario</div>
+            <div class="category-content">
+                <a href="/Anime/Horarios/horarios.php?anis=30&filtrar=" class="category-link">
+                    Yowai 5000-nen no Soushoku Dragon, Iwarenaki Jaryuu Nintei S2 Otoño 2024
+                </a>
+                <a href="/Anime/Horarios/horarios.php?anis=21&filtrar=" class="category-link">
+                    Yowai 5000-nen no Soushoku Dragon, Iwarenaki Jaryuu Nintei Verano 2022
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.menu-toggle').addEventListener('click', () => {
+            document.querySelector('.navbar-menu').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

@@ -657,7 +657,7 @@ include '../update_emision.php';
                     </thead>
                     <tbody>
                         <?php
-                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado,anime.Nombre as Nombre FROM `emision` INNER JOIN anime ON emision.ID_Anime = anime.id $where";
+                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado,anime.Nombre as Nombre FROM `emision` LEFT JOIN anime ON emision.ID_Anime = anime.id $where";
                         $result = mysqli_query($conexion, $sql1);
                         //echo $sql1;
                         while ($mostrar = mysqli_fetch_array($result)) {
@@ -670,7 +670,7 @@ include '../update_emision.php';
                             }
                         ?>
                             <tr>
-                                <td class="fw-500"><?php echo $mostrar['Nombre_Anime'] ?>
+                                <td class="fw-500"> <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
                                 </td>
                                 <td>
                                     <div class="progress-cell">
