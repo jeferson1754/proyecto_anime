@@ -74,7 +74,7 @@
                         Op y ED
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <a class="dropdown-item" href="../../Graficos/index.php">Graficos</a>
+                        <a class="dropdown-item" href="/Anime/Graficos/">Graficos</a>
                         <a class="dropdown-item" href="/Anime/OP/">OP</a>
                         <a class="dropdown-item" href="/Anime/ED/">ED</a>
                     </div>

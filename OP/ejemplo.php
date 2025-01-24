@@ -91,20 +91,20 @@ if (isset($_GET['id'])) {
 
 <body>
     <?php
-    $consulta = "SELECT * FROM `op`INNER JOIN autor ON op.ID_Autor=autor.ID WHERE op.ID='$id'";
+    $consulta = "SELECT op.*, autor.Autor, autor.Copia_Autor, anime.Nombre FROM `op` INNER JOIN autor ON op.ID_Autor=autor.ID INNER JOIN anime ON op.ID_Anime=anime.id WHERE op.ID='$id'";
     $resultados = $conexion->query($consulta);
 
     if ($resultados->num_rows > 0) {
         while ($row = $resultados->fetch_assoc()) {
             $cancion = $row["Cancion"] ?? "";
-            $texto1 = $row["Nombre"] ?? "";
+            $texto1 = $row["Nombre"] . ' ' . $row["Temporada"];
+            $nombre = $row["Nombre"] ?? "";
             $texto2 = $row["Opening"] ?? "";
             /*
             echo $cancion . "<br>";
             echo $texto1 . "<br>";
             echo $texto2 . "<br>";
             */
-
 
 
             echo "<div class='buttons-container'>";
@@ -119,16 +119,8 @@ if (isset($_GET['id'])) {
             }
 
 
-            $sql2 = "SELECT anime.Anime FROM `op` INNER JOIN anime ON op.ID_Anime = anime.id WHERE op.ID = '$id'";
-            $result2 = $conexion->query($sql2);
+            echo '<button title="Copiar Álbum" onclick="copyToClipboard(\'' . $nombre . '\')"><i class="fa-solid fa-compact-disc"></i> Álbum</button>';
 
-            if ($result2->num_rows > 0) {
-                $fila = $result2->fetch_assoc();
-                $anime = $fila["Anime"];
-                echo '<button title="Copiar Álbum" onclick="copyToClipboard(\'' . $anime . '\')"><i class="fa-solid fa-compact-disc"></i> Álbum</button>';
-            } else {
-                echo '<button title="Copiar Álbum" onclick="copyToClipboard(\'' . $texto1 . '\')"><i class="fa-solid fa-compact-disc"></i> Álbum</button>';
-            }
 
             echo "</div>";
         }

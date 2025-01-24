@@ -971,17 +971,17 @@ $año = date("Y");
         <?php
         include('ModalMix.php');
 
-        $where = "where op.mostrar='SI' ORDER BY `op`.`ID` DESC limit 10 ";
+        $where = " ORDER BY `op`.`ID` DESC limit 10 ";
 
 
         if (isset($_GET['borrar'])) {
             $busqueda = "";
 
-            $where = "where op.mostrar='SI' ORDER BY `op`.`ID` DESC limit 10";
+            $where = "ORDER BY `op`.`ID` DESC limit 10";
         } else if (isset($_GET['filtrar'])) {
             if (isset($_GET['estado'])) {
                 $estado   = $_REQUEST['estado'];
-                $where = "WHERE op.Mix LIKE'%" . $estado . "%' AND op.mostrar='SI' ORDER BY `op`.`ID` DESC ";
+                $where = "WHERE op.Mix LIKE'%" . $estado . "%' ORDER BY `op`.`ID` DESC ";
             }
         } else if (isset($_GET['link'])) {
 
@@ -995,7 +995,7 @@ $año = date("Y");
 
                 $busqueda   = $_REQUEST['busqueda_op'];
 
-                $where = "WHERE op.Nombre LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
+                $where = "WHERE anime.Nombre LIKE '%$busqueda%' ORDER BY `op`.`ID` DESC limit 10";
             }
         } else if (isset($_GET['buscar1'])) {
 
@@ -1029,7 +1029,7 @@ $año = date("Y");
                     <tbody>
                         <?php
 
-                        $sql = "SELECT op.ID,op.Nombre,op.ID_Anime,op.Opening,op.Cancion,autor.Autor,autor.Copia_Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link,op.mostrar FROM `op` JOIN temporada ON op.Temporada=temporada.ID JOIN autor ON op.ID_Autor=autor.ID $where";
+                        $sql = "SELECT op.ID,CONCAT(anime.Nombre, ' ',op.Temporada) as Nombre, anime.Nombre as album, op.ID_Anime,op.Opening,op.Cancion,autor.Autor,autor.Copia_Autor,op.Ano,temporada.Temporada,op.Estado,op.Link,op.Link_Iframe,op.Mix,op.Estado_Link FROM `op` JOIN temporada ON op.Temporada_Emision=temporada.ID JOIN autor ON op.ID_Autor=autor.ID JOIN anime ON op.ID_Anime=anime.id $where";
                         //echo $sql;
 
                         $result = mysqli_query($conexion, $sql);
@@ -1089,13 +1089,11 @@ $año = date("Y");
                                     </button>
                                 </td>
                             </tr>
-                            <!--Ventana Modal para Actualizar--->
-                            <?php include('ModalEditar-OP.php'); ?>
-                            <?php include('ModalInfo-OP.php'); ?>
-
-                            <!--Ventana Modal para la Alerta de Eliminar--->
-                            <?php include('ModalDelete-OP.php'); ?>
                         <?php
+
+                            include('ModalEditar-OP.php');
+                            include('ModalInfo-OP.php');
+                            include('ModalDelete-OP.php');
                         }
                         ?>
                     </tbody>

@@ -972,18 +972,18 @@ $año = date("Y");
         <?php
         include('ModalMix-ED.php');
 
-        $where = "where ed.mostrar='SI' ORDER BY `ed`.`ID` DESC limit 10 ";
+        $where = " ORDER BY `ed`.`ID` DESC limit 10 ";
 
 
         if (isset($_GET['borrar'])) {
 
-            $where = "where ed.mostrar='SI' ORDER BY `ed`.`ID` DESC limit 10 ";
+            $where = "ORDER BY `ed`.`ID` DESC limit 10 ";
         } else  if (isset($_GET['filtrar'])) {
 
             if (isset($_GET['estado'])) {
                 $estado   = $_REQUEST['estado'];
 
-                $where = "WHERE ed.Mix = $estado AND ed.mostrar='SI' ORDER BY `ed`.`ID` DESC";
+                $where = "WHERE ed.Mix = $estado ORDER BY `ed`.`ID` DESC";
             }
         } else if (isset($_GET['link'])) {
 
@@ -997,7 +997,7 @@ $año = date("Y");
 
                 $busqueda   = $_REQUEST['busqueda_ed'];
 
-                $where = "WHERE ed.Nombre LIKE '%$busqueda%' ORDER BY `ed`.`ID` DESC limit 10";
+                $where = "WHERE anime.Nombre LIKE '%$busqueda%' ORDER BY `ed`.`ID` DESC limit 10";
             }
         } else if (isset($_GET['buscar1'])) {
 
@@ -1032,8 +1032,7 @@ $año = date("Y");
                 <tbody>
                     <?php
 
-                    $sql = "SELECT ed.ID,ed.Nombre,ed.ID_Anime,ed.Ending,ed.Cancion,autor.Autor,autor.Copia_Autor,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Link_Iframe,ed.Mix,ed.Estado_Link,ed.mostrar FROM `ed` JOIN temporada ON ed.Temporada=temporada.ID JOIN autor ON ed.ID_Autor=autor.ID $where";
-                    //echo $sql;
+                    $sql = "SELECT ed.ID,CONCAT(anime.Nombre, ' ',ed.Temporada) as Nombre, anime.Nombre as album,ed.ID_Anime,ed.Ending,ed.Cancion,autor.Autor,autor.Copia_Autor,ed.Ano,temporada.Temporada,ed.Estado,ed.Link,ed.Link_Iframe,ed.Mix,ed.Estado_Link FROM `ed` JOIN temporada ON ed.Temporada_Emision=temporada.ID JOIN autor ON ed.ID_Autor=autor.ID JOIN anime ON ed.ID_Anime=anime.id $where";
 
                     $result = mysqli_query($conexion, $sql);
 
@@ -1093,12 +1092,10 @@ $año = date("Y");
                             </td>
                         </tr>
                         <!--Ventana Modal para Actualizar--->
-                        <?php include('ModalEditar-ED.php'); ?>
-                        <?php include('ModalInfo-ED.php'); ?>
-
-                        <!--Ventana Modal para la Alerta de Eliminar--->
-                        <?php include('ModalDelete-ED.php'); ?>
                     <?php
+                        include('ModalEditar-ED.php');
+                        include('ModalInfo-ED.php');
+                        include('ModalDelete-ED.php');
                     }
                     ?>
                 </tbody>

@@ -147,10 +147,6 @@
         </div>
 
         <?php include('regreso-modal.php');
-        $op = $conexion->query("SELECT Anime FROM `anime` WHERE id='$mostrar[ID_Anime]';");
-        while ($valores = mysqli_fetch_array($op)) {
-          $album = $valores[0];
-        }
         ?>
 
         <div class="modal-body">
@@ -175,12 +171,12 @@
 
               <div class="detail-item">
                 <span class="detail-label">Álbum:</span>
-                <span><?php echo $album; ?></span>
+                <span><?php echo $mostrar['album'];; ?></span>
               </div>
             </div>
 
             <div class="player-container">
-              <iframe src="./ejemplo.php?id=<?php echo $id_Registros; ?>" frameborder="0" style="width: 100%; height: 100px;"></iframe>
+              <iframe src="./ejemplo.php?id=<?php echo $mostrar['ID']; ?>" frameborder="0" style="width: 100%; height: 100px;"></iframe>
             </div>
           </div>
         </div>
