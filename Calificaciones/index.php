@@ -854,7 +854,7 @@ require '../bd.php';
                         $where_clause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
 
                         // Construir la consulta final
-                        $sql = "SELECT anime.Anime, calificaciones.* 
+                        $sql = "SELECT anime.Nombre as Anime, calificaciones.* 
                             FROM calificaciones 
                             INNER JOIN anime ON anime.id = calificaciones.ID_Anime 
                             $where_clause 

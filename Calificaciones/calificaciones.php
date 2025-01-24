@@ -292,7 +292,7 @@
             require '../bd.php';
 
             $sql = "SELECT 
-            anime.Anime, 
+            anime.Nombre as Anime, 
             AVG(calificaciones.Promedio) AS PromedioGeneral, 
             calificaciones.* 
         FROM calificaciones 
