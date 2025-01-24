@@ -98,7 +98,9 @@ if (isset($_GET['filtrar']) && isset($_GET['anis'])) {
 
     foreach ($dias as $dia) {
         // Fetch anime for the day
-        $anime_query = "SELECT Nombre, Duracion FROM horario where dia='$dia' AND num_horario='$estado' ORDER BY LENGTH(Nombre) DESC";
+        $anime_query = "SELECT CONCAT(anime.Nombre, ' ', horario.Temporada) AS Nombre, Duracion FROM horario 
+        LEFT JOIN anime ON horario.ID_Anime = anime.id 
+        where horario.dia='$dia' AND horario.num_horario='$estado' ORDER BY LENGTH(Nombre) DESC";
         $anime_result = mysqli_query($conexion, $anime_query);
 
         // Fetch total hours for the day
@@ -125,28 +127,35 @@ if (isset($_GET['filtrar']) && isset($_GET['anis'])) {
 } else {
 
     foreach ($dias as $dia) {
-        // Fetch anime for the day
-        $anime_query = "SELECT Nombre, Duracion FROM emision WHERE Dia='$dia' AND Emision='Emision' ORDER BY LENGTH(Nombre) DESC";
+        // Obtener animes para el día
+        $anime_query = "SELECT  emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre, anime.Estado as Estado FROM emision 
+    LEFT JOIN anime ON emision.ID_Anime = anime.id  WHERE Dia='$dia' AND anime.Estado='Emision' ORDER BY LENGTH(Nombre) DESC";
         $anime_result = mysqli_query($conexion, $anime_query);
 
-        // Fetch total hours for the day
-        $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='$dia' AND Emision='Emision'";
+        // Obtener total de horas para el día
+        $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision 
+    LEFT JOIN anime ON emision.ID_Anime = anime.id 
+    WHERE emision.Dia='$dia' AND anime.Estado='Emision'";
         $hours_result = mysqli_query($conexion, $hours_query);
         $hours_row = mysqli_fetch_assoc($hours_result);
 
         $daily_results[$dia] = [
             'animes' => mysqli_fetch_all($anime_result, MYSQLI_ASSOC),
-            'hours' => $hours_row['hours'] ?: '00:00:00'
+            'hours' => $hours_row['hours'] ?: '00:00:00',
         ];
     }
 
-    // Total weekly hours and anime count
-    $total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+    // Total de horas semanales y animes
+    $total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision 
+ LEFT JOIN anime ON emision.ID_Anime = anime.id 
+ WHERE anime.Estado='Emision' AND emision.Dia!='Indefinido'";
     $total_hours_result = mysqli_query($conexion, $total_hours_query);
     $total_hours_row = mysqli_fetch_assoc($total_hours_result);
     $total_hours = $total_hours_row['hours'];
 
-    $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+    $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision 
+ LEFT JOIN anime ON emision.ID_Anime = anime.id 
+ WHERE anime.Estado='Emision' AND emision.Dia!='Indefinido'";
     $total_anime_result = mysqli_query($conexion, $total_anime_query);
     $total_anime_row = mysqli_fetch_assoc($total_anime_result);
     $total_anime = $total_anime_row['Total_Registros'];

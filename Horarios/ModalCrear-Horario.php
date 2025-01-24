@@ -31,9 +31,9 @@
             <select name="nombre" class="form-control" required>
               <option value="">Seleccione un Anime</option>
               <?php
-              $query = $conexion->query("SELECT id,Anime FROM `anime` ORDER BY `anime`.`Anime` ASC");
+              $query = $conexion->query("SELECT id,Nombre FROM `anime` ORDER BY `anime`.`Nombre` ASC");
               while ($valores = mysqli_fetch_array($query)) {
-                echo '<option value="' . $valores['Anime'] . '">' . $valores['Anime'] . '</option>';
+                echo '<option value="' . $valores['id'] . '">' . $valores['Nombre'] . '</option>';
               }
               ?>
             </select>

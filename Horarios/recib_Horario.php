@@ -22,7 +22,7 @@ echo "Temporada: $tempo <br>";
 echo "Link: $link <br>";
 
 // Consultar si el anime ya está en el horario
-$sql3 = "SELECT * FROM `horario` WHERE Nombre='$nombre' AND num_horario='$tempo'";
+$sql3 = "SELECT * FROM `horario` WHERE ID_Anime='$nombre' AND num_horario='$tempo'";
 $horario = mysqli_query($conexion, $sql3);
 
 if (mysqli_num_rows($horario) == 0) {
@@ -31,10 +31,10 @@ if (mysqli_num_rows($horario) == 0) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        
+
         // Insertar registro en la tabla de horario
-        $sql = "INSERT INTO `horario` (`Nombre`, `Dia`, `Duracion`, `num_horario`)
-                VALUES ('$nombre' '$temps', '$dias', '$duracion', '$tempo')";
+        $sql = "INSERT INTO `horario` (`ID_Anime`,`Temporada`,`Dia`, `Duracion`, `num_horario`)
+                VALUES ('$nombre','$temps', '$dias', '$duracion', '$tempo')";
         $conn->exec($sql);
         echo "Query ejecutada: $sql <br>";
         $conn = null;
@@ -56,7 +56,7 @@ if (mysqli_num_rows($horario) == 0) {
 } else {
     // El anime ya está en el horario
     echo "El anime ya existe en el horario, así que no se hace nada<br>";
-    
+
     // Mostrar mensaje de advertencia
     echo '<script>
             Swal.fire({
@@ -69,4 +69,3 @@ if (mysqli_num_rows($horario) == 0) {
         </script>';
 }
 ?>
-

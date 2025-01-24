@@ -47,11 +47,14 @@ $total_anime = 0;
 
 foreach ($dias as $dia) {
     // Obtener animes para el día
-    $anime_query = "SELECT Nombre, Duracion, Faltantes,Capitulos FROM emision WHERE Dia='$dia' AND Emision='Emision' ORDER BY LENGTH(Nombre) DESC";
+    $anime_query = "SELECT  emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre, anime.Estado as Estado FROM emision 
+    LEFT JOIN anime ON emision.ID_Anime = anime.id  WHERE Dia='$dia' AND anime.Estado='Emision' ORDER BY LENGTH(Nombre) DESC";
     $anime_result = mysqli_query($conexion, $anime_query);
 
     // Obtener total de horas para el día
-    $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Dia='$dia' AND Emision='Emision'";
+    $hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision 
+    LEFT JOIN anime ON emision.ID_Anime = anime.id 
+    WHERE emision.Dia='$dia' AND anime.Estado='Emision'";
     $hours_result = mysqli_query($conexion, $hours_query);
     $hours_row = mysqli_fetch_assoc($hours_result);
 
@@ -62,12 +65,16 @@ foreach ($dias as $dia) {
 }
 
 // Total de horas semanales y animes
-$total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+$total_hours_query = "SELECT SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion))) AS hours FROM emision 
+ LEFT JOIN anime ON emision.ID_Anime = anime.id 
+ WHERE anime.Estado='Emision' AND emision.Dia!='Indefinido'";
 $total_hours_result = mysqli_query($conexion, $total_hours_query);
 $total_hours_row = mysqli_fetch_assoc($total_hours_result);
 $total_hours = $total_hours_row['hours'];
 
-$total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision WHERE Emision='Emision' AND Dia!='Indefinido'";
+$total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision 
+ LEFT JOIN anime ON emision.ID_Anime = anime.id 
+ WHERE anime.Estado='Emision' AND emision.Dia!='Indefinido'";
 $total_anime_result = mysqli_query($conexion, $total_anime_query);
 $total_anime_row = mysqli_fetch_assoc($total_anime_result);
 $total_anime = $total_anime_row['Total_Registros'];
