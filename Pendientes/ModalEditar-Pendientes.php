@@ -11,7 +11,6 @@
       <form method="POST" action="recib_Update-Pendientes.php" id="updateAnimeForm<?php echo $mostrar['ID']; ?>" class="needs-validation" novalidate>
         <?php include('regreso-modal.php'); ?>
         <input type="hidden" name="id" value="<?php echo $mostrar['ID']; ?>">
-        <input type="hidden" name="name" value="<?php echo $mostrar['Temporada']; ?>">
         <input type="hidden" name="nombre_aviso" value="<?php echo $mostrar['Nombre_Anime']; ?>">
 
         <div class="modal-body">
@@ -19,9 +18,37 @@
             <label class="form-label">
               <i class="lucide-tv-2 me-1"></i>Nombre del Anime
             </label>
-            <input type="text" name="nombre" class="form-control"
-              value="<?php echo $mostrar['Nombre_Anime']; ?>" disabled>
+            <input type="text" name="name" class="form-control"
+              value="<?php echo $mostrar['Temporada']; ?>">
             <i class="lucide-lock input-icon"></i>
+          </div>
+
+          <!-- ID Anime -->
+          <div class="form-group mb-3">
+            <label for="anime" class="col-form-label">Anime:</label>
+            <select class="form-control" name="anime" id="anime">
+              <option value="" disabled <?= ($mostrar['ID_Anime'] === 0 || empty($mostrar['ID_Anime'])) ? 'selected' : ''; ?>>
+                Selecciona un Anime
+              </option>
+              <?php
+              // Consulta para obtener los datos
+              $animes = $conexion->query("SELECT id, Nombre FROM `anime` ORDER BY `anime`.`Nombre` ASC");
+
+              // Obtener el ID seleccionado actualmente
+              $idSeleccionado = $mostrar['ID_Anime'];
+
+              // Generar opciones
+              foreach ($animes as $anime) {
+                // Verificar si este es el anime actualmente seleccionado
+                $selected = ($anime['id'] == $idSeleccionado) ? 'selected' : '';
+                echo "<option value='" . htmlspecialchars($anime['id'], ENT_QUOTES, 'UTF-8') . "' $selected>" . htmlspecialchars($anime['Nombre'], ENT_QUOTES, 'UTF-8') . "</option>";
+              }
+              ?>
+            </select>
+
+
+
+
           </div>
 
           <div class="form-group">

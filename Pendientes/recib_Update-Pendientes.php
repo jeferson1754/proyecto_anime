@@ -15,13 +15,16 @@ $enlace           = $_POST['enlace'];
 $link           = $_POST['link'];
 $estado         = $_POST['estado'];
 $tipo           = $_POST['tipo'];
+$id_anime = $_POST['anime'] ?? NULL;
 
 
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $sql = "UPDATE pendientes SET 
+    Temporada ='" . $nombre . "',
     Vistos ='" . $caps . "',
+    ID_Anime ='" . $id_anime . "',
     Total ='" . $total . "',
     Link ='" . $enlace . "',
     Tipo ='" . $tipo . "',

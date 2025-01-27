@@ -11,6 +11,7 @@ $total   = $_REQUEST['total'];
 $enlace  = $_REQUEST['enlace'];
 $link    = $_REQUEST['link'];
 $tipo    = $_REQUEST['tipo'];
+$id_anime    = $_REQUEST['anime'] ?? '';
 
 if ($enlace == "") {
     $estado = "Faltante";
@@ -20,7 +21,7 @@ if ($enlace == "") {
 
 
 
-$sql2 = ("SELECT * FROM `pendientes`where Nombre='$nombre';");
+$sql2 = ("SELECT * FROM `pendientes`where Temporada='$nombre';");
 echo $sql2 . "<br>";
 $pendientes = mysqli_query($conexion, $sql2);
 
@@ -31,8 +32,8 @@ if (mysqli_num_rows($pendientes) == 0) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "INSERT INTO pendientes (`Nombre`, `Tipo`, `Vistos`, `Total`,`Link`,`Estado_Link`) 
-            VALUES ( '" . $nombre . "','" . $tipo . "','" . $caps . "','" . $total . "','" . $enlace . "','" . $estado . "')";
+        $sql = "INSERT INTO pendientes (`ID_Anime`,`Temporada`, `Tipo`, `Vistos`, `Total`,`Link`,`Estado_Link`) 
+            VALUES ( '" . $id_anime . "','" . $nombre . "','" . $tipo . "','" . $caps . "','" . $total . "','" . $enlace . "','" . $estado . "')";
         $conn->exec($sql);
         $last_id1 = $conn->lastInsertId();
         echo $sql;

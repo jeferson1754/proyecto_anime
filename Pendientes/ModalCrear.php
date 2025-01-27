@@ -23,6 +23,23 @@
               Por favor ingresa un nombre válido (2-100 caracteres)
             </div>
           </div>
+
+          <!-- ID Anime -->
+          <div class="form-group">
+            <label for="anime" class="form-label">Anime:</label>
+            <select class="js-example-matcher-start form-control" name="anime" id="anime">
+              <option value="" disabled selected>Selecciona un Anime</option>
+              <?php
+              // Consulta para obtener los datos
+              $animes = $conexion->query("SELECT id, Nombre FROM `anime` ORDER BY `anime`.`Nombre` ASC");
+
+              // Generar opciones
+              foreach ($animes as $anime) {
+                echo "<option value='" . htmlspecialchars($anime['id'], ENT_QUOTES, 'UTF-8') . "'>" . htmlspecialchars($anime['Nombre'], ENT_QUOTES, 'UTF-8') . "</option>";
+              }
+              ?>
+            </select>
+          </div>
           <div class="form-group">
             <label class="form-label" for="tipo">
               <i class="lucide-list me-1"></i>Tipo
