@@ -111,10 +111,12 @@ try {
     $stmt->bindValue(':promedio', $promedio, PDO::PARAM_STR);
     $stmt->bindValue(':id_calificacion', $id_calificacion, PDO::PARAM_INT);
     $stmt->execute();
+
+    header('Location: index.php');
+    exit();
+
 } catch (PDOException $e) {
     // Manejo de errores
     echo "Error: " . $e->getMessage();
 }
 
-header('Location: index.php');
-exit();
