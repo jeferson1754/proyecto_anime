@@ -87,12 +87,13 @@
                 <i class="fa-solid fa-calendar-day me-2"></i>Día de Emisión
               </label>
               <select name="dias" class="form-select" required>
-                <option value="<?php echo $day ?>"><?php echo $day ?></option>
+                <option value="" disabled selected>Seleccione un día</option>
                 <?php
                 $query = $conexion->query("SELECT * FROM `dias` ORDER BY ID ASC");
                 while ($valores = mysqli_fetch_array($query)) {
-                  echo '<option value="' . htmlspecialchars($valores['Dia']) . '">'
-                    . htmlspecialchars($valores['Dia']) . '</option>';
+                  $dia = htmlspecialchars($valores['Dia']);
+                  $selected = ($dia == $day) ? ' selected' : '';
+                  echo '<option value="' . $dia . '"' . $selected . '>' . $dia . '</option>';
                 }
                 ?>
               </select>
