@@ -68,13 +68,13 @@ $fecha_actual_retrasada = date('Y-m-d H:i:s', strtotime('-5 hours'));
 
 // Array con los nombres de los días en español.
 $nombres_dias = array(
+    'Domingo',
     'Lunes',
     'Martes',
     'Miercoles',
     'Jueves',
     'Viernes',
-    'Sabado',
-    'Domingo'
+    'Sabado'
 );
 
 // Obtener el número del día de la semana (0 para domingo, 1 para lunes, etc.).

@@ -62,8 +62,7 @@ if (!$result) {
 
 */
 
-
-
+date_default_timezone_set('America/Santiago');
 
 // Obtener la fecha y hora actual con 5 horas de retraso.
 $fecha_actual_retrasada = date('Y-m-d H:i:s', strtotime('-5 hours'));
