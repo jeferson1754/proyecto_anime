@@ -92,7 +92,7 @@ if ($num && mysqli_num_rows($num) > 0) {
 // Consulta preparada para obtener los eliminados de emisión
 $sql5 = "SELECT * FROM `eliminados_emision` WHERE ID_Anime=? LIMIT 1";
 $stmt5 = mysqli_prepare($conexion, $sql5);
-mysqli_stmt_bind_param($stmt5, "i", $id_Registros);
+mysqli_stmt_bind_param($stmt5, "i", $idRegistros);
 mysqli_stmt_execute($stmt5);
 $eliminados_emision = mysqli_stmt_get_result($stmt5);
 
@@ -148,7 +148,7 @@ if ($estado != "Finalizado") {
 
         $sql6 = "SELECT * FROM `horario` WHERE ID_Anime LIKE :id_anime ORDER BY `num_horario` DESC LIMIT 1";
         $stmt = $conn->prepare($sql6);
-        $stmt->execute([':id_anime' => $id_Registros]);
+        $stmt->execute([':id_anime' => $idRegistros]);
 
         $info = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -176,7 +176,7 @@ if ($estado != "Finalizado") {
                 $stmt = $conn->prepare($sql);
 
                 // Vincular los parámetros de forma individual
-                $stmt->bindValue(1, $id_Registros);
+                $stmt->bindValue(1, $idRegistros);
                 $stmt->bindValue(2, $temps);
                 $stmt->bindValue(3, $dia);
                 $stmt->bindValue(4, $duracion);
