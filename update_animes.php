@@ -1,11 +1,31 @@
 <header>
+    <!---->
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </header>
 
 <?php
 include 'bd.php';
 
-function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $fecha)
+function alerta($alertTitle, $alertText, $alertType, $redireccion)
+{
+
+    echo '
+    <script>
+        Swal.fire({
+            title: "' . $alertTitle . '",
+            text: "' . $alertText . '",
+            icon: "' . $alertType . '",
+            confirmButtonText: "OK"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "' . $redireccion . '";
+            }
+        });
+    </script>';
+}
+
+function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $num_tempo, $fecha)
 {
     // Obtener el estado del anime
     $query_estado = "SELECT Nombre, Temporadas, Estado FROM `anime` WHERE id = ?";
@@ -38,7 +58,7 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
     }
 
     // Vincular los parámetros a la consulta
-    mysqli_stmt_bind_param($stmt_emision, "iii", $fecha, $tempo, $id_anime);
+    mysqli_stmt_bind_param($stmt_emision, "iii", $fecha, $num_tempo, $id_anime);
 
     // Ejecutar la consulta
     if (mysqli_stmt_execute($stmt_emision)) {
@@ -49,7 +69,7 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
     }
 
     // Si el estado no es "Finalizado", realizar las acciones
-    if ($estado != "Finalizado") {
+    if ($estado == "Emision") {
         echo "Estado: $estado<br>";
         echo "Nombre del Anime: $nombre_anime<br>";
         echo "Temporada: $temporada<br>";
@@ -94,7 +114,8 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
 
 
         try {
-
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql6 = "SELECT * FROM `horario` WHERE ID_Anime LIKE :id_anime ORDER BY `num_horario` DESC LIMIT 1";
             $stmt = $conn->prepare($sql6);
             $stmt->execute([':id_anime' => $id_anime]);
@@ -109,7 +130,7 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
                 $duracion = "00:24:00";
             }
 
-            if (empty($horario)) {
+            if (empty($info)) {
 
                 echo "No existe el anime en el horario, así que lo creo:<br>";
                 // Consulta 2: Buscar horario por nombre si no hay resultados previos
@@ -151,23 +172,7 @@ function verificarEstadoAnime($id_anime, $conexion, $servidor, $basededatos, $us
 }
 
 
-function alerta($alertTitle, $alertText, $alertType, $redireccion)
-{
 
-    echo '
-    <script>
-        Swal.fire({
-            title: "' . $alertTitle . '",
-            text: "' . $alertText . '",
-            icon: "' . $alertType . '",
-            confirmButtonText: "OK"
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = "' . $redireccion . '";
-            }
-        });
-    </script>';
-}
 
 //$id_anime = 771;
 //$id_anime = 770;
@@ -190,7 +195,7 @@ $temporada = [
 ];
 
 $tempo = $temporada[$mes][0] ?? 'Desconocido';
-
+$num_tempo = $temporada[$mes][1] ?? '5';
 
 
 $query = "
@@ -224,7 +229,7 @@ if (!$result) {
         $ids_animes = $row['id']; // Agregar el ID del anime al arreglo
         echo "IDs de los animes en emisión: " . $row['id'] . " " . $row['Estado'] . "<br>";
         $conteo++; // Incrementar el conteo
-        verificarEstadoAnime($ids_animes, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $año);
+        verificarEstadoAnime($ids_animes, $conexion, $servidor, $basededatos, $usuario, $password, $tempo, $num_tempo, $año);
 
         echo "<br><br><br><br><br>";
     }
