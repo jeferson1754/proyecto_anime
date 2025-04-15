@@ -1,5 +1,4 @@
 <!---->
-
 <header>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </header>
@@ -56,26 +55,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Preparar las sentencias
     $stmt_anime = $conexion->prepare($sql);
-    $stmt_horario = $conexion->prepare($sql2);
+
     $stmt_conteo = $conexion->prepare($sql3);
 
     // Enlazar los parámetros
     $stmt_anime->bind_param('i', $ID_Anime);
-    $stmt_horario->bind_param('i', $ID_Anime);
+
     $stmt_conteo->bind_param('is', $idRegistros, $dia);
 
     // Ejecutar las consultas
     $stmt_anime->execute();
     $result_anime = $stmt_anime->get_result();
 
-    $stmt_horario->execute();
-    $result_horario = $stmt_horario->get_result();
+
 
     $stmt_conteo->execute();
     $result_conteo = $stmt_conteo->get_result();
 
-    // Depuración de las consultas (opcional)
-    echo $stmt_horario->error . "<br>";
+
     echo $stmt_conteo->error . "<br>";
 
     // Procesar resultados
@@ -95,6 +92,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $num = $fila["Num"];
     }
     echo $num;
+
+    $sql2 = "SELECT * FROM horario WHERE ID_Anime = ? AND num_horario = ?";
+
+    $stmt_horario = $conexion->prepare($sql2);
+    $stmt_horario->bind_param('ii', $ID_Anime, $num);
+    $stmt_horario->execute();
+    $result_horario = $stmt_horario->get_result();
+    // Depuración de las consultas (opcional)
+    echo $stmt_horario->error . "<br>";
+
+
 
 
     $sql = "
