@@ -37,8 +37,8 @@
         $stmtEd->close();
         ?>
 
-        <input type="hidden" name="op_total" value="<?php echo $ed1; ?>">
-        <input type="hidden" name="ed_total" value="<?php echo $op1; ?>">
+        <input type="hidden" name="op_total" value="<?php echo $op1; ?>">
+        <input type="hidden" name="ed_total" value="<?php echo $ed1; ?>">
 
         <div class="modal-body">
           <div class="row">

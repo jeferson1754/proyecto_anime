@@ -34,7 +34,7 @@ function Swal($icon, $title, $location)
     </script>';
 }
 
-function InfoSwal($title, $location)
+function InfoSwal($title, $location, $link)
 {
     echo '<script>
     Swal.fire({
@@ -46,8 +46,8 @@ function InfoSwal($title, $location)
       }).then((result) => {
         if (result.isConfirmed) {
             window.location = "' . $location . '";
-        } else if (result.isDenied) {
-          Swal.fire("Changes are not saved", "", "info");
+        } else {
+              window.location = "' . $link . '";
         }
       });
       </script>';
@@ -227,6 +227,8 @@ echo $mix2 . "<br>";
 echo $link . "<br> Temporada: " . $tempo . "<br> ";
 echo "Num_Horario:" . $num_horario . "<br>";
 
+$nombre_temps = $nombre . " " . $temps;
+
 
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
@@ -278,7 +280,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
     if (mysqli_num_rows($emision) == 0) {
         if ($id_eliminados_emision != 0) {
             echo "Existe en Eliminados_Emision: $id_eliminados_emision";
-            InfoSwal('El anime ' . $nombre_temps . ' tiene registros en Eliminados de Emision', './update_eliminados_emision.php?variable=' . urlencode($id_eliminados_emision) . '');
+            InfoSwal('El anime ' . $nombre_temps . ' tiene registros en Eliminados de Emision', './update_eliminados_emision.php?variable=' . urlencode($id_eliminados_emision) . '', $link);
             $ID_emision = 1;
         } else {
 
