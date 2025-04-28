@@ -988,7 +988,7 @@ $año = date("Y");
             $where = "WHERE Link='' OR Estado_link!='Correcto' OR Link_Iframe='' ORDER BY `op`.`ID` DESC limit 10";
         } else if (isset($_GET['nombre'])) {
 
-            $where = "WHERE Cancion='' OR Autor='' limit 10";
+            $where = "WHERE Cancion='' OR Autor='' ORDER BY `op`.`ID` DESC limit 10";
         } else if (isset($_GET['buscar'])) {
 
             if (isset($_GET['busqueda_op'])) {
