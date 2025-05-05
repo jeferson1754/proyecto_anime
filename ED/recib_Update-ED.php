@@ -27,11 +27,12 @@ try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Invertir el mapeo para buscar por valor
-    $temporadas_invertidas = array_flip($temporadas);
-
-    // Obtener el número correspondiente a la temporada
-    $tempor = $temporadas_invertidas[$temp] ?? null;
+    if (is_numeric($temp) && isset($temporadas[(int)$temp])) {
+        $tempor = $temporadas[(int)$temp];
+    } else {
+        $tempor = $temp;
+    }
+    
 
     // Verificar si el autor existe
     $stmt = $conn->prepare("SELECT * FROM `autor` WHERE Autor = :autor");
@@ -55,7 +56,7 @@ try {
             `Link_Iframe` = :iframe,
             `Estado` = :estado,
             `ID_Anime` = :idAnime,
-            `Temporada` = :tempor,
+            `Temporada_Emision` = :tempor,
             `Estado_Link` = :estado_link,
             `Ano` = :ano,
             `ID_Autor` = :autores,
