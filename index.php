@@ -940,6 +940,7 @@ $añoPhp = date('Y'); // Año actual
                         <option value="Finalizado" <?= (isset($_GET['estado']) && $_GET['estado'] === "Finalizado") ? 'selected' : '' ?>>Finalizado</option>
                         <option value="Pausado" <?= (isset($_GET['estado']) && $_GET['estado'] === "Pausado") ? 'selected' : '' ?>>En Pausado</option>
                         <option value="Pendiente" <?= (isset($_GET['estado']) && $_GET['estado'] === "Pendiente") ? 'selected' : '' ?>>Pendiente</option>
+                        <option value="Viendo" <?= (isset($_GET['estado']) && $_GET['estado'] === "Viendo") ? 'selected' : '' ?>>Viendo</option>
                     </select>
                     <select class="form-select" style="max-width: 200px;" name="temporada">
                         <option value="">Temporada</option>
@@ -1028,6 +1029,8 @@ $añoPhp = date('Y'); // Año actual
                                     echo 'status-pendiente';
                                 } elseif ($mostrar['Estado'] == 'Pausado') {
                                     echo 'status-pausado';
+                                } elseif ($mostrar['Estado'] == 'Viendo') {
+                                    echo 'status-en-emision';
                                 }
                                 ?>">
                                     <?php echo $mostrar['Estado']; ?>

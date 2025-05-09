@@ -311,7 +311,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
 
         Swal('success', 'Actualizando registro de ' . $nombre . ' en Emision y en Anime', $link);
     }
-} else if ($estado == "Pendiente") {
+} else if ($estado == "Pendiente" or $estado == "Viendo") {
     echo "Estado en Pendiente: $estado<br>";
     if (mysqli_num_rows($pendientes) == 0) {
 

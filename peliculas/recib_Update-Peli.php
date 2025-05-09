@@ -198,7 +198,7 @@ try {
             }
         }
         // Lógica de estado 'Pendiente'
-        else if ($estado == "Pendiente") {
+        else if ($estado == "Pendiente" or $estado == "Viendo") {
             if ($resultadoPendientes->rowCount() == 0) {
                 try {
                     // Conexión PDO para la eliminación

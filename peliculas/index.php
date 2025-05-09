@@ -333,6 +333,11 @@ $año = date("Y");
             color: #92400e;
         }
 
+        .status-en-emision {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
         .day-badge {
             background-color: #e0e7ff;
             color: #4338ca;
@@ -823,6 +828,8 @@ $año = date("Y");
                                     echo 'status-finalizado';
                                 } elseif ($mostrar['Estado'] == 'Pendiente') {
                                     echo 'status-pendiente';
+                                } elseif ($mostrar['Estado'] == 'Viendo') {
+                                    echo 'status-en-emision';
                                 }
                                 ?>">
                                         <?php echo $mostrar['Estado']; ?>

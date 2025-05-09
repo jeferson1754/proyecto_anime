@@ -66,6 +66,7 @@
               <option value="" disabled selected>Seleccione el estado</option>
               <option value="Finalizado" <?php echo $mostrar['Estado'] === 'Finalizado' ? 'selected' : ''; ?>>Finalizado</option>
               <option value="Pendiente" <?php echo $mostrar['Estado'] === 'Pendiente' ? 'selected' : ''; ?>>Pendiente</option>
+              <option value="Viendo" <?php echo $mostrar['Estado'] === 'Viendo' ? 'selected' : ''; ?>>Viendo</option>
             </select>
           </div>
         </div>
