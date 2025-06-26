@@ -341,7 +341,7 @@
                                         foreach ($images as $imageLink) {
                                         ?>
                                             <div class="carousel-item <?php echo $isActive ? 'active' : ''; ?>">
-                                                <img src="<?php echo $imageLink; ?>" alt="Imagen de <?php echo $id_anime; ?>" class="imagen d-block w-100" style="height: 400px; object-fit: cover;">
+                                                <img src="<?php echo $imageLink; ?>" alt="Imagen de <?php echo $id_anime; ?>" class="imagen d-block w-100" style="height: 300px; object-fit: cover;">
                                             </div>
                                         <?php
                                             $isActive = false; // Desactivar "active" para los siguientes elementos
