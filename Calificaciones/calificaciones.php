@@ -271,7 +271,6 @@
     .season-item:not(:last-child) {
         border-bottom: 1px solid #ddd;
     }
-
 </style>
 
 <body>
@@ -332,7 +331,7 @@
                             if (count($images) > 1) {
                         ?>
                                 <!-- Componente Carrusel de Bootstrap -->
-                                <div id="animeCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div id="animeCarousel-<?php echo $id_anime; ?>" class="carousel slide" data-bs-ride="carousel">
                                     <div class="carousel-inner">
                                         <?php
                                         $isActive = true; // Variable para marcar el primer elemento como activo
@@ -350,11 +349,11 @@
                                     </div>
 
                                     <!-- Controles del Carrusel -->
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#animeCarousel" data-bs-slide="prev">
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#animeCarousel-<?php echo $id_anime; ?>" data-bs-slide="prev">
                                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden">Anterior</span>
                                     </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#animeCarousel" data-bs-slide="next">
+                                    <button class="carousel-control-next" type="button" data-bs-target="#animeCarousel-<?php echo $id_anime; ?>" data-bs-slide="next">
                                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden">Siguiente</span>
                                     </button>
