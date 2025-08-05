@@ -11,7 +11,6 @@ $idRegistros    = $_POST['id'];
 $nombre         = $_POST['anime'];
 $temps          = $_POST['temps'];
 $peli           = $_POST['peli'];
-$spin           = $_POST['spin'];
 $estado         = $_POST['estado'];
 $fecha          = $_POST['fecha'];
 $tempo           = $_POST['temp'];
@@ -358,7 +357,6 @@ try {
     Nombre ='" . $nombre . "',
     Temporadas ='" . $temps . "',
     Peliculas ='" . $peli . "',
-    Spin_Off ='" . $spin . "',
     Estado ='" . $estado . "',
     Ano ='" . $fecha . "',
     Temporada ='" . $tempo . "'

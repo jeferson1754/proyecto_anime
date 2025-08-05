@@ -11,8 +11,17 @@
 
       <form name="form-data" action="recibCliente.php" method="POST" class="needs-validation" novalidate>
         <?php
+        try {
+          $stmt_all_animes = $connect->query("SELECT id, Nombre FROM anime where TipoAnime ='Anime' ORDER BY Nombre ASC;");
+          $all_animes = $stmt_all_animes->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+          // Manejar el error, por ejemplo, loguearlo y mostrar un mensaje
+          $all_animes = [];
+        }
+
         include('regreso-modal.php');
         ?>
+
         <div class="modal-body">
           <!-- Campos ocultos -->
           <input type="hidden" name="id" value="<?php echo $ani1 ?>">
@@ -28,7 +37,38 @@
               Por favor ingrese el nombre del anime
             </div>
           </div>
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-film me-2"></i>Tipo de Obra
+            </label>
+            <select name="tipo_anime" class="form-select" id="tipoAnimeSelect" required>
+              <option value="">Seleccione el tipo...</option>
+              <option value="Anime" selected>Anime Principal</option>
+              <option value="Spin off">Spin-off</option>
+              <option value="Precuela">Precuela</option>
+              <option value="Secuela">Secuela</option>
+            </select>
+            <div class="invalid-feedback">
+              Por favor seleccione el tipo de obra
+            </div>
+          </div>
 
+          <div class="mb-3 d-none" id="parentAnimeContainer">
+            <label class="form-label">
+              <i class="fas fa-link me-2"></i>Serie Principal Relacionada
+            </label>
+            <select name="id_anime_principal" class="form-select" id="parentAnimeSelect">
+              <option value="">Seleccione la obra principal...</option>
+              <?php foreach ($all_animes as $anime) { ?>
+                <option value="<?= htmlspecialchars($anime['id']); ?>">
+                  <?= htmlspecialchars($anime['Nombre']); ?>
+                </option>
+              <?php } ?>
+            </select>
+            <div class="form-text">
+              Seleccione la obra de la que este anime es un spin-off, precuela, etc.
+            </div>
+          </div>
           <!-- Estado y Año (en la misma fila) -->
           <div class="row mb-3">
             <div class="col-md-6">
@@ -228,4 +268,33 @@
     // Mostrar tooltip con el rango válido de años
     fechaInput.title = `Año válido entre 1900 y ${currentYear}`;
   });
+</script>
+
+<script>
+  // Obtener los elementos del DOM
+  const tipoAnimeSelect = document.getElementById('tipoAnimeSelect');
+  const parentAnimeContainer = document.getElementById('parentAnimeContainer');
+  const parentAnimeSelect = document.getElementById('parentAnimeSelect');
+
+  // Función para manejar la visibilidad del select del padre
+  function handleParentSelectVisibility() {
+    const selectedValue = tipoAnimeSelect.value;
+    // Definir qué tipos de anime necesitan un padre
+    const typesWithParent = ['Spin-off', 'Precuela', 'Secuela'];
+
+    if (typesWithParent.includes(selectedValue)) {
+      parentAnimeContainer.classList.remove('d-none'); // Mostrar el contenedor
+      parentAnimeSelect.setAttribute('required', 'required'); // Hacer el select del padre obligatorio
+    } else {
+      parentAnimeContainer.classList.add('d-none'); // Ocultar el contenedor
+      parentAnimeSelect.removeAttribute('required'); // Quitar la obligatoriedad
+      parentAnimeSelect.value = ''; // Limpiar la selección
+    }
+  }
+
+  // Escuchar el evento de cambio en el select del tipo de anime
+  tipoAnimeSelect.addEventListener('change', handleParentSelectVisibility);
+
+  // Llamar a la función al cargar la página para manejar el estado inicial
+  document.addEventListener('DOMContentLoaded', handleParentSelectVisibility);
 </script>

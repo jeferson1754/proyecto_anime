@@ -1063,6 +1063,20 @@ $añoPhp = date('Y'); // Año actual
         </div>
     </div>
 
+
+
+    <datalist id="anime-list-all">
+        <?php foreach ($all_animes as $anime) { ?>
+            <option data-id="<?= htmlspecialchars($anime['id']); ?>" value="<?= htmlspecialchars($anime['Nombre']); ?>"></option>
+        <?php } ?>
+    </datalist>
+
+    <?php
+    // Cargar la lista completa de animes una sola vez para el datalist global
+    $all_animes_json = json_encode($all_animes);
+    ?>
+
+
     <!-- Scripts -->
     <!-- Bootstrap 5 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -1171,6 +1185,120 @@ $añoPhp = date('Y'); // Año actual
             }
         });
     </script>
+
+
+    <script>
+        // Datos globales inyectados una sola vez
+        const allAnimes = <?php echo $all_animes_json; ?>;
+
+        // Función centralizada para manejar la adición de relaciones
+        document.addEventListener('click', function(event) {
+            const addButton = event.target.closest('.add-relation-btn');
+            if (!addButton) return;
+
+            const animePrincipalId = addButton.dataset.id;
+            const addRelationshipInput = document.getElementById(`addRelationshipInput-${animePrincipalId}`);
+            const tipoRelacionSelect = document.getElementById(`tipoRelacionSelect-${animePrincipalId}`);
+            const currentRelationshipsList = document.getElementById(`currentRelationships-${animePrincipalId}`);
+
+            const selectedName = addRelationshipInput.value.trim();
+            const tipoRelacion = tipoRelacionSelect.value;
+
+            const selectedAnime = allAnimes.find(anime => anime.Nombre.trim() === selectedName);
+            const existingInputs = currentRelationshipsList.querySelectorAll(`input[type="hidden"]`);
+            let isDuplicate = false;
+            existingInputs.forEach(input => {
+                if (input.dataset.id == selectedAnime.id && input.dataset.tipo == tipoRelacion) {
+                    isDuplicate = true;
+                }
+            });
+
+            if (isDuplicate) {
+                alert('Esta relación ya existe en la lista.');
+                return;
+            }
+            if (!selectedAnime) {
+                alert('Por favor, selecciona un anime válido de la lista.');
+                return;
+            }
+
+            if (!tipoRelacion) {
+                alert('Por favor, selecciona un tipo de relación.');
+                return;
+            }
+
+            if (selectedAnime.id == animePrincipalId) {
+                alert('No puedes relacionar un anime consigo mismo.');
+                return;
+            }
+
+            // Evitar duplicados: busca si ya existe una relación con el mismo ID y tipo
+            const existingInput = currentRelationshipsList.querySelector(
+                `input[data-id="${selectedAnime.id}"][data-tipo="${tipoRelacion}"]`
+            );
+            if (existingInput) {
+                alert('Esta relación ya existe.');
+                return;
+            }
+            const li = document.createElement('li');
+            li.className = 'd-flex justify-content-between align-items-center mb-1';
+            li.innerHTML = `
+            <span>
+                <i class="fas fa-link me-1"></i>
+                <strong>${selectedAnime.Nombre}</strong> - ${tipoRelacion}
+            </span>
+            <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('li').remove()">
+                <i class="fas fa-times"></i>
+            </button>
+            <input type="hidden" name="relaciones[${animePrincipalId}][]" value="${selectedAnime.id}|${tipoRelacion}" data-id="${selectedAnime.id}" data-tipo="${tipoRelacion}">
+        `;
+            currentRelationshipsList.appendChild(li);
+
+            addRelationshipInput.value = '';
+            tipoRelacionSelect.selectedIndex = 0;
+        });
+
+        document.addEventListener('click', function(event) {
+            const saveButton = event.target.closest('[id^="saveChangesBtn-"]');
+            if (!saveButton) return;
+
+            // PREVIENE EL ENVÍO NATIVO DEL FORMULARIO
+            event.preventDefault();
+
+            const animePrincipalId = saveButton.id.split('-').pop();
+            const form = document.getElementById(`myModalForm-${animePrincipalId}`);
+
+            // Crear un objeto FormData con los datos del formulario
+            const formData = new FormData(form);
+
+
+            // Dentro del eventListener, después de crear formData
+            const relacionesInputs = document.querySelectorAll(`#currentRelationships-${animePrincipalId} input[type="hidden"]`);
+            relacionesInputs.forEach(input => {
+                formData.append(input.name, input.value);
+            });
+
+            // AÑADE UN BREAKPOINT AQUÍ
+            //debugger;
+
+            // Llamada a fetch
+            fetch('actualizar_relaciones.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(result => {
+                    console.log(result);
+                    alert('Cambios guardados con éxito.');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Ocurrió un error al guardar los cambios.');
+                });
+        });
+    </script>
+
 </body>
 
 </html>

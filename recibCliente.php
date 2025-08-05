@@ -13,6 +13,8 @@ $tempo       = $_REQUEST['temp'];
 $fecha      = $_REQUEST['fecha'];
 $dia_emision = $_REQUEST['dias'];
 $link       = $_REQUEST['link'];
+$tipo_anime = $_REQUEST['tipo_anime'];
+$id_anime_principal = $_REQUEST['id_anime_principal'] ?? '';
 
 // Traducir el número de temporada a texto
 
@@ -60,7 +62,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql_insert_anime = "INSERT INTO anime (`id`, `Nombre`, `Estado`, `Ano`, `Temporada`) VALUES ('$id', '$nombre', '$estado','$fecha', '$tempo')";
+        $sql_insert_anime = "INSERT INTO anime (`id`, `Nombre`, `Estado`, `Ano`, `Temporada`, `TipoAnime`) VALUES ('$id', '$nombre', '$estado','$fecha', '$tempo', '$tipo_anime')";
         $conn->exec($sql_insert_anime);
         $last_id_anime = $conn->lastInsertId();
         $conn = null;
@@ -191,6 +193,18 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
         default:
             // No hacer nada si el estado no es reconocido
             break;
+    }
+
+    if (!empty($id_anime_principal)) {
+        try {
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $sql_relacion = "INSERT INTO anime_relaciones (`id_anime_origen`, `id_anime_destino`,`tipo_relacion`) VALUES ('$last_id_anime', '$id_anime_principal', '$tipo_anime')";
+            $conn->exec($sql_relacion);
+            $conn = null;
+        } catch (PDOException $e) {
+            $conn = null;
+        }
     }
 
 
