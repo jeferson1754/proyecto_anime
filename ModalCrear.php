@@ -280,7 +280,7 @@
   function handleParentSelectVisibility() {
     const selectedValue = tipoAnimeSelect.value;
     // Definir qué tipos de anime necesitan un padre
-    const typesWithParent = ['Spin-off', 'Precuela', 'Secuela'];
+    const typesWithParent = ['Spin off', 'Precuela', 'Secuela'];
 
     if (typesWithParent.includes(selectedValue)) {
       parentAnimeContainer.classList.remove('d-none'); // Mostrar el contenedor

@@ -27,6 +27,22 @@ $temporadas = [
     'December' => ['Otoño', 4]
 ];
 
+// Consulta SQL para seleccionar todos los animes
+$query = "SELECT id, Nombre FROM anime ORDER BY Nombre ASC";
+$result_animes = $conexion->query($query);
+
+// Array para almacenar todos los animes
+$all_animes = [];
+if ($result_animes->num_rows > 0) {
+    while ($row = $result_animes->fetch_assoc()) {
+        $all_animes[] = $row;
+    }
+}
+
+// Cargar la lista completa de animes para el datalist global
+// Convertir el array de PHP a una cadena JSON para usar en JavaScript
+$all_animes_json = json_encode($all_animes);
+
 $tempo = $temporadas[$mes][0] ?? 'Desconocido';
 $id_tempo = $temporadas[$mes][1] ?? 0;
 
@@ -1070,11 +1086,6 @@ $añoPhp = date('Y'); // Año actual
             <option data-id="<?= htmlspecialchars($anime['id']); ?>" value="<?= htmlspecialchars($anime['Nombre']); ?>"></option>
         <?php } ?>
     </datalist>
-
-    <?php
-    // Cargar la lista completa de animes una sola vez para el datalist global
-    $all_animes_json = json_encode($all_animes);
-    ?>
 
 
     <!-- Scripts -->
