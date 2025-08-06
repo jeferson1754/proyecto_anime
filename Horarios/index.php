@@ -241,9 +241,9 @@ $total_faltantes = 0;
                     <p class="text-3xl font-bold text-orange-600"><?php echo $total_faltantes; ?>
                         (<?php
                             if ($horas > 0) {
-                                echo sprintf('%02dhrs %02dmin', $horas, $minutos);
+                                echo $horas . 'hrs ' . $minutos . 'min';
                             } else {
-                                echo sprintf('%02dmin', $minutos);
+                                echo $minutos . 'min';
                             }
                             ?>)
                     </p>
