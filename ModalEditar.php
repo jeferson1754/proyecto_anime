@@ -97,6 +97,48 @@
 
           </div>
 
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">OP</label>
+                <input type="number" class="form-control" min="<?php echo $op1; ?>" value="<?php echo $op1; ?>" max="<?php echo $op2; ?>" name="op" id="op">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">ED</label>
+                <input type="number" class="form-control" min="<?php echo $ed1; ?>" value="<?php echo $ed1; ?>" max="<?php echo $ed2; ?>" name="ed" id="ed">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label">Películas</label>
+                <input type="number" name="peli" class="form-control" value="<?php echo $mostrar['Peliculas']; ?>" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Año</label>
+                <input type="number" name="fecha" min="1900" class="form-control" max="<?php echo $año ?>" value="<?php echo $mostrar['Ano']; ?>" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="form-label">Temporada</label>
+                <select name="temp" class="form-control">
+                  <option value="<?php echo $mostrar['Temporada']; ?>"><?php echo $mostrar['Temporada']; ?></option>
+                  <?php
+                  $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `temporada`.`ID` ASC;");
+                  while ($valores = mysqli_fetch_array($query)) {
+                    echo '<option value="' . $valores['Temporada'] . '">' . $valores['Meses'] . '</option>';
+                  }
+                  ?>
+                </select>
+              </div>
+            </div>
+          </div>
 
 
           <?php
@@ -195,7 +237,7 @@
                   </button>
 
                   <button type="button" class="btn btn-primary" id="saveChangesBtn-<?php echo ($iden); ?>">
-                    <i class="fas fa-save me-2"></i>Actualizar Relaciones
+                    <i class="fas fa-sync-alt me-1"></i> Actualizar
                   </button>
                 </div>
               </div>
@@ -203,48 +245,6 @@
           </div>
 
 
-          <div class="row">
-            <div class="col-md-4">
-              <div class="form-group">
-                <label class="form-label">OP</label>
-                <input type="number" class="form-control" min="<?php echo $op1; ?>" value="<?php echo $op1; ?>" max="<?php echo $op2; ?>" name="op" id="op">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label class="form-label">ED</label>
-                <input type="number" class="form-control" min="<?php echo $ed1; ?>" value="<?php echo $ed1; ?>" max="<?php echo $ed2; ?>" name="ed" id="ed">
-              </div>
-            </div>
-            <div class="col-md-4">
-              <div class="form-group">
-                <label class="form-label">Películas</label>
-                <input type="number" name="peli" class="form-control" value="<?php echo $mostrar['Peliculas']; ?>" required>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="form-label">Año</label>
-                <input type="number" name="fecha" min="1900" class="form-control" max="<?php echo $año ?>" value="<?php echo $mostrar['Ano']; ?>" required>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label class="form-label">Temporada</label>
-                <select name="temp" class="form-control">
-                  <option value="<?php echo $mostrar['Temporada']; ?>"><?php echo $mostrar['Temporada']; ?></option>
-                  <?php
-                  $query = $conexion->query("SELECT * FROM `temporada` ORDER BY `temporada`.`ID` ASC;");
-                  while ($valores = mysqli_fetch_array($query)) {
-                    echo '<option value="' . $valores['Temporada'] . '">' . $valores['Meses'] . '</option>';
-                  }
-                  ?>
-                </select>
-              </div>
-            </div>
-          </div>
 
 
           <div class="rating-box">
