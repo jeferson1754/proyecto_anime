@@ -72,6 +72,47 @@ $total_hours_result = mysqli_query($conexion, $total_hours_query);
 $total_hours_row = mysqli_fetch_assoc($total_hours_result);
 $total_hours = $total_hours_row['hours'];
 
+
+$total_hours_faltantes_sql = "SELECT 
+    anime.Nombre,
+    SEC_TO_TIME(SUM(TIME_TO_SEC(Duracion)) / COUNT(*)) AS tiempo_por_episodio,
+    SUM(emision.Faltantes - emision.Capitulos) AS faltantes
+FROM 
+    emision
+LEFT JOIN 
+    anime ON emision.ID_Anime = anime.id
+WHERE 
+    anime.Estado = 'Emision'
+    AND (emision.Faltantes - emision.Capitulos) > 0
+GROUP BY 
+    anime.id
+ORDER BY 
+    faltantes ASC;";
+
+$total_hours_result = mysqli_query($conexion, $total_hours_faltantes_sql);
+
+$totalSegundos = 0;
+
+while ($row = mysqli_fetch_assoc($total_hours_result)) {
+    $tiempo = $row['tiempo_por_episodio']; // Formato HH:MM:SS
+    $faltantes = (int)$row['faltantes'];
+
+    // Convertir HH:MM:SS a segundos
+    list($horas, $minutos, $segundos) = explode(':', $tiempo);
+    $duracionEnSegundos = ($horas * 3600) + ($minutos * 60) + $segundos;
+
+    // Sumar al total
+    $totalSegundos += $duracionEnSegundos * $faltantes;
+}
+
+// Convertir total a HH:MM:SS
+$horas = floor($totalSegundos / 3600);
+$minutos = floor(($totalSegundos % 3600) / 60);
+$segundos = $totalSegundos % 60;
+
+
+
+
 $total_anime_query = "SELECT COUNT(*) AS Total_Registros FROM emision 
  LEFT JOIN anime ON emision.ID_Anime = anime.id 
  WHERE anime.Estado='Emision' AND emision.Dia!='Indefinido'";
@@ -188,7 +229,7 @@ $total_faltantes = 0;
                     <p class="text-3xl font-bold text-green-600">
                         <?php
                         $time_parts = explode(":", $total_hours); // Divide el tiempo en horas, minutos y segundos
-                        echo sprintf("%02d hrs %02d min", $time_parts[0], $time_parts[1]); // Formato deseado
+                        echo sprintf("%02dhrs %02dmin", $time_parts[0], $time_parts[1]); // Formato deseado
                         ?>
                     </p>
 
@@ -197,7 +238,15 @@ $total_faltantes = 0;
                     <h3 class="text-2xl font-bold text-gray-700">
                         <i class="fas fa-tasks mr-2 text-orange-600"></i>Capitulos Faltantes
                     </h3>
-                    <p class="text-3xl font-bold text-orange-600"><?php echo $total_faltantes; ?></p>
+                    <p class="text-3xl font-bold text-orange-600"><?php echo $total_faltantes; ?>
+                        (<?php
+                            if ($horas > 0) {
+                                echo sprintf('%02dhrs %02dmin', $horas, $minutos);
+                            } else {
+                                echo sprintf('%02dmin', $minutos);
+                            }
+                            ?>)
+                    </p>
                 </div>
                 <div>
                     <h3 class="text-2xl font-bold text-gray-700">
