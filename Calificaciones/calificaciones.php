@@ -111,9 +111,9 @@
         color: var(--text-color);
         min-height: 3rem;
         display: -webkit-box;
-        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
+        text-align: center;
     }
 
     @media (min-width: 576px) {
@@ -308,42 +308,45 @@
             ?>
                     <div class="rating-box">
                         <?php
-                        $id_anime = $fila['ID_Anime'];
+                        $id_anime = (int)$fila['ID_Anime']; // Sanitizar el ID numéricamente
 
                         // Consulta SQL para obtener las imágenes relacionadas con el ID_Anime
-                        $imageQuery = "SELECT DISTINCT Link_Imagen 
-                                       FROM calificaciones 
-                                       WHERE ID_Anime = $id_anime";
-
+                        $imageQuery = "
+    SELECT DISTINCT Link_Imagen 
+    FROM calificaciones 
+    WHERE ID_Anime = $id_anime
+";
                         $result = $conexion->query($imageQuery);
 
-                        // Verificar si hay resultados
-                        if ($result->num_rows > 0) {
+                        if ($result && $result->num_rows > 0) {
                             $images = [];
-                            // Recorrer los resultados y almacenar las imágenes
+
+                            // Recorrer los resultados y almacenar las imágenes válidas
                             while ($row = $result->fetch_assoc()) {
-                                if (!empty($row['Link_Imagen'])) {
-                                    $images[] = htmlspecialchars($row['Link_Imagen'], ENT_QUOTES, 'UTF-8'); // Sanitizar el link y agregar al array
+                                $link = trim($row['Link_Imagen']);
+                                if (!empty($link)) {
+                                    $images[] = htmlspecialchars($link, ENT_QUOTES, 'UTF-8');
                                 }
                             }
 
-                            // Solo mostrar el carrusel si hay más de una imagen
                             if (count($images) > 1) {
+                                // 🔹 Carrusel (más de una imagen)
                         ?>
-                                <!-- Componente Carrusel de Bootstrap -->
                                 <div id="animeCarousel-<?php echo $id_anime; ?>" class="carousel slide" data-bs-ride="carousel">
                                     <div class="carousel-inner">
                                         <?php
-                                        $isActive = true; // Variable para marcar el primer elemento como activo
-
-                                        // Recorrer las imágenes y agregar cada una al carrusel
+                                        $isActive = true;
                                         foreach ($images as $imageLink) {
                                         ?>
                                             <div class="carousel-item <?php echo $isActive ? 'active' : ''; ?>">
-                                                <img src="<?php echo $imageLink; ?>" alt="Imagen de <?php echo $id_anime; ?>" class="imagen d-block w-100" style="height: 300px; object-fit: cover;">
+                                                <img src="<?php echo $imageLink; ?>"
+                                                    alt="Imagen de <?php echo $id_anime; ?>"
+                                                    class="imagen d-block w-100"
+                                                    style="height: 300px; object-fit: cover;"
+                                                    onerror="this.outerHTML='<div class=\'no-image\'><i class=\'fas fa-film\'></i>ID:<?php echo $id_anime; ?></div>';">
                                             </div>
                                         <?php
-                                            $isActive = false; // Desactivar "active" para los siguientes elementos
+                                            $isActive = false;
                                         }
                                         ?>
                                     </div>
@@ -359,24 +362,20 @@
                                     </button>
                                 </div>
                         <?php
+                            } elseif (count($images) == 1) {
+                                // 🔹 Una sola imagen con fallback en caso de error
+                                echo "<img class='imagen d-block w-100' 
+                                    src='{$images[0]}' 
+                                    alt='Imagen de {$id_anime}' 
+                                    style='height: 300px; object-fit: cover;' 
+                                    onerror=\"this.outerHTML='<div class=\'no-image\'><i class=\'fas fa-film\'></i>ID:{$id_anime}</div>'\">";
                             } else {
-                                // Si hay solo una imagen, mostrar la imagen sin carrusel
-                                if (count($images) == 1) {
-                                    echo "<img class='imagen' src='" . $images[0] . "' alt='Imagen de {$id_anime}'>";
-                                } else {
-                                    echo "     
-                                     <div class='no-image'>
-                                        <i class='fas fa-film'></i>
-                                        ID:{$fila['ID_Anime']}
-                                    </div>";
-                                }
+                                // 🔹 No hay imágenes válidas
+                                echo "<div class='no-image'><i class='fas fa-film'></i>ID:{$id_anime}</div>";
                             }
                         } else {
-                            echo "     
-                            <div class='no-image'>
-                               <i class='fas fa-film'></i>
-                               ID:{$fila['ID_Anime']}
-                           </div>";
+                            // 🔹 No se encontraron resultados
+                            echo "<div class='no-image'><i class='fas fa-film'></i>ID:{$id_anime}</div>";
                         }
                         ?>
 
