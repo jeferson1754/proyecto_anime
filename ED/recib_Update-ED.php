@@ -11,7 +11,6 @@ $idRegistros = $_REQUEST['id'];
 $idAnime = $_REQUEST['anime'];
 $cancion = $_REQUEST['cancion'];
 $enlace = $_REQUEST['enlace'];
-$iframe = $_REQUEST['iframe'];
 $ed = $_REQUEST['ed'];
 $estado = $_REQUEST['estado'];
 $mix = $_REQUEST['mix'];
@@ -22,6 +21,8 @@ $estado_link = $_REQUEST['estado_link'];
 $link = $_REQUEST['link'];
 $autor = $_REQUEST['autor'];
 
+
+$iframe = convertirEnlaceIframe($enlace);
 
 try {
     $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);

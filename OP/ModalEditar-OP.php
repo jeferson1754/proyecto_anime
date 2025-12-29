@@ -72,12 +72,7 @@
                   <label for="enlace" class="col-form-label">Link:</label>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-floating mb-3">
-                  <input type="text" id="iframe" name="iframe" class="form-control" value="<?php echo $mostrar['Link_Iframe']; ?>">
-                  <label for="iframe" class="col-form-label">Link Iframe:</label>
-                </div>
-              </div>
+
               <div class="col-md-4">
                 <div class="form-floating mb-3">
                   <select id="estado_link" name="estado_link" class="form-control" required>
@@ -103,11 +98,8 @@
                   <label for="estado_link" class="col-form-label">Estado del Link:</label>
                 </div>
               </div>
-            </div>
 
-            <!-- Tercera fila: Estado y Mix -->
-            <div class="row mb-3">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-floating mb-3">
                   <select id="estado" name="estado" class="form-control">
                     <option value="<?php echo $mostrar['Estado']; ?>"><?php echo $mostrar['Estado']; ?></option>
@@ -129,7 +121,13 @@
                   <label for="estado" class="col-form-label">Estado:</label>
                 </div>
               </div>
-              <div class="col-md-6">
+            </div>
+
+
+            <!-- Cuarta fila: Año y Temporada -->
+            <div class="row mb-3">
+
+              <div class="col-md-4">
                 <div class="form-floating mb-3">
                   <select id="mix" name="mix" class="form-control">
                     <option value="<?php echo $mostrar['Mix']; ?>"><?php echo $mostrar['Mix']; ?></option>
@@ -150,11 +148,7 @@
                   <label for="mix" class="col-form-label">Mix:</label>
                 </div>
               </div>
-            </div>
-
-            <!-- Cuarta fila: Año y Temporada -->
-            <div class="row mb-3">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-floating mb-3">
                   <select id="temp" name="temp" class="form-control">
                     <option value="<?php echo $mostrar['Temporada']; ?>"><?php echo $mostrar['Temporada']; ?></option>
@@ -168,7 +162,7 @@
                   <label for="temp" class="col-form-label">Temporada:</label>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-floating mb-3">
                   <input type="number" id="ano" name="ano" class="form-control" value="<?php echo $mostrar['Ano']; ?>">
                   <label for="ano" class="col-form-label">Año:</label>

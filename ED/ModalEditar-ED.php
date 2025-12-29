@@ -59,19 +59,13 @@
 
             <!-- Segunda fila: Links -->
             <div class="row">
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-floating mb-3">
                   <input type="text" id="enlace" name="enlace" class="form-control" value="<?php echo $mostrar['Link']; ?>">
                   <label for="enlace" class="col-form-label">Link:</label>
                 </div>
               </div>
-              <div class="col-md-4">
-                <div class="form-floating mb-3">
-                  <input type="text" id="iframe" name="iframe" class="form-control" value="<?php echo $mostrar['Link_Iframe']; ?>">
-                  <label for="iframe" class="col-form-label">Link Iframe:</label>
-                </div>
-              </div>
-              <div class="col-md-4">
+              <div class="col-md-6">
                 <div class="form-floating mb-3">
                   <select id="estado_link" name="estado_link" class="form-control" required>
                     <!-- Opción seleccionada actualmente -->

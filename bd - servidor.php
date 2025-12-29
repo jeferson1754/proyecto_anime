@@ -20,7 +20,7 @@ try {
 //Linea para los caracteres �
 
 if (!mysqli_set_charset($conexion, "utf8mb4")) {
-    printf("Error loading character set utf8mb4: %s\n", mysqli_error($conn));
+    printf("Error loading character set utf8mb4: %s\n", mysqli_error($conexion));
     exit();
 }
 
@@ -91,3 +91,22 @@ $temporadas = [
     4 => "Otoño",
     5 => "Desconocida"
 ];
+
+
+function convertirEnlaceIframe($url)
+{
+    // Si ya es un link de embed, lo dejamos igual
+    if (strpos($url, 'youtube.com/embed/') !== false) {
+        return $url;
+    }
+
+    // Buscamos el ID de YouTube (soporta youtube.com y youtu.be)
+    $pattern = '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/';
+    if (preg_match($pattern, $url, $match)) {
+        $videoID = $match[1];
+        return "https://www.youtube.com/embed/" . $videoID;
+    }
+
+    // Si no es de YouTube, devuelve el link original (puedes añadir más plataformas aquí)
+    return $url;
+}
