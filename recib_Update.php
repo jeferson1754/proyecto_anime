@@ -272,6 +272,34 @@ try {
 echo "<br>";
 
 
+if ($estado == "Viendo") {
+    // 1. Obtener el total actual de animes pendientes/viendo
+    $sql = "SELECT COUNT(*) FROM anime WHERE Estado IN ('Pendiente','Viendo')";
+    $result = mysqli_query($conexion, $sql);
+    $fila = mysqli_fetch_row($result);
+    $total_actual = (int) $fila[0];
+
+    // 2. Consultar el ÚLTIMO valor insertado en la tabla de historial
+    $stmt_check = $connect->prepare("
+        SELECT total_anterior 
+        FROM estadisticas_historial 
+        WHERE categoria = 'Animes' 
+        ORDER BY fecha_actualizacion DESC LIMIT 1
+    ");
+    $stmt_check->execute();
+    $ultimo_registro = $stmt_check->fetchColumn();
+
+    // 3. Insertar una NUEVA FILA solo si el valor cambió o si no hay registros previos
+    if ($ultimo_registro === false || $total_actual != $ultimo_registro) {
+        $stmt = $connect->prepare("
+            INSERT INTO estadisticas_historial (categoria, total_anterior, fecha_actualizacion)
+            VALUES ('animes', ?, NOW())
+        ");
+        $stmt->execute([$total_actual]);
+    }
+} else {
+    echo "El estado no es viendo<br>";
+}
 
 
 if ($estado == "Emision" or $estado == "Pausado") {
