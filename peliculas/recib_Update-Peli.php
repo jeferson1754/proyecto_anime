@@ -64,7 +64,7 @@ if ($estado == "Viendo") {
     if ($ultimo_registro === false || $total_actual != $ultimo_registro) {
         $stmt = $connect->prepare("
             INSERT INTO estadisticas_historial (categoria, total_anterior, fecha_actualizacion)
-            VALUES ('Películas', ?, NOW())
+            VALUES ('Peliculas', ?, NOW())
         ");
         $stmt->execute([$total_actual]);
     }
