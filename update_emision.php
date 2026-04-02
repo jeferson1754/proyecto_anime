@@ -80,3 +80,21 @@ if ($new_time == $Hoy) {
     $text = "No se actualizo " . $ultima_actualizacion;
     $estatus = "finalizado";
 }
+
+
+// Calculamos la fecha de hace 3 meses
+$haceTresMeses = date("Y-m-d", strtotime("-3 months"));
+
+$sqlPausadosOlvidados = "
+    SELECT id, Nombre, Fecha_Modificacion 
+    FROM anime 
+    WHERE Estado = 'Pausado' 
+    AND Fecha_Modificacion <= '$haceTresMeses'
+";
+
+$resPausados = mysqli_query($conexion, $sqlPausadosOlvidados);
+$animesParaRevisar = [];
+
+while ($row = mysqli_fetch_assoc($resPausados)) {
+    $animesParaRevisar[] = $row;
+}

@@ -1,6 +1,7 @@
 <?php
 
 require 'bd.php';
+include 'update_emision.php';
 
 setlocale(LC_ALL, "es_ES");
 $año = date("Y");
@@ -1309,6 +1310,57 @@ $añoPhp = date('Y'); // Año actual
                 });
         });
     </script>
+
+    <?php if (!empty($animesParaRevisar)):
+        // Creamos la lista de nombres para mostrar en el Alert
+        $nombresAnimes = "";
+        $idsAnimes = [];
+        foreach ($animesParaRevisar as $anime) {
+            $nombresAnimes .= "• " . addslashes($anime['Nombre']) . "<br>";
+            $idsAnimes[] = $anime['id'];
+        }
+        $idsString = implode(',', $idsAnimes);
+    ?>
+        <script>
+            Swal.fire({
+                title: '¿Posponer revisión de animes?',
+                html: `
+                <div style="text-align: left; background: #f8f9fa; padding: 10px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 10px;">
+                    <p><b>Los siguientes animes llevan +3 meses pausados:</b></p>
+                    <div style="color: #555; font-size: 0.9em;"><?php echo $nombresAnimes; ?></div>
+                </div>
+                <p>¿Deseas ignorarlos y que te avise de nuevo en 1 mes?</p>
+            `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, ignorar 1 mes',
+                cancelButtonText: 'No, revisar ahora',
+                footer: '<small>Si ignoras, la fecha de modificación se ajustará automáticamente</small>'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviamos los datos al procesador PHP mediante Fetch
+                    fetch('procesar_pausados.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: 'ids=<?php echo $idsString; ?>&accion=posponer_un_mes'
+                        })
+                        .then(response => response.text())
+                        .then(data => {
+                            if (data.trim() === "success") {
+                                Swal.fire('¡Postergado!', 'Te avisaré de nuevo en 30 días.', 'success')
+                                    .then(() => location.reload());
+                            } else {
+                                Swal.fire('Error', 'No se pudo actualizar la base de datos.', 'error');
+                            }
+                        });
+                }
+            });
+        </script>
+    <?php endif; ?>
 
 </body>
 
