@@ -6,6 +6,7 @@ $max_queries_per_day = 1;
 
 $current_time = date("Y-m-d H:i:s");
 $Hoy = date("Y-m-d");
+$hora_actual = (int)date("H"); // Obtiene la hora actual (0-23)
 
 // Consultamos el número de consultas realizadas en la última hora
 $query = "
@@ -59,8 +60,12 @@ $result = mysqli_query($conexion, $consulta);
 $count = mysqli_fetch_assoc($result)['count'];
 mysqli_free_result($result);
 
-// Si se han superado las consultas permitidas, lanzamos un error
-if ($count >= 1 && $num_queries_last_day < $max_queries_per_day) {
+// --- LÓGICA DE ACTUALIZACIÓN A LAS 5 AM ---
+
+// 1. $count >= 1 : Hay animes para actualizar hoy
+// 2. $num_queries_last_day < $max_queries_per_day : No se ha actualizado hoy todavía
+// 3. $hora_actual >= 5 : Ya son las 5 de la mañana o más
+if ($count >= 1 && $num_queries_last_day < $max_queries_per_day && $hora_actual >= 5) {
     $query = "INSERT INTO actualizaciones_anime (Fecha) VALUES ('$current_time')";
     mysqli_query($conexion, $query);
 
