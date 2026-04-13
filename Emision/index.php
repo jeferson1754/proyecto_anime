@@ -747,13 +747,14 @@ include '../update_emision.php';
 
     <script>
         $(document).ready(function() {
-            $('#animeTable').DataTable({
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-                },
-                responsive: true,
-                order: [],
-            });
+          $('#animeTable').DataTable({
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+            },
+            responsive: true,
+            order: [],
+            pageLength: 25
+        });
         });
 
         function myFunction() {
