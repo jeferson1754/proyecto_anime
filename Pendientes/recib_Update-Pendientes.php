@@ -16,6 +16,7 @@ $link           = $_POST['link'];
 $estado         = $_POST['estado'];
 $tipo           = $_POST['tipo'];
 $id_anime = $_POST['anime'] ?? NULL;
+$historia = $_POST['historia'] ?? 0;
 
 
 try {
@@ -28,7 +29,9 @@ try {
     Total ='" . $total . "',
     Link ='" . $enlace . "',
     Tipo ='" . $tipo . "',
+    orden_historia ='" . $historia . "',
     Estado_Link ='" . $estado . "'
+
     WHERE ID='" . $idRegistros . "'";
     $conn->exec($sql);
     $last_id1 = $conn->lastInsertId();

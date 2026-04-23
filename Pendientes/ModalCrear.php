@@ -59,7 +59,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div class="form-group">
                 <label class="form-label" for="caps">
                   <i class="lucide-eye me-1"></i>Capítulos Vistos
@@ -72,17 +72,27 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
               <div class="form-group">
                 <label class="form-label" for="total">
                   <i class="lucide-layers me-1"></i>Total Capítulos
                 </label>
                 <i class="lucide-list input-icon"></i>
-                <input type="number" id="total" name="total" min="1"
+                <input type="number" id="total" name="total" min="1" 
                   class="form-control" required>
                 <div class="invalid-feedback">
                   Debe ser mayor que 0 y mayor que los capítulos vistos
                 </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label class="form-label" for="historia">
+                  <i class="lucide-eye me-1"></i>Orden Historia
+                </label>
+                <i class="lucide-play input-icon"></i>
+                <input type="number" id="historia" name="historia" min="0" value="0"
+                  class="form-control" required>
               </div>
             </div>
           </div>

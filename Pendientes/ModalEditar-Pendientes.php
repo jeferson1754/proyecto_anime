@@ -69,7 +69,7 @@
           <div class="episodes-container">
 
             <div class="row">
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group mb-md-0">
                   <label class="form-label">
                     <i class="lucide-eye me-1"></i>Capítulos Vistos
@@ -78,13 +78,23 @@
                     value="<?php echo $mostrar['Vistos']; ?>" required>
                 </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-4">
                 <div class="form-group mb-0">
                   <label class="form-label">
                     <i class="lucide-layers me-1"></i>Total Capítulos
                   </label>
                   <input type="number" id="total<?php echo $mostrar['ID']; ?>" name="total" min="1" class="form-control"
                     value="<?php echo $mostrar['Total']; ?>" required>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="form-group mb-md-0">
+                  <label class="form-label">
+                    <i class="lucide-eye me-1"></i>Orden Historia
+                  </label>
+                  <input type="number" id="historia<?php echo $mostrar['ID']; ?>" name="historia" min="0" class="form-control"
+                    value="<?php echo $mostrar['orden_historia']; ?>" required>
                 </div>
               </div>
             </div>

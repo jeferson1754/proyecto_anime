@@ -792,18 +792,20 @@ require '../bd.php';
         <?php
         include('ModalCrear.php');
 
-        $where = "AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
+        // 1. Definimos los filtros (solo la parte del WHERE)
+        $where = "AND pendientes.ID>1";
 
         if (isset($_GET['borrar'])) {
-            $where = "AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
+            $where = " AND pendientes.ID > 1";
         } else if (isset($_GET['filtrar']) && isset($_GET['tipo'])) {
-            $tipo = $_REQUEST['tipo'];
-            $where = "AND pendientes.Tipo='$tipo' AND pendientes.ID>1 ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
+            $tipo = mysqli_real_escape_string($conexion, $_REQUEST['tipo']);
+            $where = " AND pendientes.Tipo = '$tipo' AND pendientes.ID > 1";
         } else if (isset($_GET['link'])) {
-            $where = "AND pendientes.Link='' AND pendientes.Estado_link='Faltante' OR pendientes.Estado_link='Erroneo/Inexistente' ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
+            // Agregamos paréntesis para que el OR no rompa el filtro principal
+            $where = " AND (pendientes.Link = '' AND (pendientes.Estado_link = 'Faltante' OR pendientes.Estado_link = 'Erroneo/Inexistente'))";
         } else if (isset($_GET['buscar']) && isset($_GET['busqueda_pendientes'])) {
-            $busqueda = $_REQUEST['busqueda_pendientes'];
-            $where = "AND anime.Nombre LIKE '%$busqueda%' ORDER BY rn, pendientes.Tipo, pendientes.Pendientes ASC;";
+            $busqueda = mysqli_real_escape_string($conexion, $_REQUEST['busqueda_pendientes']);
+            $where = " AND anime.Nombre LIKE '%$busqueda%'";
         }
 
         ?>
@@ -829,15 +831,18 @@ require '../bd.php';
                             CONCAT(anime.Nombre, ' ', pendientes.Temporada) AS Nombre_Anime, 
                             anime.Estado AS Estado,
                             anime.Nombre AS Nombre,
-                            ROW_NUMBER() OVER (PARTITION BY pendientes.Tipo ORDER BY pendientes.Pendientes ASC, pendientes.ID ASC) AS rn
+                            pendientes.Orden_Historia AS orden_historia
                         FROM 
                             pendientes
                         LEFT JOIN 
                             anime ON pendientes.ID_Anime = anime.id
                         WHERE 
-                            pendientes.Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') $where";
-
-                        //echo $sql;
+                            pendientes.Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') 
+                            $where
+                        ORDER BY 
+                            pendientes.ID_Anime ASC,      -- Agrupa la franquicia
+                            pendientes.orden_historia ASC,  -- Tu nuevo orden cronológico manual
+                            pendientes.ID ASC;      -- Desempate por orden de creación";
                         $result = mysqli_query($conexion, $sql);
 
                         while ($mostrar = mysqli_fetch_array($result)) {

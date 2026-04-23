@@ -48,7 +48,7 @@
                 <i class="lucide-plus-circle me-1"></i>
                 Agregar Capítulos Vistos
               </label>
-              <input type="number" id="episodesInput<?php echo $mostrar['ID']; ?>" name="vistos" class="form-control" min="1" value="1" max="<?php echo $mostrar['Pendientes']; ?>" required>
+              <input type="number" id="episodesInput<?php echo $mostrar['ID']; ?>" name="vistos" class="form-control text-center" min="1" value="1" max="<?php echo $mostrar['Pendientes']; ?>" required>
               <small class="text-muted mt-2 d-block">
                 Máximo <?php echo $mostrar['Pendientes']; ?> capítulos pendientes
               </small>
