@@ -657,20 +657,42 @@ include '../update_emision.php';
                     </thead>
                     <tbody>
                         <?php
-                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado,anime.Nombre as Nombre FROM `emision` LEFT JOIN anime ON emision.ID_Anime = anime.id $where";
+                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado, anime.Nombre as Nombre 
+                        FROM `emision` 
+                        LEFT JOIN anime ON emision.ID_Anime = anime.id $where";
+
                         $result = mysqli_query($conexion, $sql1);
-                        //echo $sql1;
+
                         while ($mostrar = mysqli_fetch_array($result)) {
+                            // --- NUEVA LÓGICA PARA EL OPENING ---
+                            $temporada_actual = $mostrar['Temporada'];
+                            $id_anime = $mostrar['ID_Anime'];
+
+                            $checkOp = mysqli_query($conexion, "SELECT id FROM op 
+                                WHERE ID_Anime = '$id_anime' 
+                                AND Temporada = '$temporada_actual' 
+                                LIMIT 1");
+
+                            $tieneOpening = mysqli_num_rows($checkOp) > 0;
+                            // ------------------------------------
+
                             if ($mostrar['Totales'] > 0) {
                                 $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos'];
                                 $porcentaje = ($mostrar['Capitulos'] / $mostrar['Totales']) * 100;
                             } else {
-                                $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos']; // O el valor por defecto que desees
-                                $porcentaje = 0; // O un mensaje o acción específica en caso de Totales = 0
+                                $faltantes = $mostrar['Faltantes'] - $mostrar['Capitulos'];
+                                $porcentaje = 0;
                             }
                         ?>
                             <tr>
-                                <td class="fw-500"> <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
+                                <td class="fw-500">
+                                    <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
+
+                                    <?php if ($tieneOpening < 1 && $mostrar['Capitulos'] < 3): ?>
+                                        <span class="badge bg-info text-white" style="font-size: 0.7em; margin-left: 5px;">
+                                            <i class="fas fa-music"></i> Sin OP
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="progress-cell">
@@ -747,14 +769,14 @@ include '../update_emision.php';
 
     <script>
         $(document).ready(function() {
-          $('#animeTable').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
-            },
-            responsive: true,
-            order: [],
-            pageLength: 25
-        });
+            $('#animeTable').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                },
+                responsive: true,
+                order: [],
+                pageLength: 25
+            });
         });
 
         function myFunction() {
