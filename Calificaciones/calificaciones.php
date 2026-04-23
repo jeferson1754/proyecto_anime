@@ -291,15 +291,15 @@
             require '../bd.php';
 
             $sql = "SELECT 
-            anime.Nombre as Anime, 
-            AVG(calificaciones.Promedio) AS PromedioGeneral, 
-            calificaciones.* 
-        FROM calificaciones 
-        INNER JOIN anime 
-        ON calificaciones.ID_Anime = anime.id 
-        WHERE calificaciones.Promedio > 0 
-       GROUP BY calificaciones.ID_Anime
-        ORDER BY PromedioGeneral DESC;";
+    anime.Nombre as Anime, 
+    AVG(calificaciones.Promedio) AS PromedioGeneral, 
+    calificaciones.*,
+    GROUP_CONCAT(DISTINCT calificaciones.Link_Imagen) as Todas_Imagenes
+FROM calificaciones 
+INNER JOIN anime ON calificaciones.ID_Anime = anime.id 
+WHERE calificaciones.Promedio > 0 
+GROUP BY calificaciones.ID_Anime
+ORDER BY PromedioGeneral DESC;";
 
             $resultado = $conexion->query($sql);
 
@@ -339,11 +339,13 @@
                                         foreach ($images as $imageLink) {
                                         ?>
                                             <div class="carousel-item <?php echo $isActive ? 'active' : ''; ?>">
-                                                <img src="<?php echo $imageLink; ?>"
+                                                <img
+                                                    src="<?php echo $imageLink; ?>"
+                                                    loading="lazy"
                                                     alt="Imagen de <?php echo $id_anime; ?>"
                                                     class="imagen d-block w-100"
-                                                    style="height: 300px; object-fit: cover;"
-                                                    onerror="this.outerHTML='<div class=\'no-image\'><i class=\'fas fa-film\'></i>ID:<?php echo $id_anime; ?></div>';">
+                                                    style="height: 300px; object-fit: cover; background-color: #2a2a2a;"
+                                                    onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'no-image\'><i class=\'fas fa-film\'></i>ID:<?php echo $id_anime; ?></div>';">
                                             </div>
                                         <?php
                                             $isActive = false;
@@ -512,6 +514,27 @@
                 arrow.classList.add('fa-chevron-up'); // Mostrar flecha hacia arriba
             }
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Detener carruseles automáticos para ahorrar CPU hasta que sean visibles
+            var carousels = document.querySelectorAll('.carousel');
+            var observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    let carouselInstance = bootstrap.Carousel.getInstance(entry.target);
+                    if (!carouselInstance) carouselInstance = new bootstrap.Carousel(entry.target);
+
+                    if (entry.isIntersecting) {
+                        carouselInstance.cycle(); // Activa si es visible
+                    } else {
+                        carouselInstance.pause(); // Pausa si no es visible
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            carousels.forEach(c => observer.observe(c));
+        });
     </script>
 </body>
 
