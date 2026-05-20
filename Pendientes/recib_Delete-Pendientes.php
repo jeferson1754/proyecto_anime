@@ -4,221 +4,117 @@
 </header>
 
 <?php
+// 1. Configuración e Inclusión
 include '../bd.php';
-$idRegistros = $_REQUEST['id'];
-$id_anime = $_REQUEST['id_anime'];
-$nombre = $_REQUEST['nombre'];
-$link    = $_REQUEST['link'];
-$tipo   = $_REQUEST['tipo'];
 
-$sql = ("SELECT * FROM `anime` where ID='$id_anime';");
+// 2. Sanitización básica de datos de entrada
+$idRegistros = $_REQUEST['id'] ?? null;
+$id_anime    = $_REQUEST['id_anime'] ?? null;
+$nombre      = $_REQUEST['nombre'] ?? '';
+$link        = $_REQUEST['link'] ?? 'index.php';
+$tipo        = $_REQUEST['tipo'] ?? '';
 
-$anime = mysqli_query($conexion, $sql);
+if (!$idRegistros) {
+    die("Error: ID de registro no proporcionado.");
+}
 
-$sql1 = ("SELECT * FROM `peliculas` where ID_Pendientes='$idRegistros';");
+try {
+    // 3. Crear una ÚNICA conexión PDO
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$anime = mysqli_query($conexion, $sql);
-$peli = mysqli_query($conexion, $sql1);
+    // 4. Verificaciones previas utilizando consultas preparadas
+    $stmtAnime = $conn->prepare("SELECT COUNT(*) FROM `anime` WHERE ID = ?");
+    $stmtAnime->execute([$id_anime]);
+    $existeAnime = $stmtAnime->fetchColumn() > 0;
 
-echo $sql;
-echo "<br>";
+    $stmtPeli = $conn->prepare("SELECT COUNT(*) FROM `peliculas` WHERE ID_Pendientes = ?");
+    $stmtPeli->execute([$idRegistros]);
+    $existePeli = $stmtPeli->fetchColumn() > 0;
 
+    // --- NUEVA VALIDACIÓN: Contar cuántos pendientes QUEDAN de este mismo anime (excluyendo el que estamos borrando) ---
+    $stmtRestantes = $conn->prepare("SELECT COUNT(*) FROM `pendientes` WHERE ID_Anime = ? AND ID != ?");
+    $stmtRestantes->execute([$id_anime, $idRegistros]);
+    $quentanPendientes = $stmtRestantes->fetchColumn() > 0; // Será true si aún quedan otros registros
+    // ------------------------------------------------------------------------------------------------------------------
 
+    // 5. Flujo Lógico Principal (Decisión de Estados con la nueva validación)
+    $mensajeSweet = "Eliminando " . htmlspecialchars($nombre) . " de Pendientes";
 
-if (mysqli_num_rows($anime) == 0) {
-
-    if (mysqli_num_rows($peli) == 0) {
-
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "DELETE FROM `pendientes` 
-            WHERE ID='" . $idRegistros . "'";
-            $conn->exec($sql);
-            $last_id2 = $conn->lastInsertId();
-            echo $sql;
-            echo 'ultimo anime insertado ' . $last_id2;
-            echo "<br>";
-            $conn = null;
-        } catch (PDOException $e) {
-            $conn = null;
-            echo $e;
+    if (!$existeAnime) {
+        if (!$existePeli) {
+            // Caso A: No hay anime maestro ni película vinculada -> Solo borrar pendiente
+        } else {
+            // Caso B: Es una película independiente vinculada
+            if (!$quentanPendientes) {
+                // Desvinculamos el ID_Pendientes poniéndolo en NULL y la marcamos como Finalizado
+                $stmtUpdPeli = $conn->prepare("UPDATE peliculas SET estado = 'Finalizado', ID_Pendientes = NULL WHERE ID_Pendientes = ?");
+                $stmtUpdPeli->execute([$idRegistros]);
+                $mensajeSweet = "¡Último elemento! Película " . htmlspecialchars($nombre) . " marcada como Finalizada";
+            } else {
+                // Si quedan más cosas, solo desvinculamos este pendiente específico
+                $stmtUpdPeli = $conn->prepare("UPDATE peliculas SET ID_Pendientes = NULL WHERE ID_Pendientes = ?");
+                $stmtUpdPeli->execute([$idRegistros]);
+                $mensajeSweet = "Eliminado de la lista. Aún te quedan otros elementos de este título por ver.";
+            }
         }
-
-        echo '<script>
-        Swal.fire({
-        icon: "success",
-        title: "Eliminando ' . $nombre . ' de Pendientes",
-        confirmButtonText: "OK"
-        }).then(function() {
-            window.location = "' . $link . '";
-        });
-        </script>';
     } else {
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "UPDATE peliculas set estado='Finalizado',ID_Pendientes='1' where ID_Pendientes='" . $idRegistros . "'";
-            $conn->exec($sql);
-            $last_id1 = $conn->lastInsertId();
-            echo $sql;
-            echo 'ultimo anime insertado ' . $last_id1;
-            echo "<br>";
-        } catch (PDOException $e) {
-            $conn = null;
-            echo $e;
+        // Caso C: Existe el anime maestro
+        // SÓLO si no quedan más pendientes de este ID_Anime, pasamos el Anime Maestro a Finalizado
+        if (!$quentanPendientes) {
+            $stmtUpdAnime = $conn->prepare("UPDATE anime SET Estado = 'Finalizado' WHERE id = ?");
+            $stmtUpdAnime->execute([$id_anime]);
+            $mensajeSweet = "¡Serie Completada! " . htmlspecialchars($nombre) . " ha sido marcado como Finalizado";
+        } else {
+            $mensajeSweet = "Eliminado de la lista. Aún tienes otras temporadas/OVAs pendientes de esta serie.";
         }
-
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "DELETE FROM `pendientes` 
-            WHERE ID='" . $idRegistros . "'";
-            $conn->exec($sql);
-            $last_id2 = $conn->lastInsertId();
-            echo $sql;
-            echo 'ultimo anime insertado ' . $last_id2;
-            echo "<br>";
-        } catch (PDOException $e) {
-            $conn = null;
-            echo $e;
-        }
-
-
-        echo '<script>
-        Swal.fire({
-        icon: "success",
-        title: "Actualizando Estado de ' . $nombre . ' a Finalizado",
-        confirmButtonText: "OK"
-        }).then(function() {
-            window.location = "' . $link . '";
-        });
-        </script>';
-    }
-} else {
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE anime set Estado='Finalizado' where id='" . $id_anime . "'";
-        $conn->exec($sql);
-        $last_id1 = $conn->lastInsertId();
-        echo $sql;
-        echo 'ultimo anime insertado ' . $last_id1;
-        echo "<br>";
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
     }
 
-    try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "DELETE FROM `pendientes` 
-        WHERE ID='" . $idRegistros . "'";
-        $conn->exec($sql);
-        $last_id2 = $conn->lastInsertId();
-        echo $sql;
-        echo 'ultimo anime insertado ' . $last_id2;
-        echo "<br>";
-    } catch (PDOException $e) {
-        $conn = null;
-        echo $e;
+    // 6. El borrado del pendiente actual ocurre SIEMPRE al final de las evaluaciones
+    $stmtDelete = $conn->prepare("DELETE FROM `pendientes` WHERE ID = ?");
+    $stmtDelete->execute([$idRegistros]);
+
+
+    // 7. Lógica del Siguiente Pendiente Automático ("Viendo = SI")
+    $ordenTipos = [
+        "Anime" => "Ova y Otros",
+        "Ova y Otros" => "Pelicula",
+        "Pelicula" => "Anime"
+    ];
+
+    $siguienteTipo = $ordenTipos[$tipo] ?? "Anime";
+
+    $sqlSiguiente = "SELECT ID FROM pendientes WHERE tipo = ? GROUP BY Pendientes ORDER BY Pendientes ASC LIMIT 1";
+    $stmtSig = $conn->prepare($sqlSiguiente);
+
+    $stmtSig->execute([$siguienteTipo]);
+    $id_Pendiente = $stmtSig->fetchColumn();
+
+    if (!$id_Pendiente) {
+        $siguienteTipoAlterno = $ordenTipos[$siguienteTipo];
+        $stmtSig->execute([$siguienteTipoAlterno]);
+        $id_Pendiente = $stmtSig->fetchColumn();
+    }
+
+    if ($id_Pendiente) {
+        $stmtViendo = $conn->prepare("UPDATE pendientes SET Viendo = 'SI' WHERE ID = ?");
+        $stmtViendo->execute([$id_Pendiente]);
     }
 
 
+    // 8. Renderizado del aviso de éxito con SweetAlert2 personalizado según el caso
     echo '<script>
     Swal.fire({
-    icon: "success",
-    title: "Actualizando Estado de ' . $nombre . ' a Finalizado",
-    confirmButtonText: "OK"
+        icon: "success",
+        title: "' . $mensajeSweet . '",
+        confirmButtonText: "OK"
     }).then(function() {
         window.location = "' . $link . '";
     });
     </script>';
-}
-
-// Determinar el siguiente tipo
-switch ($tipo) {
-    case "Anime":
-        $siguiente = "Ova y Otros";
-        break;
-    case "Ova y Otros":
-        $siguiente = "Pelicula";
-        break;
-    default:
-        $siguiente = "Anime";
-        break;
-}
-
-// Preparar la consulta
-$sql2 = "SELECT COUNT(*) as cantidad, ID 
-         FROM pendientes 
-         WHERE tipo = ? 
-         GROUP BY Pendientes 
-         ORDER BY Pendientes ASC 
-         LIMIT 1";
-
-// Ejecutar la consulta
-$stmt = $conexion->prepare($sql2);
-$stmt->bind_param("s", $siguiente);
-$stmt->execute();
-$result = $stmt->get_result();
-
-// Obtener resultados
-$cantidad = 0;
-$id_Pendiente = null;
-
-if ($mostrar = $result->fetch_assoc()) {
-    $cantidad = $mostrar['cantidad'];
-    $id_Pendiente = $mostrar['ID'];
-}
-
-echo $cantidad . "<br>" . $id_Pendiente;
-
-// Si no hay registros, buscar en el siguiente tipo
-if ($cantidad == 0) {
-    switch ($siguiente) {
-        case "Anime":
-            $next = "Ova y Otros";
-            break;
-        case "Ova y Otros":
-            $next = "Pelicula";
-            break;
-        default:
-            $next = "Anime";
-            break;
-    }
-
-    // Repetir la consulta para el siguiente tipo
-    $stmt->bind_param("s", $next);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($mostrar = $result->fetch_assoc()) {
-        $id_Pendiente = $mostrar['ID'];
-    }
-}
-
-echo $id_Pendiente . "<br>";
-
-try {
-    // Conexión con PDO para la actualización
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // Preparar consulta de actualización
-    $sql = "UPDATE pendientes SET Viendo = 'SI' WHERE ID = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$id_Pendiente]);
-
-    echo $sql . "<br>";
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    echo "¡Error en la base de datos!: " . $e->getMessage();
+} finally {
+    $conn = null;
 }
-
-
-
-
-
-//header("location:index.php");
 ?>
