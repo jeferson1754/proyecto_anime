@@ -773,16 +773,21 @@ $año = date("Y");
         <?php include('ModalCrear.php');  ?>
         <?php
 
-        $where = " ";
+        $where = "WHERE ";
 
         if (isset($_GET['pendientes'])) {
 
-            $where = "WHERE peliculas.Estado='Pendiente'";
+            $where .= " peliculas.Estado='Pendiente' AND";
+            $order = "ASC";
         } elseif (isset($_GET['borrar'])) {
-            $where = "";
+            $where = "WHERE";
+            $order = "DESC";
         } else {
-            $where = "";
+            $where = "WHERE";
+            $order = "DESC";
         }
+
+        $where .= " (peliculas.ID_Anime IS NULL OR peliculas.ID_Anime = 0 OR anime.Estado = 'Finalizado')"; // Solo mostrar películas independientes por defecto
         ?>
 
         <!-- Tabla de Animes -->
@@ -800,12 +805,10 @@ $año = date("Y");
                     <tbody>
                         <?php
 
-                        $sql = "SELECT peliculas.*,
-                        CONCAT(anime.Nombre, ' ', peliculas.Nombre) AS Nombre_Anime,
-                        anime.Nombre as anime_name
-                        FROM `peliculas` 
-                        left join anime on peliculas.ID_Anime = anime.id
-                        $where ORDER BY `peliculas`.`ID` DESC";
+                        $sql = "SELECT peliculas.*, CONCAT(anime.Nombre, ' ', peliculas.Nombre) AS Nombre_Anime, anime.Nombre as anime_name
+                        FROM `peliculas`
+                        LEFT JOIN `anime` ON anime.id = peliculas.ID_Anime
+                        $where ORDER BY `peliculas`.`ID` $order";
 
                         //echo $sql;
                         $result = mysqli_query($conexion, $sql);
