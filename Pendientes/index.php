@@ -796,10 +796,11 @@ require '../bd.php';
         $where = "  WHERE pendientes.Tipo IN ('Ova y Otros', 'Anime') 
                         AND pendientes.ID > 1 
                     ORDER BY 
-                        secuencia_intercalado ASC, 
-                        CASE WHEN pendientes.Tipo = 'Anime' THEN 1 ELSE 2 END ASC, 
-                        pendientes.Pendientes ASC, -- Ordena de menor a mayor cantidad de pendientes de forma global
-                        pendientes.ID ASC;";
+                       secuencia_intercalado ASC, 
+                    -- Va a buscar a la tabla qué tipo debe ir primero
+                    CASE WHEN pendientes.Tipo = (SELECT valor FROM configuracion_pendientes WHERE clave = 'proximo_primero') THEN 1 ELSE 2 END ASC, 
+                    pendientes.Pendientes ASC, 
+                    pendientes.ID ASC;";
 
         if (isset($_GET['borrar'])) {
             $where =  " WHERE 

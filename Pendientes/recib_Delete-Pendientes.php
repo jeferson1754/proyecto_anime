@@ -28,6 +28,18 @@ try {
     $stmtAnime->execute([$id_anime]);
     $existeAnime = $stmtAnime->fetchColumn() > 0;
 
+    // --- CORRECCIÓN: Definir y EJECUTAR la actualización de la configuración ---
+    if ($tipo == "Anime") {
+        // Si el que estás borrando es un Anime:
+        $sqlConfig = "UPDATE configuracion_pendientes  SET valor = 'Ova y Otros' WHERE clave = 'proximo_primero'";
+    } else {
+        // Si el que estás borrando es una OVA:
+        $sqlConfig = "UPDATE configuracion_pendientes  SET valor = 'Anime' WHERE clave = 'proximo_primero'";
+    }
+    // Ejecutamos la consulta de configuración para que el cambio impacte en la Base de Datos
+    $conn->exec($sqlConfig);
+    // ---------------------------------------------------------------------------
+
     $stmtPeli = $conn->prepare("SELECT COUNT(*) FROM `peliculas` WHERE ID_Pendientes = ?");
     $stmtPeli->execute([$idRegistros]);
     $existePeli = $stmtPeli->fetchColumn() > 0;

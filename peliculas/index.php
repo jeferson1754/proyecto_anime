@@ -785,8 +785,8 @@ $año = date("Y");
             $order = "ASC";
         } else if (isset($_GET['link'])) {
             // Agregamos paréntesis para que el OR no rompa el filtro principal
-            $where .= " (peliculas.Link = '' OR peliculas.Estado_link = 'Faltante' OR peliculas.Estado_link = 'Erroneo/Inexistente') AND";
-            $order = "ASC";
+            $where .= " (peliculas.Link = '' OR peliculas.Estado_link !='Correcto') AND";
+            $order = "DESC";
         } elseif (isset($_GET['borrar'])) {
             $where = "WHERE";
             $order = "DESC";
