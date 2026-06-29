@@ -83,7 +83,7 @@ try {
 
 // Lógica para Calificar
 if (isset($_POST['Calificar_Ahora'])) {
-    header("location:../Calificaciones/editar_stars.php?id=$id_anime&nombre=$nombre&temporada=$dato3");
+    header("location:../Calificaciones/editar_stars.php?id=$id_anime&nombre=$nombre&temporada=$dato3&origen=emision");
 } else if (isset($_POST['Calificar_Luego'])) {
     try {
         $sql = "INSERT INTO calificaciones (ID_Anime, Temporadas) VALUES (:id_anime, :temporadas)";

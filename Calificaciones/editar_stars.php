@@ -2,10 +2,14 @@
 <html lang="en">
 
 <?php
+$origen = "";
 if (isset($_GET['id']) && isset($_GET['nombre'])) {
     $id_anime = urldecode($_GET['id']);
     $nombre_anime = urldecode($_GET['nombre']);
-    $temporada = urldecode($_GET['temporada']) ?? null;
+
+    // Validamos la existencia antes de asignar
+    $temporada = isset($_GET['temporada']) ? urldecode($_GET['temporada']) : null;
+    $origen = isset($_GET['origen']) ? urldecode($_GET['origen']) : null;
 }
 
 require '../bd.php';
@@ -173,6 +177,7 @@ $titulos = array("Historia", "Música", "Animación", "Desarrollo", "Final");
             <input type="hidden" id="starValuesInput" name="starValues">
             <input type="hidden" name="id" value="<?php echo htmlspecialchars($id_anime); ?>">
             <input type="hidden" name="nombre" value="<?php echo htmlspecialchars($temporada); ?>">
+            <input type="hidden" name="origen" value="<?php echo htmlspecialchars($origen); ?>">
             <button type="button" class="clear-button" id="clearRatings">Borrar selección</button>
             <button type="submit">Guardar Calificacion</button>
 

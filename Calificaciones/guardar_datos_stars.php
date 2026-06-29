@@ -6,6 +6,7 @@ require '../bd.php';
 $starValuesJSON = $_POST['starValues'];
 $id_anime = $_POST['id'];
 $nombre = $_POST['nombre'];
+$origen = $_POST['origen'] ?? '';
 
 // Decodificar el JSON para obtener un array PHP
 $starValues = json_decode($starValuesJSON, true);
@@ -112,11 +113,14 @@ try {
     $stmt->bindValue(':id_calificacion', $id_calificacion, PDO::PARAM_INT);
     $stmt->execute();
 
-    header('Location: index.php');
-    exit();
+    if ($origen == 'emision') {
+        header('Location:../Emision/index.php');
+    } else {
+        header('Location: index.php');
+    }
 
+    exit();
 } catch (PDOException $e) {
     // Manejo de errores
     echo "Error: " . $e->getMessage();
 }
-
