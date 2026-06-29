@@ -78,7 +78,7 @@
                   <i class="lucide-layers me-1"></i>Total Capítulos
                 </label>
                 <i class="lucide-list input-icon"></i>
-                <input type="number" id="total" name="total" min="1" 
+                <input type="number" id="total" name="total" min="1"
                   class="form-control" required>
                 <div class="invalid-feedback">
                   Debe ser mayor que 0 y mayor que los capítulos vistos
@@ -95,18 +95,20 @@
                   class="form-control" required>
               </div>
             </div>
-          </div>
-          <div class="form-group mb-0">
-            <label class="form-label" for="enlace">
-              <i class="lucide-link me-1"></i>Enlace
-            </label>
-            <i class="lucide-link input-icon"></i>
-            <input type="url" id="enlace" name="enlace" class="form-control"
-              placeholder="https://ejemplo.com/anime">
-            <div class="invalid-feedback">
-              Por favor ingresa una URL válida
+
+            <div class="form-group mb-0">
+              <label class="form-label" for="enlace">
+                <i class="lucide-link me-1"></i>Enlace
+              </label>
+              <i class="lucide-link input-icon"></i>
+              <input type="url" id="enlace" name="enlace" class="form-control"
+                placeholder="https://ejemplo.com/anime">
+              <div class="invalid-feedback">
+                Por favor ingresa una URL válida
+              </div>
             </div>
           </div>
+
         </div>
         <div class="modal-footer border-top-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">

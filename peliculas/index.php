@@ -763,6 +763,10 @@ $año = date("Y");
                     <i class="fas fa-clock"></i> Pendientes
                 </button>
 
+                <button type="submit" name="link" class="btn btn-warning btn-custom" style="text-decoration: none;">
+                    <i class="fas fa-unlink"></i> Sin Link
+                </button>
+
                 <button class="btn btn-custom btn-secondary" type="submit" name="borrar">
                     <i class="fas fa-eraser"></i>
                     <span>Borrar Filtros</span>
@@ -778,6 +782,10 @@ $año = date("Y");
         if (isset($_GET['pendientes'])) {
 
             $where .= " peliculas.Estado='Pendiente' AND";
+            $order = "ASC";
+        } else if (isset($_GET['link'])) {
+            // Agregamos paréntesis para que el OR no rompa el filtro principal
+            $where .= " (peliculas.Link = '' OR peliculas.Estado_link = 'Faltante' OR peliculas.Estado_link = 'Erroneo/Inexistente') AND";
             $order = "ASC";
         } elseif (isset($_GET['borrar'])) {
             $where = "WHERE";
@@ -818,7 +826,13 @@ $año = date("Y");
                             <tr>
                                 <td class="fw-500">
 
-                                    <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Nombre'] ?>
+                                    <a href="<?php echo $mostrar['Link']; ?>"
+                                        class="fw-500 color-black"
+                                        target="_blank"
+                                        title="<?php echo $mostrar['Estado_Link']; ?>"
+                                        style="text-decoration: none; color: inherit;">
+                                        <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Nombre'] ?>
+                                    </a>
                                 </td>
                                 <td>
                                     <?php echo $mostrar['Ano'] ?>

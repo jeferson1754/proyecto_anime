@@ -10,6 +10,15 @@ $nombre = $_REQUEST['nombre'];
 $estado = $_REQUEST['estado'];
 $fecha = $_REQUEST['fecha'];
 $id_anime = $_REQUEST['anime'] ?? NULL;
+$enlace  = $_REQUEST['enlace'];
+
+
+if ($enlace == "" || $enlace == null) {
+    $estado_link = "Faltante";
+} else {
+    $estado_link = "Correcto";
+}
+
 
 function alerta($alertTitle, $alertText, $alertType, $redireccion)
 {
@@ -29,93 +38,93 @@ function alerta($alertTitle, $alertText, $alertType, $redireccion)
         });
     </script>';
 }
+try {
+    // 1. Una sola conexión PDO para todo el proceso
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$sql = "SELECT * FROM `peliculas` WHERE Nombre='$nombre'";
-$peli = mysqli_query($conexion, $sql);
+    // 2. Verificar si la película ya existe usando PDO
+    $stmtCheck = $conn->prepare("SELECT * FROM `peliculas` WHERE Nombre = :nombre");
+    $stmtCheck->execute([':nombre' => $nombre]);
 
-if (mysqli_num_rows($peli) == 0) {
-    if ($estado == "Finalizado") {
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    if ($stmtCheck->rowCount() == 0) {
 
-            // Insertar registro en la tabla de películas
-            $sqlInsertPelicula = "INSERT INTO `peliculas` (`ID`,`ID_Anime`,  `Nombre`, `Ano`, `Estado`, `ID_Pendientes`) 
-                                  VALUES ('$id','$id_anime', '$nombre', '$fecha', '$estado', 1)";
-            $conn->exec($sqlInsertPelicula);
+        if ($estado == "Finalizado") {
+            // NOTA: Cambié el '1' por :id_pendiente. Pasa la variable real correspondiente.
+            // Si no aplica, recuerda cambiarlo a NULL en SQL y configurar la columna como NULLABLE.
+            $sqlInsertPelicula = "INSERT INTO `peliculas` (`ID`,`ID_Anime`, `Nombre`, `Ano`, `Estado`, `ID_Pendientes`, `Link`, `Estado_Link`) 
+                                  VALUES (:id, :id_anime, :nombre, :fecha, :estado, :id_pendiente, :enlace, :estado_link)";
+            $stmtInsert = $conn->prepare($sqlInsertPelicula);
+            $stmtInsert->execute([
+                ':id' => $id,
+                ':id_anime' => $id_anime,
+                ':nombre' => $nombre,
+                ':fecha' => $fecha,
+                ':estado' => $estado,
+                ':id_pendiente' => 1, // <-- Reemplaza por la variable real si es necesario
+                ':enlace' => $enlace,
+                ':estado_link' => $estado_link
+            ]);
 
-            // Eliminar registro de la tabla de IDs de películas
-            $sqlDeleteIdPelicula = "DELETE FROM `id_peliculas` WHERE `ID` = '$id'";
-            $conn->exec($sqlDeleteIdPelicula);
+            // Eliminar de id_peliculas
+            $stmtDeleteId = $conn->prepare("DELETE FROM `id_peliculas` WHERE `ID` = :id");
+            $stmtDeleteId->execute([':id' => $id]);
 
-            $conn = null;
             $alertTitle = '¡Pelicula Creada!';
             $alertText = 'Creando registro de ' . $nombre . ' en Películas';
             $alertType = 'success';
             $redireccion = "window.location='./'";
-
             alerta($alertTitle, $alertText, $alertType, $redireccion);
-        } catch (PDOException $e) {
-            $conn = null;
+        } elseif ($estado == "Pendiente") {
 
-            $alertTitle = '¡Error!';
-            $alertText = 'Error: ' . $e;
-            $alertType = 'error';
-            $redireccion = "window.location='javascript:history.back()'";
+            // Insertar película
+            $sqlInsertPelicula = "INSERT INTO `peliculas` (`ID`,`ID_Anime`, `Nombre`, `Ano`, `Estado`, `ID_Pendientes`, `Link`, `Estado_Link`) 
+                                  VALUES (:id, :id_anime, :nombre, :fecha, :estado, :id_pendiente, :enlace, :estado_link)";
+            $stmtInsert = $conn->prepare($sqlInsertPelicula);
+            $stmtInsert->execute([
+                ':id' => $id,
+                ':id_anime' => $id_anime,
+                ':nombre' => $nombre,
+                ':fecha' => $fecha,
+                ':estado' => $estado,
+                ':id_pendiente' => 1, // <-- Reemplaza por la variable real si es necesario
+                ':enlace' => $enlace,
+                ':estado_link' => $estado_link
+            ]);
 
-            alerta($alertTitle, $alertText, $alertType, $redireccion);
-            die();
-        }
-    } elseif ($estado == "Pendiente") {
-        try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-            $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            // CORRECCIÓN: El UPDATE ahora solo afecta a la fila vinculada
+            $sqlUpdatePendientes = "UPDATE pendientes SET Pendientes = (Total - Vistos) WHERE ID = :id_pendiente AND Vistos > -1";
+            $stmtUpdatePen = $conn->prepare($sqlUpdatePendientes);
+            $stmtUpdatePen->execute([':id_pendiente' => 1]); // <-- Usa el ID real aquí también
 
-            // Insertar registro en la tabla de pendientes
-            $sqlInsertPendiente = "INSERT INTO `pendientes` (`ID_Anime`, `Temporada`, `Tipo`, `Vistos`, `Total`) 
-                                   VALUES ('$id_anime','$nombre', 'Pelicula', 0, 1)";
-            $conn->exec($sqlInsertPendiente);
-            $last_id1 = $conn->lastInsertId();
+            // Eliminar de id_peliculas
+            $stmtDeleteId = $conn->prepare("DELETE FROM `id_peliculas` WHERE `ID` = :id");
+            $stmtDeleteId->execute([':id' => $id]);
 
-            // Insertar registro en la tabla de películas
-            $sqlInsertPelicula = "INSERT INTO `peliculas` (`ID`,`ID_Anime`, `Nombre`, `Ano`, `Estado`, `ID_Pendientes`) 
-                                  VALUES ('$id', '$id_anime','$nombre', '$fecha', '$estado', '$last_id1')";
-            $conn->exec($sqlInsertPelicula);
-
-            // Actualizar campo Pendientes en la tabla de pendientes
-            $sqlUpdatePendientes = "UPDATE pendientes SET Pendientes = (Total - Vistos) WHERE Vistos > -1";
-            $conn->exec($sqlUpdatePendientes);
-
-            // Eliminar registro de la tabla de IDs de películas
-            $sqlDeleteIdPelicula = "DELETE FROM `id_peliculas` WHERE `ID` = '$id'";
-            $conn->exec($sqlDeleteIdPelicula);
-
-            $conn = null;
             $alertTitle = '¡Pelicula Creada!';
-            $alertText = 'Creando registro de ' . $nombre . ' en Películas y en Pendintes';
+            $alertText = 'Creando registro de ' . $nombre . ' en Películas';
             $alertType = 'success';
             $redireccion = "window.location='./'";
-
             alerta($alertTitle, $alertText, $alertType, $redireccion);
-        } catch (PDOException $e) {
-            $conn = null;
-            $alertTitle = '¡Error!';
-            $alertText = 'Error: ' . $e;
-            $alertType = 'error';
-            $redireccion = "window.location='javascript:history.back()'";
-
-            alerta($alertTitle, $alertText, $alertType, $redireccion);
-            die();
         }
+    } else {
+        // Película repetida
+        $alertTitle = '¡Pelicula Repetida!';
+        $alertText = 'Pelicula ' . $nombre . ' ya existe en Peliculas';
+        $alertType = 'error';
+        $redireccion = "window.location='javascript:history.back()'";
+        alerta($alertTitle, $alertText, $alertType, $redireccion);
     }
-} else {
-
-    $alertTitle = '¡Pelicula Repetida!';
-    $alertText = 'Pelicula ' . $nombre . ' ya existe en Peliculas';
+} catch (PDOException $e) {
+    // Si algo falla, el catch captura cualquier error de las consultas internas
+    $alertTitle = '¡Error!';
+    $alertText = 'Error en el proceso: ' . $e->getMessage();
     $alertType = 'error';
     $redireccion = "window.location='javascript:history.back()'";
-
     alerta($alertTitle, $alertText, $alertType, $redireccion);
+    die();
+} finally {
+    $conn = null; // Cerrar la conexión de forma segura siempre
 }
 
 try {

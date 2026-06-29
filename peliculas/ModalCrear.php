@@ -49,12 +49,28 @@
             </select>
           </div>
 
+          <div class="mb-3">
+            <label class="form-label" for="enlace">
+              <i class="lucide-link me-1"></i>Enlace
+            </label>
+            <i class="lucide-link input-icon"></i>
+            <input type="url" id="enlace" name="enlace" class="form-control"
+              placeholder="https://ejemplo.com/anime">
+            <div class="invalid-feedback">
+              Por favor ingresa una URL válida
+            </div>
+          </div>
+
           <!-- Año -->
           <div class="mb-3">
             <label for="fecha" class="form-label">Año</label>
             <input type="number" name="fecha" id="fecha" min="1900" max="<?php echo date('Y'); ?>" class="form-control" value="<?php echo date('Y'); ?>" required>
           </div>
+
+
         </div>
+
+
 
         <!-- Pie del Modal -->
         <div class="modal-footer">

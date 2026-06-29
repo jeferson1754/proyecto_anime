@@ -793,19 +793,31 @@ require '../bd.php';
         include('ModalCrear.php');
 
         // 1. Definimos los filtros (solo la parte del WHERE)
-        $where = "AND pendientes.ID>1";
+        $where = "  WHERE pendientes.Tipo IN ('Ova y Otros', 'Anime') 
+                        AND pendientes.ID > 1 
+                    ORDER BY 
+                        secuencia_intercalado ASC, 
+                        CASE WHEN pendientes.Tipo = 'Anime' THEN 1 ELSE 2 END ASC, 
+                        pendientes.Pendientes ASC, -- Ordena de menor a mayor cantidad de pendientes de forma global
+                        pendientes.ID ASC;";
 
         if (isset($_GET['borrar'])) {
-            $where = " AND pendientes.ID > 1";
+            $where =  " WHERE 
+                             pendientes.ID > 1
+                        ORDER BY 
+                            pendientes.ID DESC;";
         } else if (isset($_GET['filtrar']) && isset($_GET['tipo'])) {
             $tipo = mysqli_real_escape_string($conexion, $_REQUEST['tipo']);
-            $where = " AND pendientes.Tipo = '$tipo' AND pendientes.ID > 1";
+            $where = " WHERE pendientes.Tipo = '$tipo' AND pendientes.ID > 1  ORDER BY 
+                            pendientes.ID ASC;";
         } else if (isset($_GET['link'])) {
             // Agregamos paréntesis para que el OR no rompa el filtro principal
-            $where = " AND (pendientes.Link = '' AND (pendientes.Estado_link = 'Faltante' OR pendientes.Estado_link = 'Erroneo/Inexistente'))";
+            $where = " WHERE (pendientes.Link = '' OR pendientes.Estado_link = 'Faltante' OR pendientes.Estado_link = 'Erroneo/Inexistente')AND pendientes.ID > 1  ORDER BY 
+                            pendientes.ID ASC;";
         } else if (isset($_GET['buscar']) && isset($_GET['busqueda_pendientes'])) {
             $busqueda = mysqli_real_escape_string($conexion, $_REQUEST['busqueda_pendientes']);
-            $where = " AND anime.Nombre LIKE '%$busqueda%'";
+            $where = " WHERE anime.Nombre LIKE '%$busqueda%' AND pendientes.ID > 1  ORDER BY 
+                            pendientes.ID ASC;";
         }
 
         ?>
@@ -831,18 +843,19 @@ require '../bd.php';
                             CONCAT(anime.Nombre, ' ', pendientes.Temporada) AS Nombre_Anime, 
                             anime.Estado AS Estado,
                             anime.Nombre AS Nombre,
-                            pendientes.Orden_Historia AS orden_historia
+                            pendientes.Orden_Historia AS orden_historia,
+                            ROW_NUMBER() OVER(
+                                PARTITION BY pendientes.Tipo 
+                                ORDER BY pendientes.Pendientes ASC, pendientes.ID ASC
+                            ) AS secuencia_intercalado
                         FROM 
                             pendientes
                         LEFT JOIN 
                             anime ON pendientes.ID_Anime = anime.id
-                        WHERE 
-                            pendientes.Tipo IN ('Pelicula', 'Ova y Otros', 'Anime') 
                             $where
-                        ORDER BY 
-                            pendientes.ID_Anime ASC,      -- Agrupa la franquicia
-                            pendientes.orden_historia ASC,  -- Tu nuevo orden cronológico manual
-                            pendientes.ID ASC;      -- Desempate por orden de creación";
+                   ";
+                        //echo $sql;
+
                         $result = mysqli_query($conexion, $sql);
 
                         while ($mostrar = mysqli_fetch_array($result)) {

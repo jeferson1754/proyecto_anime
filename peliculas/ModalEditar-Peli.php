@@ -69,6 +69,32 @@
               <option value="Viendo" <?php echo $mostrar['Estado'] === 'Viendo' ? 'selected' : ''; ?>>Viendo</option>
             </select>
           </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="lucide-link me-1"></i>Enlace
+            </label>
+            <input type="url" name="enlace" class="form-control"
+              value="<?php echo $mostrar['Link']; ?>"
+              placeholder="https://ejemplo.com/anime">
+          </div>
+
+          <div class="form-group mb-0">
+            <label class="form-label">
+              <i class="lucide-activity me-1"></i>Estado del Enlace
+            </label>
+            <select name="estado_link" class="form-select" style="max-width: 100% !important;" required>
+              <option value="<?php echo $mostrar['Estado_Link']; ?>">
+                <?php echo $mostrar['Estado_Link']; ?>
+              </option>
+              <?php
+              $query = $conexion->query("SELECT Estado FROM `estado_link`;");
+              while ($valores = mysqli_fetch_array($query)) {
+                echo '<option value="' . $valores['Estado'] . '">' . $valores['Estado'] . '</option>';
+              }
+              ?>
+            </select>
+          </div>
         </div>
 
         <!-- Pie del Modal -->
