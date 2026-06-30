@@ -22,7 +22,7 @@ if ($enlace == "" || $enlace == null) {
 
 
 
-$sql2 = ("SELECT * FROM `pendientes`where Temporada='$nombre';");
+$sql2 = ("SELECT * FROM `pendientes`where Temporada='$nombre' and ID_Anime='$id_anime';");
 echo $sql2 . "<br>";
 $pendientes = mysqli_query($conexion, $sql2);
 
@@ -61,6 +61,17 @@ if (mysqli_num_rows($pendientes) == 0) {
         $sql = "UPDATE pendientes SET Pendientes = (Total- Vistos)";
         $conn->exec($sql);
         $last_id2 = $conn->lastInsertId();
+        echo $sql;
+    } catch (PDOException $e) {
+        $conn = null;
+        echo $e;
+    }
+
+    try {
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = "UPDATE anime SET Estado = 'Pendiente' where id='$id_anime'";
+        $conn->exec($sql);
         echo $sql;
     } catch (PDOException $e) {
         $conn = null;

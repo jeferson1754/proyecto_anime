@@ -44,8 +44,8 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // 2. Verificar si la película ya existe usando PDO
-    $stmtCheck = $conn->prepare("SELECT * FROM `peliculas` WHERE Nombre = :nombre");
-    $stmtCheck->execute([':nombre' => $nombre]);
+    $stmtCheck = $conn->prepare("SELECT * FROM `peliculas` WHERE Nombre = :nombre and ID_Anime = :id_anime");
+    $stmtCheck->execute([':nombre' => $nombre, ':id_anime' => $id_anime]);
 
     if ($stmtCheck->rowCount() == 0) {
 
@@ -92,10 +92,15 @@ try {
                 ':estado_link' => $estado_link
             ]);
 
-            // CORRECCIÓN: El UPDATE ahora solo afecta a la fila vinculada
-            $sqlUpdatePendientes = "UPDATE pendientes SET Pendientes = (Total - Vistos) WHERE ID = :id_pendiente AND Vistos > -1";
+            // CORRECCIÓN: Se eliminaron las comillas simples de :estado
+            $sqlUpdatePendientes = "UPDATE anime SET Estado = :estado WHERE ID = :id_anime";
             $stmtUpdatePen = $conn->prepare($sqlUpdatePendientes);
-            $stmtUpdatePen->execute([':id_pendiente' => 1]); // <-- Usa el ID real aquí también
+
+            // Ahora PDO reemplazará :estado por 'Pendiente' de forma segura y correcta
+            $stmtUpdatePen->execute([
+                ':estado'   => 'Pendiente',
+                ':id_anime' => $id_anime
+            ]);
 
             // Eliminar de id_peliculas
             $stmtDeleteId = $conn->prepare("DELETE FROM `id_peliculas` WHERE `ID` = :id");
