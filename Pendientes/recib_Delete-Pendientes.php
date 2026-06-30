@@ -28,57 +28,50 @@ try {
     $stmtAnime->execute([$id_anime]);
     $existeAnime = $stmtAnime->fetchColumn() > 0;
 
-    // --- CORRECCIÓN: Definir y EJECUTAR la actualización de la configuración ---
-    if ($tipo == "Anime") {
-        // Si el que estás borrando es un Anime:
-        $sqlConfig = "UPDATE configuracion_pendientes  SET valor = 'Ova y Otros' WHERE clave = 'proximo_primero'";
-    } else {
-        // Si el que estás borrando es una OVA:
-        $sqlConfig = "UPDATE configuracion_pendientes  SET valor = 'Anime' WHERE clave = 'proximo_primero'";
+    // --- CORRECCIÓN LOGICA: Solo actualiza si se especificó el tipo ---
+    if (!empty($tipo)) {
+        if ($tipo == "Anime") {
+            $sqlConfig = "UPDATE configuracion_pendientes SET valor = 'Ova y Otros' WHERE clave = 'proximo_primero'";
+        } else {
+            $sqlConfig = "UPDATE configuracion_pendientes SET valor = 'Anime' WHERE clave = 'proximo_primero'";
+        }
+        $conn->exec($sqlConfig);
     }
-    // Ejecutamos la consulta de configuración para que el cambio impacte en la Base de Datos
-    $conn->exec($sqlConfig);
     // ---------------------------------------------------------------------------
 
-    $stmtPeli = $conn->prepare("SELECT COUNT(*) FROM `peliculas` WHERE ID_Pendientes = ?");
-    $stmtPeli->execute([$idRegistros]);
+    $stmtPeli = $conn->prepare("SELECT COUNT(*) FROM `peliculas` WHERE ID_Anime = ?");
+    $stmtPeli->execute([$id_anime]);
     $existePeli = $stmtPeli->fetchColumn() > 0;
 
     // --- NUEVA VALIDACIÓN: Contar cuántos pendientes QUEDAN de este mismo anime (excluyendo el que estamos borrando) ---
     $stmtRestantes = $conn->prepare("SELECT COUNT(*) FROM `pendientes` WHERE ID_Anime = ? AND ID != ?");
     $stmtRestantes->execute([$id_anime, $idRegistros]);
-    $quentanPendientes = $stmtRestantes->fetchColumn() > 0; // Será true si aún quedan otros registros
-    // ------------------------------------------------------------------------------------------------------------------
+    $quedanPendientes = $stmtRestantes->fetchColumn() > 0; // true o false
 
-    // 5. Flujo Lógico Principal (Decisión de Estados con la nueva validación)
+    // 5. Flujo Lógico Principal (Decisión de Estados)
+
+    // Valor por defecto para el mensaje
     $mensajeSweet = "Eliminando " . htmlspecialchars($nombre) . " de Pendientes";
 
     if (!$existeAnime) {
         if (!$existePeli) {
             // Caso A: No hay anime maestro ni película vinculada -> Solo borrar pendiente
-        } else {
-            // Caso B: Es una película independiente vinculada
-            if (!$quentanPendientes) {
-                // Desvinculamos el ID_Pendientes poniéndolo en NULL y la marcamos como Finalizado
-                $stmtUpdPeli = $conn->prepare("UPDATE peliculas SET estado = 'Finalizado', ID_Pendientes = NULL WHERE ID_Pendientes = ?");
-                $stmtUpdPeli->execute([$idRegistros]);
-                $mensajeSweet = "¡Último elemento! Película " . htmlspecialchars($nombre) . " marcada como Finalizada";
-            } else {
-                // Si quedan más cosas, solo desvinculamos este pendiente específico
-                $stmtUpdPeli = $conn->prepare("UPDATE peliculas SET ID_Pendientes = NULL WHERE ID_Pendientes = ?");
-                $stmtUpdPeli->execute([$idRegistros]);
-                $mensajeSweet = "Eliminado de la lista. Aún te quedan otros elementos de este título por ver.";
-            }
+            $mensajeSweet = "Eliminado correctamente de la lista temporal.";
         }
     } else {
         // Caso C: Existe el anime maestro
-        // SÓLO si no quedan más pendientes de este ID_Anime, pasamos el Anime Maestro a Finalizado
-        if (!$quentanPendientes) {
+
+        // CAMBIO AQUÍ: Evaluamos lógicamente si quedan pendientes O si existe película
+        $tieneElementosActivos = ($quedanPendientes || $existePeli);
+
+        if (!$tieneElementosActivos) {
+            // SÓLO si NO quedan pendientes Y NO existen películas asociadas
             $stmtUpdAnime = $conn->prepare("UPDATE anime SET Estado = 'Finalizado' WHERE id = ?");
             $stmtUpdAnime->execute([$id_anime]);
-            $mensajeSweet = "¡Serie Completada! " . htmlspecialchars($nombre) . " ha sido marcado como Finalizado";
+            $mensajeSweet = "¡Anime Completado! " . htmlspecialchars($nombre) . " ha sido marcado como Finalizado";
         } else {
-            $mensajeSweet = "Eliminado de la lista. Aún tienes otras temporadas/OVAs pendientes de esta serie.";
+            // Si todavía queda algo (otra temporada en pendientes o una película en su tabla)
+            $mensajeSweet = "Eliminado de la lista. Aún tienes otras temporadas, OVAs o películas pendientes de esta serie.";
         }
     }
 
@@ -86,39 +79,11 @@ try {
     $stmtDelete = $conn->prepare("DELETE FROM `pendientes` WHERE ID = ?");
     $stmtDelete->execute([$idRegistros]);
 
-
-    // 7. Lógica del Siguiente Pendiente Automático ("Viendo = SI")
-    $ordenTipos = [
-        "Anime" => "Ova y Otros",
-        "Ova y Otros" => "Pelicula",
-        "Pelicula" => "Anime"
-    ];
-
-    $siguienteTipo = $ordenTipos[$tipo] ?? "Anime";
-
-    $sqlSiguiente = "SELECT ID FROM pendientes WHERE tipo = ? GROUP BY Pendientes ORDER BY Pendientes ASC LIMIT 1";
-    $stmtSig = $conn->prepare($sqlSiguiente);
-
-    $stmtSig->execute([$siguienteTipo]);
-    $id_Pendiente = $stmtSig->fetchColumn();
-
-    if (!$id_Pendiente) {
-        $siguienteTipoAlterno = $ordenTipos[$siguienteTipo];
-        $stmtSig->execute([$siguienteTipoAlterno]);
-        $id_Pendiente = $stmtSig->fetchColumn();
-    }
-
-    if ($id_Pendiente) {
-        $stmtViendo = $conn->prepare("UPDATE pendientes SET Viendo = 'SI' WHERE ID = ?");
-        $stmtViendo->execute([$id_Pendiente]);
-    }
-
-
-    // 8. Renderizado del aviso de éxito con SweetAlert2 personalizado según el caso
+    // 7. Renderizado del aviso de éxito con SweetAlert2 personalizado según el caso
     echo '<script>
     Swal.fire({
         icon: "success",
-        title: "' . $mensajeSweet . '",
+        title: ' . json_encode($mensajeSweet) . ',
         confirmButtonText: "OK"
     }).then(function() {
         window.location = "' . $link . '";
