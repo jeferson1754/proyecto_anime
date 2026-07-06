@@ -33,23 +33,41 @@ function Swal($icon, $title, $location)
     </script>';
 }
 
-function InfoSwal($title, $location, $link)
+function InfoSwal($title, $id_eliminados, $post_data)
 {
-    echo '<script>
+    // Convertimos todos los datos actuales de $_POST a inputs ocultos de HTML
+    $inputs_ocultos = '';
+    foreach ($post_data as $key => $value) {
+        // Ignoramos si ya venía un forzar_insercion previo
+        if ($key !== 'forzar_insercion') {
+            $inputs_ocultos .= '<input type="hidden" name="' . htmlspecialchars($key) . '" value="' . htmlspecialchars($value) . '">';
+        }
+    }
+    // Añadimos el input que le da permiso a PHP de ignorar el aviso e insertar directamente
+    $inputs_ocultos .= '<input type="hidden" name="forzar_insercion" value="1">';
+
+    echo '
+    <form id="form_forzar_insercion" method="POST" action="' . $_SERVER['PHP_SELF'] . '">
+        ' . $inputs_ocultos . '
+    </form>
+
+    <script>
     Swal.fire({
         icon: "info",
-        title: "' . $title . '",
+        title: ' . json_encode($title) . ',
         showCancelButton: true,
         confirmButtonText: "Quiero ocuparlos",
         cancelButtonText: "No quiero ocuparlos"
-      }).then((result) => {
+    }).then((result) => {
         if (result.isConfirmed) {
-            window.location = "' . $location . '";
+            // Si quiere ocuparlos, va a la página de eliminados
+            window.location.href = "./update_eliminados_emision.php?variable=" + encodeURIComponent("' . urlencode($id_eliminados) . '");
         } else {
-              window.location = "' . $link . '";
+            // Si NO quiere ocuparlos, enviamos el formulario oculto manteniendo TODO el POST vivo
+            document.getElementById("form_forzar_insercion").submit();
         }
-      });
-      </script>';
+    });
+    </script>';
 }
 
 
@@ -301,26 +319,43 @@ if ($estado == "Viendo") {
     echo "El estado no es viendo<br>";
 }
 
+// Detectar si el usuario viene de presionar "No quiero ocuparlos"
+$forzar_insercion = $_POST['forzar_insercion'] ?? 0;
 
 if ($estado == "Emision" or $estado == "Pausado") {
     echo "Estado en Emision: $estado<br>";
     if (mysqli_num_rows($emision) == 0) {
-        if ($id_eliminados_emision != 0) {
+
+        // Si existen registros eliminados, PERO el usuario ya dijo que "No los quiere ocupar"
+        if ($id_eliminados_emision != 0 && $forzar_insercion != 1) {
+
             echo "Existe en Eliminados_Emision: $id_eliminados_emision";
-            InfoSwal('El anime ' . $nombre_temps . ' tiene registros en Eliminados de Emision', './update_eliminados_emision.php?variable=' . urlencode($id_eliminados_emision) . '', $link);
+
+            // Le pasamos el mensaje, el ID a ocupar y TODO el array $_POST actual
+            InfoSwal(
+                'El anime ' . $nombre_temps . ' tiene registros en Eliminados de Emision',
+                $id_eliminados_emision,
+                $_POST
+            );
+
             $ID_emision = 1;
         } else {
-
+            // CASO NORMAL O CUANDO EL USUARIO DIJO "NO QUIERO OCUPARLOS"
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                // Usamos consultas preparadas para evitar que comillas en las variables rompan el SQL
                 $sql = "INSERT INTO emision (`ID_Anime`, `Temporada`, `Capitulos`, `Totales`, `Dia`, `Duracion`)
-                VALUES ( '" . $idRegistros . "','" . $temps . "','1','12','" . $dia . "','" . $duracion . "')";
-                $conn->exec($sql);
-                $conn = null;
+                        VALUES (?, ?, '1', '12', ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute([$idRegistros, $temps, $dia, $duracion]);
             } catch (PDOException $e) {
+                echo "Error al insertar: " . $e->getMessage();
+            } finally {
                 $conn = null;
             }
+
             Swal('success', 'Creando registro de ' . $nombre . ' en Emision y Actualizando en Anime', $link);
         }
     } else {
