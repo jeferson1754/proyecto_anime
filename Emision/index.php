@@ -4,6 +4,30 @@ require '../bd.php';
 
 include '../update_emision.php';
 
+
+setlocale(LC_ALL, "es_ES");
+$año_actual = date("Y");
+$mes = date("F");
+
+// Determinar la temporada según el mes actual
+$temporadas = [
+    'January' => ['Invierno', 1],
+    'February' => ['Invierno', 1],
+    'March' => ['Invierno', 1],
+    'April' => ['Primavera', 2],
+    'May' => ['Primavera', 2],
+    'June' => ['Primavera', 2],
+    'July' => ['Verano', 3],
+    'August' => ['Verano', 3],
+    'September' => ['Verano', 3],
+    'October' => ['Otoño', 4],
+    'November' => ['Otoño', 4],
+    'December' => ['Otoño', 4]
+];
+
+$temporada_actual = $temporadas[$mes][0] ?? 'Desconocido';
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -611,7 +635,7 @@ include '../update_emision.php';
 
         $busqueda = "";
 
-        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'  and anime.Estado='Emision' and emision.ID>1 ORDER BY `anime`.`Nombre` ASC;";
+        $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'  and anime.Estado='Emision' and emision.ID>1 GROUP BY emision.ID ORDER BY `anime`.`Nombre` ASC;";
 
         if (isset($_GET['enviar'])) {
 
@@ -619,21 +643,21 @@ include '../update_emision.php';
 
             $busqueda = $day;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 GROUP BY emision.ID ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
         } elseif (isset($_GET['borrar'])) {
             $busqueda = "";
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and emision.ID>1 ORDER BY `anime`.`Nombre` ASC";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%'and emision.ID>1 GROUP BY emision.ID ORDER BY `anime`.`Nombre` ASC";
         } else if (isset($_GET['enviar2'])) {
             $dia   = $_REQUEST['dias'];
             $accion2 = $_REQUEST['accion'];
 
             $busqueda = $dia;
 
-            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
+            $where = "WHERE emision.dia LIKE'%" . $busqueda . "%' and anime.Estado='Emision' and emision.ID>1 GROUP BY emision.ID ORDER BY CASE WHEN emision.Posicion = 0 THEN 2 ELSE 1 END, emision.Posicion;";
         } else if (isset($_GET['faltantes'])) {
 
-            $where = "WHERE emision.Faltantes > emision.Capitulos AND anime.Estado='Emision' AND emision.ID > 1 ORDER BY (emision.Faltantes - emision.Capitulos) ASC;";
+            $where = "WHERE emision.Faltantes > emision.Capitulos AND anime.Estado='Emision' AND emision.ID > 1 GROUP BY emision.ID ORDER BY (emision.Faltantes - emision.Capitulos) ASC;";
         }
 
 
@@ -657,23 +681,34 @@ include '../update_emision.php';
                     </thead>
                     <tbody>
                         <?php
-                        $sql1 = "SELECT emision.*, CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, anime.Estado as Estado, anime.Nombre as Nombre 
-                        FROM `emision` 
-                        LEFT JOIN anime ON emision.ID_Anime = anime.id $where";
+                        $sql1 = "SELECT emision.*, 
+                            CONCAT(anime.Nombre, ' ', emision.Temporada) AS Nombre_Anime, 
+                            anime.Estado as Estado, 
+                            anime.Nombre as Nombre,
+                            anime. Temporada as Temporada_Emision,
+                            MAX(op.Ano) AS Ano,
+                            MAX(op.Temporada_Emision) AS Temporada_Emision 
+                        FROM `emision`
+                        LEFT JOIN anime ON emision.ID_Anime = anime.id 
+                        LEFT JOIN op ON op.ID_Anime = anime.id                        
+                        $where";
 
                         $result = mysqli_query($conexion, $sql1);
 
                         while ($mostrar = mysqli_fetch_array($result)) {
                             // --- NUEVA LÓGICA PARA EL OPENING ---
-                            $temporada_actual = $mostrar['Temporada'];
-                            $id_anime = $mostrar['ID_Anime'];
 
-                            $checkOp = mysqli_query($conexion, "SELECT id FROM op 
-                                WHERE ID_Anime = '$id_anime' 
-                                AND Temporada = '$temporada_actual' 
-                                LIMIT 1");
+                            // Inicializamos asumiendo que no tiene opening NUEVO para esta temporada
+                            $tieneOpeningCurrentSeason = false;
 
-                            $tieneOpening = mysqli_num_rows($checkOp) > 0;
+                            if ($mostrar['Ano'] == $año_actual && $mostrar['Temporada_Emision'] == $temporada_actual) {
+                                $tieneOpeningCurrentSeason = true;
+                            } else {
+                                // Si entra aquí, significa que tiene un opening en la base de datos, pero es VIEJO (de una temporada pasada)
+                                $tieneOpeningCurrentSeason = false;
+                            }
+
+
                             // ------------------------------------
 
                             if ($mostrar['Totales'] > 0) {
@@ -687,8 +722,24 @@ include '../update_emision.php';
                             <tr>
                                 <td class="fw-500">
                                     <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
+                                    <?php
+                                    $mostrar_alerta = false;
 
-                                    <?php if ($tieneOpening < 1 && $mostrar['Capitulos'] < 3): ?>
+                                    if (!$tieneOpeningCurrentSeason) {
+                                        // Calculamos el residuo de dividir los capítulos actuales entre 12
+                                        $residuo = $mostrar['Capitulos'] % 12;
+
+                                        // CASO ESPECIAL: Si el residuo es 0 (ej: capítulo 12, 24, 36...), 
+                                        // significa que es el último capítulo del bloque, no el inicio de uno nuevo.
+                                        // Solo nos interesan los capítulos que "sobran" al iniciar el bloque: el 1 y el 2.
+                                        if ($residuo == 1 || $residuo == 2) {
+                                            $mostrar_alerta = true;
+                                        }
+                                    }
+
+                                    // Renderizado de la etiqueta en base a tu lógica matemática
+                                    if ($mostrar_alerta):
+                                    ?>
                                         <span class="badge bg-info text-white" style="font-size: 0.7em; margin-left: 5px;">
                                             <i class="fas fa-music"></i> Sin OP
                                         </span>
