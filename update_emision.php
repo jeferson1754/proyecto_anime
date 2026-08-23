@@ -69,7 +69,7 @@ if ($count >= 1 && $num_queries_last_day < $max_queries_per_day && $hora_actual 
     $query = "INSERT INTO actualizaciones_anime (Fecha) VALUES ('$current_time')";
     mysqli_query($conexion, $query);
 
-    $sql = "UPDATE `emision` JOIN `anime` ON emision.ID_Anime = anime.id SET `emision`.`Faltantes` = `emision`.`Faltantes` + 1 WHERE `emision`.`Dia` = '$day' AND `anime`.`Estado` = 'Emision' AND `emision`.`Faltantes` < `emision`.`Totales`;";
+    $sql = "UPDATE `emision` JOIN `anime` ON emision.ID_Anime = anime.id SET `emision`.`Faltantes` = `emision`.`Faltantes` + 1,  `emision`.`Descargados ` = `emision`.`Descargados ` + 1 WHERE `emision`.`Dia` = '$day' AND `anime`.`Estado` = 'Emision' AND `emision`.`Faltantes` < `emision`.`Totales`;";
     mysqli_query($conexion, $sql);
 }
 
