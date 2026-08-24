@@ -241,6 +241,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sqlEmision = "UPDATE emision SET 
                     Capitulos = '$caps',
                     Faltantes = $caps + $faltantes,
+                    Descargados = $caps + $faltantes,
+                    No_Descargados = $caps,
                     Totales = '$total',
                     Dia = '$dias',
                     Duracion = '$duracion'
@@ -260,6 +262,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $sqlPausado = "UPDATE emision SET 
                     Capitulos = '$caps',
                     Faltantes = $caps + $faltantes,
+                    Descargados = $caps + $faltantes,
+                    No_Descargados = $caps,
                     Totales = '$total',
                     Dia = '$dias',
                     Duracion = '$duracion',
