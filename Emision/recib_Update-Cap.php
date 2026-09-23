@@ -31,7 +31,7 @@ if ($result) {
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             // Actualización de capítulos
-            $sqlUpdate = "UPDATE emision SET Capitulos = Capitulos + :vistos, No_Descargados = No_Descargados + :vistos WHERE ID = :id AND Capitulos < Totales";
+            $sqlUpdate = "UPDATE emision SET Capitulos = Capitulos + :vistos, No_Descargados = Capitulos WHERE ID = :id AND Capitulos < Totales";
             $stmtUpdate = $conn->prepare($sqlUpdate);
             $stmtUpdate->bindValue(':vistos', $vistos, PDO::PARAM_INT);  // Ligar el valor de los capítulos vistos
             $stmtUpdate->bindValue(':id', $idRegistros, PDO::PARAM_STR);  // Ligar el valor del nombre
