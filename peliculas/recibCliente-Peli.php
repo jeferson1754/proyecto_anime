@@ -93,7 +93,7 @@ try {
             ]);
 
             // CORRECCIÓN: Se eliminaron las comillas simples de :estado
-            $sqlUpdatePendientes = "UPDATE anime SET Estado = :estado WHERE ID = :id_anime";
+            $sqlUpdatePendientes = "UPDATE anime SET Estado = :estado WHERE ID = :id_anime AND Estado = 'Finalizado'";
             $stmtUpdatePen = $conn->prepare($sqlUpdatePendientes);
 
             // Ahora PDO reemplazará :estado por 'Pendiente' de forma segura y correcta

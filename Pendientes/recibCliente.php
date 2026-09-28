@@ -70,7 +70,7 @@ if (mysqli_num_rows($pendientes) == 0) {
     try {
         $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE anime SET Estado = 'Pendiente' where id='$id_anime'";
+        $sql = "UPDATE anime SET Estado = 'Pendiente' WHERE id = '$id_anime' AND Estado = 'Finalizado'";
         $conn->exec($sql);
         echo $sql;
     } catch (PDOException $e) {
