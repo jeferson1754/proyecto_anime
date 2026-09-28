@@ -747,10 +747,16 @@ $temporada_actual = $temporadas[$mes][0] ?? 'Desconocido';
                                     <?php endif; ?>
 
                                     <!-- Renderizado de Alerta: Descargados Pendientes (Puntito Naranjo) -->
-                                    <?php if ($faltantes_descarga > 0): ?>
-                                        <span class="badge rounded-pill bg-warning text-dark" style="font-size: 0.7em; margin-left: 5px;" title="<?php echo $faltantes_descarga; ?> episodio(s) pendiente(s) por descargar">
-                                            <span style="height: 7px; width: 7px; background-color: #fd7e14; border-radius: 50%; display: inline-block; margin-right: 3px;"></span>
-                                            <?php echo $faltantes_descarga; ?>
+                                    <?php if ($faltantes_descarga != 0): ?>
+                                        <?php
+                                        // Cambia el color si es positivo o negativo
+                                        $bg_badge = ($faltantes_descarga > 0) ? 'bg-warning text-dark' : 'bg-danger text-white';
+                                        $dot_color = ($faltantes_descarga > 0) ? '#fd7e14' : '#dc3545';
+                                        $texto_signo = ($faltantes_descarga > 0) ? "+{$faltantes_descarga}" : $faltantes_descarga;
+                                        ?>
+                                        <span class="badge rounded-pill <?php echo $bg_badge; ?>" style="font-size: 0.7em; margin-left: 5px;" title="<?php echo $faltantes_descarga; ?> episodio(s)">
+                                            <span style="height: 7px; width: 7px; background-color: <?php echo $dot_color; ?>; border-radius: 50%; display: inline-block; margin-right: 3px;"></span>
+                                            <?php echo $texto_signo; ?>
                                         </span>
                                     <?php endif; ?>
                                 </td>
