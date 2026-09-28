@@ -721,27 +721,36 @@ $temporada_actual = $temporadas[$mes][0] ?? 'Desconocido';
                         ?>
                             <tr>
                                 <td class="fw-500">
-                                    <?php echo $mostrar['Nombre_Anime'] ?? $mostrar['Temporada'] ?>
+                                    <?php echo htmlspecialchars($mostrar['Nombre_Anime'] ?? $mostrar['Temporada']); ?>
+
                                     <?php
-                                    $mostrar_alerta = false;
-
+                                    // --- 1. Lógica para la alerta "Sin OP" ---
+                                    $mostrar_alerta_op = false;
                                     if (!$tieneOpeningCurrentSeason) {
-                                        // Calculamos el residuo de dividir los capítulos actuales entre 12
-                                        $residuo = $mostrar['Capitulos'] % 12;
-
-                                        // CASO ESPECIAL: Si el residuo es 0 (ej: capítulo 12, 24, 36...), 
-                                        // significa que es el último capítulo del bloque, no el inicio de uno nuevo.
-                                        // Solo nos interesan los capítulos que "sobran" al iniciar el bloque: el 1 y el 2.
+                                        $residuo = ($mostrar['Capitulos'] ?? 0) % 12;
                                         if ($residuo == 1 || $residuo == 2) {
-                                            $mostrar_alerta = true;
+                                            $mostrar_alerta_op = true;
                                         }
                                     }
 
-                                    // Renderizado de la etiqueta en base a tu lógica matemática
-                                    if ($mostrar_alerta):
+                                    // --- 2. Lógica para la alerta de Descargados Pendientes (Puntito Naranjo) ---
+                                    $descargados    = intval($mostrar['Descargados'] ?? 0);
+                                    $no_descargados = intval($mostrar['No_Descargados'] ?? 0);
+                                    $faltantes_descarga      = $descargados - $no_descargados;
                                     ?>
+
+                                    <!-- Renderizado de Alerta: Sin OP -->
+                                    <?php if ($mostrar_alerta_op): ?>
                                         <span class="badge bg-info text-white" style="font-size: 0.7em; margin-left: 5px;">
                                             <i class="fas fa-music"></i> Sin OP
+                                        </span>
+                                    <?php endif; ?>
+
+                                    <!-- Renderizado de Alerta: Descargados Pendientes (Puntito Naranjo) -->
+                                    <?php if ($faltantes_descarga > 0): ?>
+                                        <span class="badge rounded-pill bg-warning text-dark" style="font-size: 0.7em; margin-left: 5px;" title="<?php echo $faltantes_descarga; ?> episodio(s) pendiente(s) por descargar">
+                                            <span style="height: 7px; width: 7px; background-color: #fd7e14; border-radius: 50%; display: inline-block; margin-right: 3px;"></span>
+                                            <?php echo $faltantes_descarga; ?>
                                         </span>
                                     <?php endif; ?>
                                 </td>
