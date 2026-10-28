@@ -124,7 +124,7 @@ if ($eliminados_emision && mysqli_num_rows($eliminados_emision) > 0) {
 
 try {
     // Conexión a la base de datos usando PDO
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Consulta 1: Buscar horario por temporada y número de horario
@@ -146,7 +146,7 @@ if ($estado != "Finalizado") {
     if (mysqli_num_rows($num) == 0) {
         echo "Horario No Existe<br> Hay que crearlo y buscar el num horario<br> ";
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "INSERT INTO num_horario (`Temporada`, `Ano`) VALUES (?, ?)";
             $stmt = $conn->prepare($sql);
@@ -184,7 +184,7 @@ if ($estado != "Finalizado") {
 
 
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 // Consulta SQL para insertar datos
                 $sql = "INSERT INTO `horario`( `ID_Anime`,`Temporada`, `Dia`, `Duracion`, `num_horario`) VALUES (?, ?, ?, ?, ?)";
@@ -248,7 +248,7 @@ $nombre_temps = $nombre . " " . $temps;
 
 
 try {
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if ($op > $op1) {
@@ -360,7 +360,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
         }
     } else {
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE emision SET Temporada ='" . $temps . "'
             WHERE ID_Anime='" . $idRegistros . "'";
@@ -378,7 +378,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
     if (mysqli_num_rows($pendientes) == 0) {
 
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "INSERT INTO pendientes (`ID_Anime`,`Temporada`,`Tipo`, `Vistos`, `Total`,`Pendientes`) 
             VALUES ( '" . $idRegistros . "', '" . $temps . "','Anime','1','12','11')";
@@ -393,7 +393,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
     } else {
 
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE pendientes SET Temporada ='" . $temps . "'
             WHERE ID_Anime='" . $idRegistros . "'";
@@ -414,7 +414,7 @@ if ($estado == "Emision" or $estado == "Pausado") {
 }
 
 try {
-    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+    $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $sql = "UPDATE anime SET 
     Nombre ='" . $nombre . "',

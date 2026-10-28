@@ -40,7 +40,7 @@ $sql_horario_exist = "SELECT * FROM `num_horario` WHERE Temporada='$tempo' AND A
 $result_horario_exist = mysqli_query($conexion, $sql_horario_exist);
 if (mysqli_num_rows($result_horario_exist) == 0) {
     try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql_insert_horario = "INSERT INTO num_horario (`Temporada`, `Ano`) VALUES ('$tempo', '$fecha')";
         $conn->exec($sql_insert_horario);
@@ -60,7 +60,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
     // Insertar en la tabla anime
     try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql_insert_anime = "INSERT INTO anime (`id`, `Nombre`, `Estado`, `Ano`, `Temporada`, `TipoAnime`) VALUES ('$id', '$nombre', '$estado','$fecha', '$tempo', '$tipo_anime')";
         $conn->exec($sql_insert_anime);
@@ -76,7 +76,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
             // Insertar en la tabla emision
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql_insert_emision = "INSERT INTO emision (`ID_Anime`, `Capitulos`, `Totales`, `Dia`, `Duracion`) VALUES ('$last_id_anime', '1', '12', '$dia_emision', '00:24:00')";
                 $conn->exec($sql_insert_emision);
@@ -89,7 +89,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
             // Insertar en la tabla horario
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql_insert_horario = "INSERT INTO `horario` (`ID_Anime`, `Dia`, `Duracion`, `num_horario`) VALUES ('$last_id_anime', '$dia_emision', '00:24:00', '$num_horario')";
                 $conn->exec($sql_insert_horario);
@@ -131,7 +131,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
             // Insertar en la tabla emision
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql_insert_emision = "INSERT INTO emision (`ID_Anime`, `Capitulos`, `Totales`, `Dia`, `Duracion`) VALUES ('$last_id_anime', '1', '12', '$dia_emision', '00:24:00')";
                 $conn->exec($sql_insert_emision);
@@ -143,7 +143,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
             // Insertar en la tabla horario
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql_insert_horario = "INSERT INTO `horario` (`ID_Anime`, `Dia`, `Duracion`, `num_horario`) VALUES ('$last_id_anime', '$dia_emision', '00:24:00', '$num_horario')";
                 $conn->exec($sql_insert_horario);
@@ -168,7 +168,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
         case "Pendiente":
             // Insertar en la tabla pendientes
             try {
-                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+                $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
                 $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $sql_insert_pendientes = "INSERT INTO pendientes (`ID_Anime`, `Tipo`, `Vistos`, `Total`,`Pendientes`) VALUES ('$last_id_anime', 'Anime', '1', '12', '11')";
                 $conn->exec($sql_insert_pendientes);
@@ -197,7 +197,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
     if (!empty($id_anime_principal)) {
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql_relacion = "INSERT INTO anime_relaciones (`id_anime_origen`, `id_anime_destino`,`tipo_relacion`) VALUES ('$last_id_anime', '$id_anime_principal', '$tipo_anime')";
             $conn->exec($sql_relacion);
@@ -210,7 +210,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
 
     // Eliminar el registro de id_anime
     try {
-        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+        $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql_delete_id_anime = "DELETE FROM `id_anime` WHERE `ID` = '$id'";
         $conn->exec($sql_delete_id_anime);
@@ -222,7 +222,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
     // Insertar en la tabla op si es necesario
     if (isset($_REQUEST["OP"])) {
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql_insert_op = "INSERT INTO op (`ID_Anime`, `Opening`, `Ano`, `Temporada_Emision`, `Estado`, `Mix`, `Estado_Link`, `Fecha_Ingreso`) VALUES ('$last_id_anime', '1', '$fecha', '$tempo', 'Faltante', '$mix', 'Faltante', NOW())";
             $conn->exec($sql_insert_op);
@@ -235,7 +235,7 @@ if (mysqli_num_rows($result_anime_exist) == 0) {
     // Insertar en la tabla ed si es necesario
     if (isset($_REQUEST["ED"])) {
         try {
-            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
+            $conn = new PDO("mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4", $usuario, $password);
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql_insert_ed = "INSERT INTO ed (`ID_Anime`, `Ending`, `Ano`, `Temporada_Emision`, `Estado`, `Mix`, `Estado_Link`, `Fecha_Ingreso`) VALUES ('$last_id_anime', '1', '$fecha', '$tempo', 'Faltante', '$mix2', 'Faltante', NOW())";
             $conn->exec($sql_insert_ed);

@@ -4,13 +4,20 @@ $usuario  = "epiz_32740026";
 $password = "eJWcVk2au5gqD";
 $servidor = "sql208.epizy.com";
 $basededatos = "epiz_32740026_r_user";
-$conexion = mysqli_connect($servidor, $usuario, $password) or die("No se ha podido conectar al Servidor");
-mysqli_query($conexion, "SET SESSION collation_connection ='utf8_unicode_ci'");
-$db = mysqli_select_db($conexion, $basededatos) or die("Upps! Error en conectar a la Base de Datos");
+$conexion = mysqli_connect($servidor, $usuario, $password, $basededatos)
+    or die("No se ha podido conectar al Servidor");
+
+if (!mysqli_set_charset($conexion, "utf8mb4")) {
+    die("Error cargando charset utf8mb4: " . mysqli_error($conexion));
+}
 
 try {
-    $connect = new PDO("mysql:host=$servidor;dbname=$basededatos", $usuario, $password);
-    $connect->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $connect = new PDO(
+        "mysql:host=$servidor;dbname=$basededatos;charset=utf8mb4",
+        $usuario,
+        $password,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
 } catch (PDOException $e) {
     die("Error de conexión: " . $e->getMessage());
 }
